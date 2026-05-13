@@ -13,6 +13,7 @@ use App\Http\Controllers\Central\MenuCategoryController;
 use App\Http\Controllers\Central\PosController;
 use App\Http\Controllers\Central\KitchenDisplayController;
 use App\Http\Controllers\Central\OrderController;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -130,4 +131,19 @@ Route::get('/env-check', function () {
         'database' => env('DB_DATABASE'),
         'username' => env('DB_USERNAME'),
     ];
+});
+
+Route::get('/db-check', function () {
+    try {
+        DB::connection()->getPdo();
+
+        return [
+            'success' => true,
+            'db' => DB::connection()->getDatabaseName()
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'error' => $e->getMessage()
+        ];
+    }
 });
