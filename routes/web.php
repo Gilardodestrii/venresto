@@ -122,3 +122,12 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
+
+Route::get('/env-check', function () {
+    return [
+        'host' => env('DB_HOST'),
+        'port' => env('DB_PORT'),
+        'database' => env('DB_DATABASE'),
+        'username' => env('DB_USERNAME'),
+    ];
+});
