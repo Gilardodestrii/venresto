@@ -40,7 +40,7 @@
       <div class="d-flex justify-content-center flex-wrap gap-4 opacity-75">
         <img src="{{ asset('assets/img/sapore.png') }}" alt="Brand 1" height="200">
         <img src="{{ asset('assets/img/warung-kita.png') }}" alt="Brand 2" height="250">
-        <img src="{{ asset('images/brand-3.png') }}" alt="Brand 3" height="28">
+        <img src="{{ asset('assets/img/nuvora.png') }}" alt="Brand 3" height="200">
       </div>
     </div>
   </section>

@@ -21,6 +21,30 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\QrMenuController;
 
 
+Route::get('/env-check', function () {
+    return [
+        'host' => env('DB_HOST'),
+        'port' => env('DB_PORT'),
+        'database' => env('DB_DATABASE'),
+        'username' => env('DB_USERNAME'),
+    ];
+});
+
+Route::get('/db-check', function () {
+    try {
+        DB::connection()->getPdo();
+
+        return [
+            'success' => true,
+            'db' => DB::connection()->getDatabaseName()
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'error' => $e->getMessage()
+        ];
+    }
+});
+
 Route::middleware('guest')->group(function () {
     Route::get('/{tenant}/login',  [LoginController::class, 'show'])->name('login');
     Route::post('/{tenant}/login', [LoginController::class, 'store'])->middleware('throttle:login');
@@ -124,26 +148,3 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-Route::get('/env-check', function () {
-    return [
-        'host' => env('DB_HOST'),
-        'port' => env('DB_PORT'),
-        'database' => env('DB_DATABASE'),
-        'username' => env('DB_USERNAME'),
-    ];
-});
-
-Route::get('/db-check', function () {
-    try {
-        DB::connection()->getPdo();
-
-        return [
-            'success' => true,
-            'db' => DB::connection()->getDatabaseName()
-        ];
-    } catch (\Throwable $e) {
-        return [
-            'error' => $e->getMessage()
-        ];
-    }
-});
