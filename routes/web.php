@@ -15,11 +15,7 @@ use App\Http\Controllers\Central\KitchenDisplayController;
 use App\Http\Controllers\Central\OrderController;
 use Illuminate\Support\Facades\DB;
 
-
-
-
 use App\Http\Controllers\QrMenuController;
-
 
 Route::get('/env-check', function () {
     return [
@@ -58,16 +54,16 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/', LandingController::class);
-Route::view('/pricing','landing.pricing');
+Route::get('/', LandingController::class)->name('landing.home');
+Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
 Route::view('/features', 'landing.features')->name('marketing.features');
-
+Route::get('/documentation', [LandingController::class, 'documentation'])
+    ->name('landing.documentation');
 
 Route::get('/signup', [SignupController::class,'show']);
 Route::post('/signup', [SignupController::class,'store']);
 
 Route::post('/webhooks/midtrans', MidtransWebhookController::class);
-
 
 Route::group(['prefix' => '{tenant}/qr'], function () {
 
@@ -89,9 +85,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
         ->name('admin.qr.download');
-        Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
+
+    Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
         ->name('admin.qr.store');
-    
+
     Route::get('{tenant}/admin/outlets/{outlet}/qr/destroy/{table}', [QrAdminController::class, 'destroy'])
         ->name('admin.qr.destroy');
 
@@ -100,10 +97,8 @@ Route::middleware(['auth'])->group(function () {
         OutletController::class
     )->names('tenant.admin.outlets');
 
-        // CATEGORY
     Route::resource('{tenant}/admin/menu-categories', MenuCategoryController::class);
 
-    // MENU ITEM
     Route::resource('{tenant}/admin/menu-items', MenuItemController::class);
 
     Route::prefix('{tenant}/admin')
@@ -118,33 +113,36 @@ Route::middleware(['auth'])->group(function () {
 
         });
 
-        Route::prefix('{tenant}/admin/kitchen')
-            ->name('kitchen.')
-            ->group(function () {
+    Route::prefix('{tenant}/admin/kitchen')
+        ->name('kitchen.')
+        ->group(function () {
 
-                Route::get('/', [KitchenDisplayController::class, 'index'])
-                    ->name('index');
+            Route::get('/', [KitchenDisplayController::class, 'index'])
+                ->name('index');
 
-                Route::get('/live', [KitchenDisplayController::class, 'live'])
-                    ->name('live');
+            Route::get('/live', [KitchenDisplayController::class, 'live'])
+                ->name('live');
 
-                Route::post(
-                    '/item/{id}/status',
-                    [KitchenDisplayController::class, 'updateStatus']
-                )->name('item.status');
+            Route::post(
+                '/item/{id}/status',
+                [KitchenDisplayController::class, 'updateStatus']
+            )->name('item.status');
 
-            });
+        });
 
-        Route::prefix('{tenant}/admin')
-            ->name('tenant.admin.')
-            ->group(function () {
-        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::prefix('{tenant}/admin')
+        ->name('tenant.admin.')
+        ->group(function () {
 
-        Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])
-            ->name('orders.updatePayment');
-        }) ;
+            Route::get('/orders', [OrderController::class, 'index'])
+                ->name('orders.index');
 
+            Route::get('/orders/{order}', [OrderController::class, 'show'])
+                ->name('orders.show');
+
+            Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])
+                ->name('orders.updatePayment');
+
+        });
 
 });
-
