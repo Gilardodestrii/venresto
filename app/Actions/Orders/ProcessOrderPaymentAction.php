@@ -2,6 +2,7 @@
 
 namespace App\Actions\Orders;
 
+use App\Models\CashierSession;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\TenantContext;
@@ -29,6 +30,19 @@ class ProcessOrderPaymentAction
                 ]);
             }
 
+            $activeSession = CashierSession::where('tenant_id', $tenant->id)
+                ->where('outlet_id', $outletId)
+                ->where('cashier_id', auth()->id())
+                ->where('status', 'open')
+                ->latest()
+                ->first();
+
+            if (! $activeSession) {
+                throw ValidationException::withMessages([
+                    'cashier_session' => 'Shift kasir belum dibuka.'
+                ]);
+            }
+
             $paidAmount = (float) $data['paid_amount'];
             $grandTotal = (float) $lockedOrder->grand_total;
 
@@ -42,7 +56,7 @@ class ProcessOrderPaymentAction
                 'tenant_id' => $lockedOrder->tenant_id,
                 'outlet_id' => $lockedOrder->outlet_id,
                 'order_id' => $lockedOrder->id,
-                'cashier_session_id' => $data['cashier_session_id'] ?? null,
+                'cashier_session_id' => $activeSession->id,
                 'cashier_id' => auth()->id(),
                 'method' => $data['payment_method'],
                 'amount' => $grandTotal,
