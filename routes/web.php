@@ -45,7 +45,7 @@ Route::get('/db-check', function () {
             'success' => true,
             'db' => DB::connection()->getDatabaseName()
         ];
-    } catch (\\Throwable $e) {
+    } catch (\Throwable $e) {
         return [
             'error' => $e->getMessage()
         ];
