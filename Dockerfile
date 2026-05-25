@@ -1,4 +1,4 @@
-# Railway production Dockerfile - cache bust 2026-05-25
+# Railway production Dockerfile - fast boot 2026-05-25
 FROM php:8.2-cli
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -48,10 +48,4 @@ RUN composer dump-autoload --optimize \
 
 EXPOSE 8080
 
-CMD test -n "$APP_KEY" \
-    && php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
-    && php artisan optimize \
-    && php artisan migrate --force \
-    && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+CMD sh -c 'php artisan config:clear && php artisan route:clear && php artisan view:clear && exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}'
