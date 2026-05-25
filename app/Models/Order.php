@@ -37,25 +37,16 @@ class Order extends Model
         'grand_total'  => 'decimal:2',
     ];
 
-    /*
-    |-----------------------------------------
-    | RELATIONSHIP
-    |-----------------------------------------
-    */
-
-    // Tenant (multi-tenant)
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
     }
 
-    // Outlet / Cabang
     public function outlet()
     {
         return $this->belongsTo(Outlet::class);
     }
 
-    // Cashier / User yang memproses
     public function cashier()
     {
         return $this->belongsTo(User::class, 'cashier_id');
@@ -66,24 +57,28 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    /*
-    |-----------------------------------------
-    | SCOPES (optional tapi berguna)
-    |-----------------------------------------
-    */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 
-public function scopePaid($query)
-{
-    return $query->where('status', 'paid');
-}
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
+    }
 
-public function scopePending($query)
-{
-    return $query->where('status', 'pending_payment');
-}
+    public function scopePaid($query)
+    {
+        return $query->where('status', 'paid');
+    }
 
-public function scopeOpen($query)
-{
-    return $query->where('status', 'open');
-}
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending_payment');
+    }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('status', 'open');
+    }
 }
