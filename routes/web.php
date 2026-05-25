@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\KitchenController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Central\LandingController;
 use App\Http\Controllers\Central\LoginController;
 use App\Http\Controllers\Central\SignupController;
@@ -16,6 +17,16 @@ use App\Http\Controllers\Central\OrderController;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\QrMenuController;
+
+Route::get('/run-seed', function () {
+
+    Artisan::call('db:seed', [
+        '--class' => 'DatabaseSeeder',
+        '--force' => true,
+    ]);
+
+    return 'Seeder berhasil dijalankan';
+});
 
 Route::get('/env-check', function () {
     return [
@@ -34,7 +45,7 @@ Route::get('/db-check', function () {
             'success' => true,
             'db' => DB::connection()->getDatabaseName()
         ];
-    } catch (\Throwable $e) {
+    } catch (\\Throwable $e) {
         return [
             'error' => $e->getMessage()
         ];
