@@ -90,7 +90,7 @@
         <ul class="navbar-nav ms-auto align-items-lg-center">
           <li class="nav-item"><a class="nav-link" href="{{ url('/features') }}">Fitur</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/pricing') }}">Harga</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url('/docs') }}">Dokumentasi</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('landing.documentation') }}">Dokumentasi</a></li>
           <li class="nav-item ms-lg-3 my-2 my-lg-0">
             <a class="btn btn-outline-primary"
             href="{{ isset($currentTenant) ? url($currentTenant->slug.'/login') : url('/login') }}">
