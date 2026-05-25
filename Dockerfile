@@ -1,3 +1,4 @@
+# Railway production Dockerfile - cache bust 2026-05-25
 FROM php:8.2-cli
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
