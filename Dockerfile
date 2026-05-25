@@ -47,7 +47,8 @@ RUN composer dump-autoload --optimize \
 
 EXPOSE 8080
 
-CMD php artisan config:clear \
+CMD test -n "$APP_KEY" \
+    && php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear \
     && php artisan optimize \
