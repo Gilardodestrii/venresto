@@ -15,13 +15,28 @@ class CashierSessionController extends Controller
         $tenant = TenantContext::get();
         $outletId = session('current_outlet_id');
 
+        $activeSession = CashierSession::where('tenant_id', $tenant->id)
+            ->where('outlet_id', $outletId)
+            ->where('cashier_id', auth()->id())
+            ->where('status', 'open')
+            ->latest()
+            ->first();
+
         $sessions = CashierSession::with('cashier')
             ->where('tenant_id', $tenant->id)
             ->where('outlet_id', $outletId)
             ->latest()
             ->paginate(10);
 
-        return view('admin.cashier-sessions.index', compact('sessions'));
+        $activePaymentTotal = $activeSession
+            ? Payment::where('cashier_session_id', $activeSession->id)->sum('amount')
+            : 0;
+
+        return view('admin.cashier-sessions.index', compact(
+            'sessions',
+            'activeSession',
+            'activePaymentTotal'
+        ));
     }
 
     public function open(Request $request)
@@ -67,6 +82,7 @@ class CashierSessionController extends Controller
         $session = CashierSession::where('tenant_id', $tenantModel->id)
             ->where('outlet_id', $outletId)
             ->where('id', $sessionId)
+            ->where('status', 'open')
             ->firstOrFail();
 
         $paymentTotal = Payment::where('cashier_session_id', $session->id)
