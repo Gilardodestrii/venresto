@@ -11,6 +11,7 @@ body{background:var(--bg);}
 .badge-paid{background:#dcfce7;color:#166534;}
 .badge-pending{background:#fef9c3;color:#854d0e;}
 .badge-open{background:#dbeafe;color:#1e40af;}
+.badge-void{background:#fee2e2;color:#991b1b;}
 .item-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #eee;}
 .summary-box{position:sticky;top:20px;}
 </style>
@@ -26,11 +27,25 @@ body{background:var(--bg);}
                 <span class="badge-soft badge-paid">Paid</span>
             @elseif($order->status == 'pending_payment')
                 <span class="badge-soft badge-pending">Pending Payment</span>
+            @elseif($order->status == 'void')
+                <span class="badge-soft badge-void">Void</span>
             @else
                 <span class="badge-soft badge-open">Open</span>
             @endif
         </div>
     </div>
+
+    @if(session('success'))
+        <div class="alert alert-success border-0 rounded-4 shadow-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger border-0 rounded-4 shadow-sm">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="row g-3">
         <div class="col-md-8">
@@ -78,8 +93,22 @@ body{background:var(--bg);}
                 <hr>
                 <div class="mb-2"><small class="text-muted">Payment Method</small><div class="fw-bold">{{ $order->payment_method ?? '-' }}</div></div>
                 <div class="mb-3"><small class="text-muted">Cashier</small><div>{{ $order->cashier->name ?? '-' }}</div></div>
-                @if($order->status != 'paid')
-                    <button class="btn btn-primary w-100" onclick="openPaymentModal()">Bayar Sekarang</button>
+
+                @if($order->status != 'paid' && $order->status != 'void')
+                    <button class="btn btn-primary w-100 mb-2" onclick="openPaymentModal()">
+                        Bayar Sekarang
+                    </button>
+                @endif
+
+                @if($order->status == 'paid')
+                    <form method="POST"
+                          action="{{ route('tenant.admin.orders.void', [$currentTenant->slug, $order->id]) }}"
+                          onsubmit="return confirm('Void order ini? Stock akan dikembalikan.')">
+                        @csrf
+                        <button class="btn btn-danger w-100">
+                            Void Order & Restore Stock
+                        </button>
+                    </form>
                 @endif
             </div>
         </div>
