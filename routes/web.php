@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\KitchenController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Central\LandingController;
 use App\Http\Controllers\Central\LoginController;
 use App\Http\Controllers\Central\SignupController;
@@ -54,8 +55,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/', LandingController::class);
-Route::view('/pricing','landing.pricing');
+Route::get('/', LandingController::class)->name('landing.home');
+Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
 Route::view('/features', 'landing.features')->name('marketing.features');
 
 Route::get('/signup', [SignupController::class,'show']);
