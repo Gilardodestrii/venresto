@@ -54,6 +54,9 @@ class InventoryService
                         ]);
                     }
 
+                    $before = (float) $material->stock;
+                    $after = $before - $deductQty;
+
                     $material->decrement('stock', $deductQty);
 
                     StockMovement::create([
@@ -62,7 +65,12 @@ class InventoryService
                         'material_id' => $material->id,
                         'type' => 'out',
                         'qty' => $deductQty,
+                        'stock_before' => $before,
+                        'stock_after' => $after,
                         'ref' => 'ORDER-' . $order->id,
+                        'note' => 'POS payment stock deduction',
+                        'source_type' => 'order',
+                        'source_id' => $order->id,
                         'created_by' => auth()->id(),
                     ]);
                 }
@@ -111,6 +119,9 @@ class InventoryService
                         continue;
                     }
 
+                    $before = (float) $material->stock;
+                    $after = $before + $restoreQty;
+
                     $material->increment('stock', $restoreQty);
 
                     StockMovement::create([
@@ -119,7 +130,12 @@ class InventoryService
                         'material_id' => $material->id,
                         'type' => 'in',
                         'qty' => $restoreQty,
+                        'stock_before' => $before,
+                        'stock_after' => $after,
                         'ref' => $refPrefix . '-' . $order->id,
+                        'note' => 'Order void stock restore',
+                        'source_type' => 'order_void',
+                        'source_id' => $order->id,
                         'created_by' => auth()->id(),
                     ]);
                 }
