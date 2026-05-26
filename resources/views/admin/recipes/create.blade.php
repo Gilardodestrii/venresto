@@ -6,8 +6,8 @@
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h3 class="fw-bold mb-1">Tambah Recipe</h3>
-            <div class="text-muted">Tentukan bahan baku yang digunakan oleh menu</div>
+            <h3 class="fw-bold mb-1">Recipe Builder</h3>
+            <div class="text-muted">Tambah banyak bahan sekaligus untuk 1 menu</div>
         </div>
 
         <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
@@ -19,7 +19,6 @@
 
     @if($errors->any())
         <div class="alert alert-danger border-0 rounded-4 shadow-sm">
-            <div class="fw-semibold mb-1">Validasi gagal</div>
             <ul class="mb-0 ps-3">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -28,134 +27,114 @@
         </div>
     @endif
 
-    <div class="row g-4">
+    <div class="card border-0 shadow-sm rounded-5">
+        <div class="card-body p-4">
 
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-5">
-                <div class="card-body p-4">
+            <form method="POST"
+                  action="{{ route('tenant.admin.recipes.store', $currentTenant->slug) }}">
+                @csrf
 
-                    <form method="POST"
-                          action="{{ route('tenant.admin.recipes.store', $currentTenant->slug) }}">
-                        @csrf
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Menu</label>
+                    <select name="item_id" class="form-select rounded-4" required>
+                        <option value="">Pilih Menu</option>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Menu</label>
-                            <select name="item_id"
-                                    class="form-select rounded-4 @error('item_id') is-invalid @enderror"
-                                    required>
-                                <option value="">Pilih menu</option>
-
-                                @foreach($menuItems as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ old('item_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            @error('item_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Bahan Baku</label>
-                            <select name="material_id"
-                                    class="form-select rounded-4 @error('material_id') is-invalid @enderror"
-                                    required>
-                                <option value="">Pilih bahan</option>
-
-                                @foreach($materials as $material)
-                                    <option value="{{ $material->id }}"
-                                        {{ old('material_id') == $material->id ? 'selected' : '' }}>
-                                        {{ $material->name }}
-                                        -
-                                        Stok {{ number_format($material->stock, 2) }}
-                                        {{ $material->unit }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            @error('material_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Qty Pemakaian</label>
-                            <input type="number"
-                                   name="qty"
-                                   step="0.001"
-                                   min="0.001"
-                                   value="{{ old('qty') }}"
-                                   class="form-control rounded-4 @error('qty') is-invalid @enderror"
-                                   placeholder="Contoh: 0.250"
-                                   required>
-
-                            <div class="form-text">
-                                Jumlah bahan yang dipakai untuk 1 porsi/menu.
-                            </div>
-
-                            @error('qty')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
-                               class="btn btn-light rounded-4 px-4">
-                                Batal
-                            </a>
-
-                            <button class="btn btn-primary rounded-4 px-4">
-                                <i class="bi bi-save me-1"></i>
-                                Simpan Recipe
-                            </button>
-                        </div>
-                    </form>
-
+                        @foreach($menuItems as $item)
+                            <option value="{{ $item->id }}">
+                                {{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-5">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-4 bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
-                             style="width:48px;height:48px;">
-                            <i class="bi bi-info-circle fs-4"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-0">Cara Kerja Recipe</h6>
-                            <small class="text-muted">Auto deduct stock</small>
-                        </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-0">Bahan Recipe</h6>
+                        <small class="text-muted">Tambah banyak bahan untuk menu</small>
                     </div>
 
-                    <div class="text-muted small lh-lg">
-                        Recipe digunakan untuk menentukan bahan baku dari setiap menu.
-                        Saat order dibayar, sistem akan mengurangi stok bahan sesuai qty recipe
-                        dikalikan jumlah item order.
-                    </div>
-
-                    <hr>
-
-                    <div class="small">
-                        <div class="fw-semibold mb-2">Contoh:</div>
-                        <div class="text-muted">
-                            Menu: Es Kopi Susu<br>
-                            Bahan: Susu<br>
-                            Qty Recipe: 0.150 liter<br>
-                            Order: 2 item<br>
-                            Stok terpotong: 0.300 liter
-                        </div>
-                    </div>
+                    <button type="button"
+                            class="btn btn-dark rounded-4"
+                            onclick="addRow()">
+                        <i class="bi bi-plus-lg"></i>
+                        Tambah Bahan
+                    </button>
                 </div>
-            </div>
-        </div>
 
+                <div id="recipeRows">
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button class="btn btn-primary rounded-4 px-4">
+                        <i class="bi bi-save me-1"></i>
+                        Simpan Recipe
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 
 </div>
+
+<script>
+const materials = @json($materials);
+
+function rowTemplate(index){
+    return `
+        <div class="border rounded-4 p-3 mb-3 recipe-row">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-6">
+                    <label class="form-label">Bahan</label>
+                    <select name="recipes[${index}][material_id]" class="form-select rounded-4" required>
+                        <option value="">Pilih bahan</option>
+
+                        ${materials.map(material => `
+                            <option value="${material.id}">
+                                ${material.name} - Stock ${parseFloat(material.stock).toFixed(2)} ${material.unit}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Qty Pemakaian</label>
+                    <input type="number"
+                           step="0.001"
+                           min="0.001"
+                           name="recipes[${index}][qty]"
+                           class="form-control rounded-4"
+                           placeholder="0.250"
+                           required>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="btn btn-danger rounded-4 w-100"
+                            onclick="removeRow(this)">
+                        Hapus
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+function addRow(){
+    const container = document.getElementById('recipeRows');
+    const index = container.querySelectorAll('.recipe-row').length;
+
+    container.insertAdjacentHTML('beforeend', rowTemplate(index));
+}
+
+function removeRow(button){
+    button.closest('.recipe-row').remove();
+}
+
+addRow();
+</script>
 
 @endsection
