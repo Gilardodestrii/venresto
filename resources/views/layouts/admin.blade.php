@@ -74,9 +74,22 @@
             <span class="text">Kitchen Display</span>
         </a>
 
-        <a href="{{ url('inventory') }}" class="sidebar-link">
+        <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i>
-            <span class="text">Inventory</span>
+            <span>Inventory</span>
+        </a>
+
+        <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
+            <i class="bi bi-journal-check"></i>
+            <span>Recipe</span>
+        </a>
+
+        <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.stock-movements.*') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Stock Movement</span>
         </a>
 
         <a href="{{ url('users') }}" class="sidebar-link">

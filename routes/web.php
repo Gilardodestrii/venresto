@@ -15,6 +15,9 @@ use App\Http\Controllers\Central\PosController;
 use App\Http\Controllers\Central\KitchenDisplayController;
 use App\Http\Controllers\Central\OrderController;
 use App\Http\Controllers\Central\CashierSessionController;
+use App\Http\Controllers\Central\MaterialController;
+use App\Http\Controllers\Central\RecipeController;
+use App\Http\Controllers\Central\StockMovementController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\QrMenuController;
 
@@ -145,4 +148,36 @@ Route::middleware(['auth'])->group(function () {
             )->name('item.status');
 
         });
+
+
 });
+
+Route::middleware(['auth'])
+    ->prefix('{tenant}/admin')
+    ->name('tenant.admin.')
+    ->group(function () {
+
+        Route::resource('materials', MaterialController::class)
+            ->except(['show']);
+
+        Route::get('/recipes', [RecipeController::class, 'index'])
+            ->name('recipes.index');
+
+        Route::get('/recipes/create', [RecipeController::class, 'create'])
+            ->name('recipes.create');
+
+        Route::post('/recipes', [RecipeController::class, 'store'])
+            ->name('recipes.store');
+
+        Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])
+            ->name('recipes.destroy');
+
+        Route::post('/materials/{material}/stock-in', [StockMovementController::class, 'stockIn'])
+            ->name('materials.stock-in');
+
+        Route::post('/materials/{material}/stock-out', [StockMovementController::class, 'stockOut'])
+            ->name('materials.stock-out');
+
+        Route::get('/stock-movements', [StockMovementController::class, 'index'])
+            ->name('stock-movements.index');
+    });

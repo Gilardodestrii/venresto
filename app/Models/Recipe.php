@@ -5,15 +5,13 @@ namespace App\Models;
 use App\Services\TenantContext;
 use Illuminate\Database\Eloquent\Model;
 
-class StockMovement extends Model
+class Recipe extends Model
 {
     protected $fillable = [
         'tenant_id',
+        'item_id',
         'material_id',
-        'type',
         'qty',
-        'ref',
-        'created_by',
     ];
 
     protected static function booted()
@@ -22,21 +20,17 @@ class StockMovement extends Model
             if ($tenant = TenantContext::get()) {
                 $model->tenant_id = $tenant->id;
             }
-
-            if (!$model->created_by && auth()->check()) {
-                $model->created_by = auth()->id();
-            }
         });
+    }
+
+    public function menuItem()
+    {
+        return $this->belongsTo(MenuItem::class, 'item_id');
     }
 
     public function material()
     {
         return $this->belongsTo(Material::class);
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function scopeTenant($query)
