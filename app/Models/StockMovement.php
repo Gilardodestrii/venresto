@@ -9,6 +9,7 @@ class StockMovement extends Model
 {
     protected $fillable = [
         'tenant_id',
+        'outlet_id',
         'material_id',
         'type',
         'qty',
@@ -23,6 +24,10 @@ class StockMovement extends Model
                 $model->tenant_id = $tenant->id;
             }
 
+            if (!$model->outlet_id && session('current_outlet_id')) {
+                $model->outlet_id = session('current_outlet_id');
+            }
+
             if (!$model->created_by && auth()->check()) {
                 $model->created_by = auth()->id();
             }
@@ -34,6 +39,11 @@ class StockMovement extends Model
         return $this->belongsTo(Material::class);
     }
 
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -42,5 +52,10 @@ class StockMovement extends Model
     public function scopeTenant($query)
     {
         return $query->where('tenant_id', TenantContext::get()->id);
+    }
+
+    public function scopeCurrentOutlet($query)
+    {
+        return $query->where('outlet_id', session('current_outlet_id'));
     }
 }
