@@ -178,6 +178,9 @@ Route::middleware(['auth'])
         Route::post('/materials/{material}/stock-out', [StockMovementController::class, 'stockOut'])
             ->name('materials.stock-out');
 
+        Route::post('/materials/{material}/adjustment', [StockMovementController::class, 'adjustment'])
+            ->name('materials.adjustment');
+
         Route::get('/stock-movements', [StockMovementController::class, 'index'])
             ->name('stock-movements.index');
     });
