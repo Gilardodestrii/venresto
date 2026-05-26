@@ -14,19 +14,9 @@ use App\Http\Controllers\Central\MenuCategoryController;
 use App\Http\Controllers\Central\PosController;
 use App\Http\Controllers\Central\KitchenDisplayController;
 use App\Http\Controllers\Central\OrderController;
+use App\Http\Controllers\Central\CashierSessionController;
 use Illuminate\Support\Facades\DB;
-
 use App\Http\Controllers\QrMenuController;
-
-Route::get('/run-seed', function () {
-
-    Artisan::call('db:seed', [
-        '--class' => 'DatabaseSeeder',
-        '--force' => true,
-    ]);
-
-    return 'Seeder berhasil dijalankan';
-});
 
 Route::get('/env-check', function () {
     return [
@@ -68,8 +58,6 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 Route::get('/', LandingController::class)->name('landing.home');
 Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
 Route::view('/features', 'landing.features')->name('marketing.features');
-Route::get('/documentation', [LandingController::class, 'documentation'])
-    ->name('landing.documentation');
 
 Route::get('/signup', [SignupController::class,'show']);
 Route::post('/signup', [SignupController::class,'store']);
@@ -109,7 +97,6 @@ Route::middleware(['auth'])->group(function () {
     )->names('tenant.admin.outlets');
 
     Route::resource('{tenant}/admin/menu-categories', MenuCategoryController::class);
-
     Route::resource('{tenant}/admin/menu-items', MenuItemController::class);
 
     Route::prefix('{tenant}/admin')
@@ -122,6 +109,23 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/pos/store', [PosController::class, 'store'])
                 ->name('pos.store');
 
+            Route::get('/orders', [OrderController::class, 'index'])
+                ->name('orders.index');
+
+            Route::get('/orders/{order}', [OrderController::class, 'show'])
+                ->name('orders.show');
+
+            Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])
+                ->name('orders.updatePayment');
+
+            Route::get('/cashier-sessions', [CashierSessionController::class, 'index'])
+                ->name('cashier-sessions.index');
+
+            Route::post('/cashier-sessions/open', [CashierSessionController::class, 'open'])
+                ->name('cashier-sessions.open');
+
+            Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])
+                ->name('cashier-sessions.close');
         });
 
     Route::prefix('{tenant}/admin/kitchen')
@@ -140,20 +144,4 @@ Route::middleware(['auth'])->group(function () {
             )->name('item.status');
 
         });
-
-    Route::prefix('{tenant}/admin')
-        ->name('tenant.admin.')
-        ->group(function () {
-
-            Route::get('/orders', [OrderController::class, 'index'])
-                ->name('orders.index');
-
-            Route::get('/orders/{order}', [OrderController::class, 'show'])
-                ->name('orders.show');
-
-            Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])
-                ->name('orders.updatePayment');
-
-        });
-
 });
