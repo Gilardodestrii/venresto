@@ -22,6 +22,16 @@
         </div>
     @endif
 
+    @if($errors->any())
+        <div class="alert alert-danger border-0 rounded-4 shadow-sm">
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="card border-0 shadow-sm rounded-5 overflow-hidden">
         <div class="table-responsive">
             <table class="table align-middle mb-0">
@@ -68,6 +78,12 @@
                                 Keluar
                             </button>
 
+                            <button class="btn btn-sm btn-outline-dark rounded-pill"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#adjustment{{ $material->id }}">
+                                Adjustment
+                            </button>
+
                             <a href="{{ route('tenant.admin.materials.edit', [$currentTenant->slug, $material->id]) }}"
                                class="btn btn-sm btn-outline-warning rounded-pill">
                                 Edit
@@ -83,6 +99,11 @@
                     @include('admin.materials.partials.stock-modal', [
                         'material' => $material,
                         'type' => 'out'
+                    ])
+
+                    @include('admin.materials.partials.stock-modal', [
+                        'material' => $material,
+                        'type' => 'adjustment'
                     ])
                 @empty
                     <tr>
