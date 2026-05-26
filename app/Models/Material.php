@@ -9,6 +9,7 @@ class Material extends Model
 {
     protected $fillable = [
         'tenant_id',
+        'outlet_id',
         'name',
         'unit',
         'stock',
@@ -20,6 +21,10 @@ class Material extends Model
         static::creating(function ($model) {
             if ($tenant = TenantContext::get()) {
                 $model->tenant_id = $tenant->id;
+            }
+
+            if (!$model->outlet_id && session('current_outlet_id')) {
+                $model->outlet_id = session('current_outlet_id');
             }
         });
     }
@@ -34,9 +39,19 @@ class Material extends Model
         return $this->hasMany(StockMovement::class);
     }
 
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
     public function scopeTenant($query)
     {
         return $query->where('tenant_id', TenantContext::get()->id);
+    }
+
+    public function scopeCurrentOutlet($query)
+    {
+        return $query->where('outlet_id', session('current_outlet_id'));
     }
 
     public function getIsLowStockAttribute()
