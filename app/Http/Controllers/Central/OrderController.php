@@ -9,6 +9,7 @@ use App\Services\InventoryService;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Services\TenantContext;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
@@ -48,53 +49,85 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-public function updatePayment(
-    ProcessPaymentRequest $request,
-    $tenant,
-    $orderId,
-    ProcessOrderPaymentAction $action,
-    InventoryService $inventoryService
-) {
-    $tenantModel = TenantContext::get();
-    $outletId = session('current_outlet_id');
+    public function updatePayment(
+        ProcessPaymentRequest $request,
+        $tenant,
+        $orderId,
+        ProcessOrderPaymentAction $action,
+        InventoryService $inventoryService
+    ) {
+        $tenantModel = TenantContext::get();
+        $outletId = session('current_outlet_id');
 
-    $order = Order::where('tenant_id', $tenantModel->id)
-        ->where('outlet_id', $outletId)
-        ->where('id', $orderId)
-        ->firstOrFail();
+        $order = Order::where('tenant_id', $tenantModel->id)
+            ->where('outlet_id', $outletId)
+            ->where('id', $orderId)
+            ->firstOrFail();
 
-    try {
-        $wasPaid = $order->payment_status === 'paid';
+        try {
+            $wasPaid = $order->status === 'paid';
 
-        $payment = $action->handle($order, $request->validated());
+            $payment = $action->handle($order, $request->validated());
 
-        $order->refresh();
+            $order->refresh();
 
-        if (!$wasPaid && $order->payment_status === 'paid') {
-            $inventoryService->deductFromOrder($order);
+            if (!$wasPaid && $order->status === 'paid') {
+                $inventoryService->deductFromOrder($order);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil diproses.',
+                'payment' => $payment,
+                'order_status' => $order->status,
+            ]);
+
+        } catch (ValidationException $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    public function void(
+        Request $request,
+        $tenant,
+        $orderId,
+        InventoryService $inventoryService
+    ) {
+        $tenantModel = TenantContext::get();
+        $outletId = session('current_outlet_id');
+
+        $order = Order::where('tenant_id', $tenantModel->id)
+            ->where('outlet_id', $outletId)
+            ->where('id', $orderId)
+            ->firstOrFail();
+
+        if ($order->status === 'void') {
+            return back()->with('error', 'Order sudah di-void.');
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pembayaran berhasil diproses.',
-            'payment' => $payment,
-            'order_status' => $order->payment_status,
-        ]);
+        DB::transaction(function () use ($order, $inventoryService) {
 
-    } catch (ValidationException $e) {
+            if ($order->status === 'paid') {
+                $inventoryService->restoreFromOrder($order, 'VOID-ORDER');
+            }
 
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-            'errors' => $e->errors()
-        ], 422);
+            $order->update([
+                'status' => 'void',
+            ]);
+        });
 
-    } catch (\Throwable $e) {
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-        ], 422);
+        return back()->with('success', 'Order berhasil di-void dan stock dikembalikan.');
     }
-}
 }
