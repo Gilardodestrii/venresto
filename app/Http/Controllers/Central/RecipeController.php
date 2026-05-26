@@ -8,6 +8,7 @@ use App\Models\MenuItem;
 use App\Models\Recipe;
 use App\Services\TenantContext;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
@@ -30,6 +31,7 @@ class RecipeController extends Controller
             ->get();
 
         $materials = Material::tenant()
+            ->currentOutlet()
             ->orderBy('name')
             ->get();
 
@@ -40,34 +42,43 @@ class RecipeController extends Controller
     {
         $tenant = TenantContext::get();
 
-        $request->validate([
+        $validated = $request->validate([
             'item_id' => ['required', 'exists:menu_items,id'],
-            'material_id' => ['required', 'exists:materials,id'],
-            'qty' => ['required', 'numeric', 'min:0.001'],
+            'recipes' => ['required', 'array', 'min:1'],
+            'recipes.*.material_id' => ['required', 'exists:materials,id'],
+            'recipes.*.qty' => ['required', 'numeric', 'min:0.001'],
         ]);
 
-        $material = Material::tenant()
-            ->where('id', $request->material_id)
-            ->firstOrFail();
-
         $menuItem = MenuItem::where('tenant_id', $tenant->id)
-            ->where('id', $request->item_id)
+            ->where('id', $validated['item_id'])
             ->firstOrFail();
 
-        Recipe::updateOrCreate(
-            [
-                'tenant_id' => $tenant->id,
-                'item_id' => $menuItem->id,
-                'material_id' => $material->id,
-            ],
-            [
-                'qty' => $request->qty,
-            ]
-        );
+        DB::transaction(function () use ($validated, $tenant, $menuItem) {
+
+            foreach ($validated['recipes'] as $recipeData) {
+
+                $material = Material::tenant()
+                    ->currentOutlet()
+                    ->where('id', $recipeData['material_id'])
+                    ->firstOrFail();
+
+                Recipe::updateOrCreate(
+                    [
+                        'tenant_id' => $tenant->id,
+                        'outlet_id' => session('current_outlet_id'),
+                        'item_id' => $menuItem->id,
+                        'material_id' => $material->id,
+                    ],
+                    [
+                        'qty' => $recipeData['qty'],
+                    ]
+                );
+            }
+        });
 
         return redirect()
             ->route('tenant.admin.recipes.index', $tenant->slug)
-            ->with('success', 'Resep berhasil disimpan.');
+            ->with('success', 'Recipe berhasil disimpan.');
     }
 
     public function destroy(string $tenant, Recipe $recipe)
