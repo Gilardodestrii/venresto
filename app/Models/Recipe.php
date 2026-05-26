@@ -9,6 +9,7 @@ class Recipe extends Model
 {
     protected $fillable = [
         'tenant_id',
+        'outlet_id',
         'item_id',
         'material_id',
         'qty',
@@ -19,6 +20,10 @@ class Recipe extends Model
         static::creating(function ($model) {
             if ($tenant = TenantContext::get()) {
                 $model->tenant_id = $tenant->id;
+            }
+
+            if (!$model->outlet_id && session('current_outlet_id')) {
+                $model->outlet_id = session('current_outlet_id');
             }
         });
     }
@@ -33,8 +38,18 @@ class Recipe extends Model
         return $this->belongsTo(Material::class);
     }
 
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
     public function scopeTenant($query)
     {
         return $query->where('tenant_id', TenantContext::get()->id);
+    }
+
+    public function scopeCurrentOutlet($query)
+    {
+        return $query->where('outlet_id', session('current_outlet_id'));
     }
 }
