@@ -13,7 +13,12 @@ class StockMovement extends Model
         'material_id',
         'type',
         'qty',
+        'stock_before',
+        'stock_after',
         'ref',
+        'note',
+        'source_type',
+        'source_id',
         'created_by',
     ];
 
