@@ -57,6 +57,12 @@
             <span class="text">POS Kasir</span>
         </a>
 
+        {{-- Cashier Session --}}
+        <a href="{{ url($currentTenant->slug.'/admin/cashier-sessions') }}" class="sidebar-link">
+            <i class="bi bi-cash-stack"></i>
+            <span class="text">Cashier Session</span>
+        </a>
+
         {{-- order --}}
         <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
             <i class="bi bi-basket"></i>

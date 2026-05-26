@@ -39,6 +39,7 @@ body{
     transition:var(--transition);
     overflow:hidden;
     backdrop-filter: blur(10px);
+    z-index: 9999px;
 }
 
 .sidebar.collapsed{ width:76px; }
@@ -796,7 +797,7 @@ textarea.premium-input{
     .sidebar{
         position:fixed;
         left:-260px;
-        z-index:999;
+        z-index:9999;
         transition:var(--transition);
     }
 

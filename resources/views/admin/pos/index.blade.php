@@ -547,6 +547,18 @@ body{
                         </select>
 
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Nominal Dibayar
+                        </label>
+
+                        <input
+                            type="number"
+                            name="paid_amount"
+                            class="form-control form-control-lg"
+                            value="0"
+                        >
+                    </div>
 
                     <div class="d-grid gap-3">
 

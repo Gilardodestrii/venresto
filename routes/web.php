@@ -57,7 +57,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 
 Route::get('/', LandingController::class)->name('landing.home');
 Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
-Route::view('/features', 'landing.features')->name('marketing.features');
+Route::view('/features', 'landing.features')->name('landing.features');
+Route::get('/documentation', [LandingController::class, 'documentation'])->name('landing.documentation');
 
 Route::get('/signup', [SignupController::class,'show']);
 Route::post('/signup', [SignupController::class,'store']);
