@@ -26,11 +26,13 @@ class InventoryService
 
             foreach ($order->items as $orderItem) {
                 $recipes = Recipe::where('tenant_id', $order->tenant_id)
+                    ->where('outlet_id', $order->outlet_id)
                     ->where('item_id', $orderItem->menu_item_id)
                     ->get();
 
                 foreach ($recipes as $recipe) {
                     $material = Material::where('tenant_id', $order->tenant_id)
+                        ->where('outlet_id', $order->outlet_id)
                         ->where('id', $recipe->material_id)
                         ->lockForUpdate()
                         ->first();
@@ -56,6 +58,7 @@ class InventoryService
 
                     StockMovement::create([
                         'tenant_id' => $order->tenant_id,
+                        'outlet_id' => $order->outlet_id,
                         'material_id' => $material->id,
                         'type' => 'out',
                         'qty' => $deductQty,
@@ -86,11 +89,13 @@ class InventoryService
 
             foreach ($order->items as $orderItem) {
                 $recipes = Recipe::where('tenant_id', $order->tenant_id)
+                    ->where('outlet_id', $order->outlet_id)
                     ->where('item_id', $orderItem->menu_item_id)
                     ->get();
 
                 foreach ($recipes as $recipe) {
                     $material = Material::where('tenant_id', $order->tenant_id)
+                        ->where('outlet_id', $order->outlet_id)
                         ->where('id', $recipe->material_id)
                         ->lockForUpdate()
                         ->first();
@@ -110,6 +115,7 @@ class InventoryService
 
                     StockMovement::create([
                         'tenant_id' => $order->tenant_id,
+                        'outlet_id' => $order->outlet_id,
                         'material_id' => $material->id,
                         'type' => 'in',
                         'qty' => $restoreQty,
