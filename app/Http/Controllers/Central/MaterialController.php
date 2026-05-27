@@ -12,6 +12,7 @@ class MaterialController extends Controller
     public function index()
     {
         $materials = Material::tenant()
+            ->currentOutlet()
             ->latest()
             ->paginate(15);
 
@@ -30,14 +31,17 @@ class MaterialController extends Controller
             'unit' => ['required', 'string', 'max:30'],
             'stock' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
+            'cost_per_unit' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         Material::create([
             'tenant_id' => TenantContext::get()->id,
+            'outlet_id' => session('current_outlet_id'),
             'name' => $request->name,
             'unit' => $request->unit,
             'stock' => $request->stock ?? 0,
             'min_stock' => $request->min_stock ?? 0,
+            'cost_per_unit' => $request->cost_per_unit ?? 0,
         ]);
 
         return redirect()
@@ -60,12 +64,14 @@ class MaterialController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'unit' => ['required', 'string', 'max:30'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
+            'cost_per_unit' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $material->update([
             'name' => $request->name,
             'unit' => $request->unit,
             'min_stock' => $request->min_stock ?? 0,
+            'cost_per_unit' => $request->cost_per_unit ?? 0,
         ]);
 
         return redirect()
@@ -84,6 +90,10 @@ class MaterialController extends Controller
 
     private function authorizeTenant(Material $material): void
     {
-        abort_if($material->tenant_id !== TenantContext::get()->id, 404);
+        abort_if(
+            $material->tenant_id !== TenantContext::get()->id ||
+            $material->outlet_id !== session('current_outlet_id'),
+            404
+        );
     }
 }
