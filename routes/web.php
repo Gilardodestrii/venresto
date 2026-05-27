@@ -87,6 +87,7 @@ Route::middleware(['auth'])
         Route::get('/reports/inventory', [InventoryReportController::class, 'index'])->middleware('permission:reports.view')->name('reports.inventory');
         Route::get('/reports/inventory/export', [InventoryReportController::class, 'export'])->middleware('permission:reports.view')->name('reports.inventory.export');
         Route::get('/reports/sales', [SalesReportController::class, 'index'])->middleware('permission:reports.view')->name('reports.sales');
+        Route::get('/reports/sales/export', [SalesReportController::class, 'export'])->middleware('permission:reports.view')->name('reports.sales.export');
 
         Route::resource('outlets', OutletController::class)->middleware('permission:outlet.manage');
 
