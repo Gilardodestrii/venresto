@@ -23,6 +23,7 @@ use App\Http\Controllers\Central\MenuCostingController;
 use App\Http\Controllers\Central\RoleManagementController;
 use App\Http\Controllers\Central\InventoryReportController;
 use App\Http\Controllers\Central\SalesReportController;
+use App\Http\Controllers\Central\ProfitReportController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -88,6 +89,7 @@ Route::middleware(['auth'])
         Route::get('/reports/inventory/export', [InventoryReportController::class, 'export'])->middleware('permission:reports.view')->name('reports.inventory.export');
         Route::get('/reports/sales', [SalesReportController::class, 'index'])->middleware('permission:reports.view')->name('reports.sales');
         Route::get('/reports/sales/export', [SalesReportController::class, 'export'])->middleware('permission:reports.view')->name('reports.sales.export');
+        Route::get('/reports/profit', [ProfitReportController::class, 'index'])->middleware('permission:reports.view')->name('reports.profit');
 
         Route::resource('outlets', OutletController::class)->middleware('permission:outlet.manage');
 
