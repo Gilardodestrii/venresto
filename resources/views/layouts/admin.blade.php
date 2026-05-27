@@ -32,93 +32,118 @@
         <button class="btn btn-sm btn-light" id="toggleSidebar">
             <i class="bi bi-list"></i>
         </button>
-        <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid"></i>
-            <span class="text">Dashboard</span>
-        </a>
 
-        <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
-            <i class="bi bi-shop"></i>
-            <span class="text">Outlet</span>
-        </a>
+        @can('dashboard.view')
+            <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid"></i>
+                <span class="text">Dashboard</span>
+            </a>
+        @endcan
 
-        <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
-            <i class="bi bi-qr-code"></i>
-            <span class="text">QR Menu</span>
-        </a>
+        @can('outlet.manage')
+            <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
+                <i class="bi bi-shop"></i>
+                <span class="text">Outlet</span>
+            </a>
 
-        <a href="{{ url($currentTenant->slug.'/admin/menu-categories') }}" class="sidebar-link">
-            <i class="bi bi-collection"></i>
-            <span class="text">Kategori Menu</span>
-        </a>
+            <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
+                <i class="bi bi-qr-code"></i>
+                <span class="text">QR Menu</span>
+            </a>
+        @endcan
 
-        <a href="{{ url($currentTenant->slug.'/admin/menu-items') }}" class="sidebar-link">
-            <i class="bi bi-cup-straw"></i>
-            <span class="text">Menu Item</span>
-        </a>
+        @can('menu.manage')
+            <a href="{{ url($currentTenant->slug.'/admin/menu-categories') }}" class="sidebar-link">
+                <i class="bi bi-collection"></i>
+                <span class="text">Kategori Menu</span>
+            </a>
 
-        <a href="{{ url($currentTenant->slug.'/admin/pos') }}" class="sidebar-link">
-            <i class="bi bi-cart-plus"></i>
-            <span class="text">POS Kasir</span>
-        </a>
+            <a href="{{ url($currentTenant->slug.'/admin/menu-items') }}" class="sidebar-link">
+                <i class="bi bi-cup-straw"></i>
+                <span class="text">Menu Item</span>
+            </a>
+        @endcan
 
-        <a href="{{ url($currentTenant->slug.'/admin/cashier-sessions') }}" class="sidebar-link">
-            <i class="bi bi-cash-stack"></i>
-            <span class="text">Cashier Session</span>
-        </a>
+        @can('pos.access')
+            <a href="{{ url($currentTenant->slug.'/admin/pos') }}" class="sidebar-link">
+                <i class="bi bi-cart-plus"></i>
+                <span class="text">POS Kasir</span>
+            </a>
 
-        <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
-            <i class="bi bi-basket"></i>
-            <span class="text">Pesanan</span>
-        </a>
+            <a href="{{ url($currentTenant->slug.'/admin/cashier-sessions') }}" class="sidebar-link">
+                <i class="bi bi-cash-stack"></i>
+                <span class="text">Cashier Session</span>
+            </a>
+        @endcan
 
-        <a href="{{ url($currentTenant->slug.'/admin/kitchen') }}" class="sidebar-link">
-            <i class="bi bi-display"></i>
-            <span class="text">Kitchen Display</span>
-        </a>
+        @can('orders.view')
+            <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
+                <i class="bi bi-basket"></i>
+                <span class="text">Pesanan</span>
+            </a>
+        @endcan
 
-        <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i>
-            <span>Inventory</span>
+        @can('kitchen.access')
+            <a href="{{ url($currentTenant->slug.'/admin/kitchen') }}" class="sidebar-link">
+                <i class="bi bi-display"></i>
+                <span class="text">Kitchen Display</span>
+            </a>
+        @endcan
 
-            @if($lowStockMaterials->count())
-                <span class="badge bg-danger rounded-pill ms-auto">
-                    {{ $lowStockMaterials->count() }}
-                </span>
-            @endif
-        </a>
+        @can('inventory.manage')
+            <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
+                <i class="bi bi-box-seam"></i>
+                <span>Inventory</span>
 
-        <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
-            <i class="bi bi-journal-check"></i>
-            <span>Recipe</span>
-        </a>
+                @if($lowStockMaterials->count())
+                    <span class="badge bg-danger rounded-pill ms-auto">
+                        {{ $lowStockMaterials->count() }}
+                    </span>
+                @endif
+            </a>
+        @endcan
 
-        <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
-            <i class="bi bi-calculator"></i>
-            <span>HPP Costing</span>
-        </a>
+        @can('recipe.manage')
+            <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
+                <i class="bi bi-journal-check"></i>
+                <span>Recipe</span>
+            </a>
+        @endcan
 
-        <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.stock-transfers.*') ? 'active' : '' }}">
-            <i class="bi bi-arrow-left-right"></i>
-            <span>Transfer Stock</span>
-        </a>
+        @can('costing.view')
+            <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
+                <i class="bi bi-calculator"></i>
+                <span>HPP Costing</span>
+            </a>
+        @endcan
 
-        <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.waste-records.*') ? 'active' : '' }}">
-            <i class="bi bi-trash3"></i>
-            <span>Waste Management</span>
-        </a>
+        @can('stock.transfer')
+            <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.stock-transfers.*') ? 'active' : '' }}">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Transfer Stock</span>
+            </a>
+        @endcan
 
-        <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
-        class="sidebar-link {{ request()->routeIs('tenant.admin.stock-movements.*') ? 'active' : '' }}">
-            <i class="bi bi-clock-history"></i>
-            <span>Stock Movement</span>
-        </a>
+        @can('waste.manage')
+            <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.waste-records.*') ? 'active' : '' }}">
+                <i class="bi bi-trash3"></i>
+                <span>Waste Management</span>
+            </a>
+        @endcan
+
+        @can('stock.movement.view')
+            <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.stock-movements.*') ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Stock Movement</span>
+            </a>
+        @endcan
 
 </div>
 
@@ -135,32 +160,34 @@
             <i class="bi bi-list"></i>
         </button>
 
-            @if($lowStockMaterials->count())
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        Low Stock
-                    </button>
+            @can('inventory.manage')
+                @if($lowStockMaterials->count())
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Low Stock
+                        </button>
 
-                    <div class="dropdown-menu dropdown-menu-end p-3" style="width:320px;">
-                        <div class="fw-bold mb-2">Low Stock Alert</div>
+                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:320px;">
+                            <div class="fw-bold mb-2">Low Stock Alert</div>
 
-                        @foreach($lowStockMaterials as $material)
-                            <div class="border rounded-3 p-2 mb-2">
-                                <div class="fw-semibold">{{ $material->name }}</div>
-                                <small class="text-danger">
-                                    Stock: {{ number_format($material->stock, 2) }} {{ $material->unit }}
-                                </small>
-                            </div>
-                        @endforeach
+                            @foreach($lowStockMaterials as $material)
+                                <div class="border rounded-3 p-2 mb-2">
+                                    <div class="fw-semibold">{{ $material->name }}</div>
+                                    <small class="text-danger">
+                                        Stock: {{ number_format($material->stock, 2) }} {{ $material->unit }}
+                                    </small>
+                                </div>
+                            @endforeach
 
-                        <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
-                           class="btn btn-sm btn-dark w-100 rounded-3">
-                            Buka Inventory
-                        </a>
+                            <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
+                               class="btn btn-sm btn-dark w-100 rounded-3">
+                                Buka Inventory
+                            </a>
+                        </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            @endcan
 
             <input class="form-control form-control-sm" placeholder="Search...">
 
