@@ -25,6 +25,7 @@ use App\Http\Controllers\Central\InventoryReportController;
 use App\Http\Controllers\Central\SalesReportController;
 use App\Http\Controllers\Central\ProfitReportController;
 use App\Http\Controllers\Central\TenantSettingController;
+use App\Http\Controllers\Central\QrisStaticController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -85,6 +86,7 @@ Route::middleware(['auth'])
 
         Route::get('/settings', [TenantSettingController::class, 'index'])->middleware('permission:outlet.manage')->name('settings.index');
         Route::put('/settings', [TenantSettingController::class, 'update'])->middleware('permission:outlet.manage')->name('settings.update');
+        Route::post('/qris-static/generate', [QrisStaticController::class, 'generate'])->middleware('permission:pos.access')->name('qris-static.generate');
 
         Route::get('/roles', [RoleManagementController::class, 'index'])->middleware('permission:users.manage')->name('roles.index');
         Route::put('/roles/users/{user}', [RoleManagementController::class, 'update'])->middleware('permission:users.manage')->name('roles.update');
@@ -133,7 +135,6 @@ Route::middleware(['auth'])
         Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->middleware('permission:recipe.manage')->name('recipes.destroy');
 
         Route::get('/menu-costing', [MenuCostingController::class, 'index'])->middleware('permission:costing.view')->name('menu-costing.index');
-
         Route::get('/stock-movements', [StockMovementController::class, 'index'])->middleware('permission:stock.movement.view')->name('stock-movements.index');
 
         Route::get('/stock-transfers', [StockTransferController::class, 'index'])->middleware('permission:stock.transfer')->name('stock-transfers.index');
