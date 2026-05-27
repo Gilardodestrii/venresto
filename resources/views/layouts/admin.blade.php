@@ -40,6 +40,14 @@
             </a>
         @endcan
 
+        @can('users.manage')
+            <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.roles.*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i>
+                <span class="text">Staff Management</span>
+            </a>
+        @endcan
+
         @can('outlet.manage')
             <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
