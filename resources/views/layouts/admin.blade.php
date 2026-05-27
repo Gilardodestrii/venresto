@@ -96,6 +96,12 @@
             <span>Recipe</span>
         </a>
 
+        <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
+            <i class="bi bi-calculator"></i>
+            <span>HPP Costing</span>
+        </a>
+
         <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
         class="sidebar-link {{ request()->routeIs('tenant.admin.stock-transfers.*') ? 'active' : '' }}">
             <i class="bi bi-arrow-left-right"></i>
