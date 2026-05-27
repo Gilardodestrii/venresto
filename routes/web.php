@@ -20,6 +20,7 @@ use App\Http\Controllers\Central\StockMovementController;
 use App\Http\Controllers\Central\StockTransferController;
 use App\Http\Controllers\Central\WasteRecordController;
 use App\Http\Controllers\Central\MenuCostingController;
+use App\Http\Controllers\Central\RoleManagementController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -77,6 +78,9 @@ Route::middleware(['auth'])
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->middleware('permission:dashboard.view')->name('dashboard');
+
+        Route::get('/roles', [RoleManagementController::class, 'index'])->middleware('permission:users.manage')->name('roles.index');
+        Route::put('/roles/users/{user}', [RoleManagementController::class, 'update'])->middleware('permission:users.manage')->name('roles.update');
 
         Route::resource('outlets', OutletController::class)->middleware('permission:outlet.manage');
 
