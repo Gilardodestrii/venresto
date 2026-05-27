@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
         window.POS.cart.bindAddToCart();
     }
 
+    if (window.POS.cart?.bindDiscountInput) {
+        window.POS.cart.bindDiscountInput();
+    }
+
     if (window.POS.ui?.bindSearchMenu) {
         window.POS.ui.bindSearchMenu();
     }
