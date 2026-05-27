@@ -217,9 +217,7 @@ body{ background:var(--bg); }
 </div>
 
 <script>
-let cart = [];
-
-const posSettings = {
+window.posSettings = {
     tax_enabled: @json((bool) $settings->tax_enabled),
     tax_rate: Number(@json((float) $settings->tax_rate)),
     tax_inclusive: @json((bool) $settings->tax_inclusive),
@@ -227,99 +225,6 @@ const posSettings = {
     service_rate: Number(@json((float) $settings->service_rate)),
     service_inclusive: @json((bool) $settings->service_inclusive),
 };
-
-function formatRupiah(number){ return 'Rp ' + Number(number || 0).toLocaleString('id-ID'); }
-
-function renderCart()
-{
-    let html = '';
-    let subtotal = 0;
-
-    cart.forEach((item,index)=>{
-        subtotal += Number(item.qty) * Number(item.price);
-        html += `
-            <div class="cart-item">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <div class="fw-bold">${item.name}</div>
-                        <small class="text-secondary">Rp ${Number(item.price).toLocaleString('id-ID')}</small>
-                    </div>
-                    <div class="qty-box">
-                        <button type="button" class="qty-btn" onclick="decreaseQty(${index})">-</button>
-                        <strong>${item.qty}</strong>
-                        <button type="button" class="qty-btn" onclick="increaseQty(${index})">+</button>
-                    </div>
-                </div>
-                <textarea class="form-control mt-3" placeholder="Catatan item..." oninput="updateNote(${index}, this.value)">${item.note ?? ''}</textarea>
-                <input type="hidden" name="items[${index}][menu_item_id]" value="${item.id}">
-                <input type="hidden" name="items[${index}][qty]" value="${item.qty}">
-                <input type="hidden" name="items[${index}][price]" value="${item.price}">
-                <input type="hidden" name="items[${index}][note]" value="${item.note ? item.note : ''}">
-            </div>
-        `;
-    });
-
-    document.getElementById('cartContainer').innerHTML = html;
-
-    let discount = parseFloat(document.getElementById('discountInput').value || 0);
-    let baseAmount = Math.max(0, subtotal - discount);
-
-    let service = 0;
-    if (posSettings.service_enabled && !posSettings.service_inclusive) {
-        service = Math.round(baseAmount * posSettings.service_rate);
-    }
-
-    let taxBase = baseAmount + service;
-    let tax = 0;
-    if (posSettings.tax_enabled && !posSettings.tax_inclusive) {
-        tax = Math.round(taxBase * posSettings.tax_rate);
-    }
-
-    let grandTotal = Math.max(0, baseAmount + service + tax);
-
-    document.getElementById('subtotalText').innerHTML = formatRupiah(subtotal);
-    document.getElementById('serviceText').innerHTML = formatRupiah(service);
-    document.getElementById('taxText').innerHTML = formatRupiah(tax);
-    document.getElementById('grandTotalText').innerHTML = formatRupiah(grandTotal);
-    document.getElementById('serviceInput').value = service;
-    document.getElementById('taxInput').value = tax;
-}
-
-function increaseQty(index){ cart[index].qty++; renderCart(); }
-function decreaseQty(index){ if(cart[index].qty > 1){ cart[index].qty--; }else{ cart.splice(index,1); } renderCart(); }
-function updateNote(index, value){ cart[index].note = value; renderCart(); }
-
-document.querySelectorAll('.addToCart').forEach(btn=>{
-    btn.addEventListener('click', function(){
-        let id = this.dataset.id;
-        let name = this.dataset.name;
-        let price = this.dataset.price;
-        let existing = cart.find(item => item.id == id);
-        if(existing){ existing.qty++; }else{ cart.push({ id:id, name:name, price:price, qty:1, note:'' }); }
-        renderCart();
-    });
-});
-
-document.getElementById('discountInput').addEventListener('input', renderCart);
-
-document.getElementById('searchMenu').addEventListener('keyup', function(){
-    let keyword = this.value.toLowerCase();
-    document.querySelectorAll('.menu-filter').forEach(item=>{
-        let name = item.dataset.name;
-        item.style.display = name.includes(keyword) ? 'block' : 'none';
-    });
-});
-
-document.querySelectorAll('.category-btn').forEach(btn=>{
-    btn.addEventListener('click', function(){
-        document.querySelectorAll('.category-btn').forEach(x=>x.classList.remove('active'));
-        this.classList.add('active');
-        let category = this.dataset.category;
-        document.querySelectorAll('.menu-filter').forEach(item=>{
-            item.style.display = category == 'all' || item.dataset.category == category ? 'block' : 'none';
-        });
-    });
-});
 </script>
 
 @endsection
