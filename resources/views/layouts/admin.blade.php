@@ -249,6 +249,7 @@
     <script>
         window.qrisStaticGenerateUrl = "{{ route('tenant.admin.qris-static.generate', $currentTenant->slug) }}";
         window.csrfToken = "{{ csrf_token() }}";
+        window.receiptUrl = @json(session('receipt_url'));
     </script>
 @endif
 
@@ -257,6 +258,15 @@
 
 @if(request()->routeIs('tenant.admin.pos.index'))
     <script src="{{ asset('assets/js/pos-qris-static.js') }}"></script>
+    <script src="{{ asset('assets/js/pos-auto-receipt.js') }}"></script>
+
+    <script>
+        if (window.receiptUrl) {
+            setTimeout(() => {
+                openReceiptWindow(window.receiptUrl);
+            }, 600);
+        }
+    </script>
 @endif
 
 @stack('scripts')
