@@ -19,6 +19,7 @@ use App\Http\Controllers\Central\RecipeController;
 use App\Http\Controllers\Central\StockMovementController;
 use App\Http\Controllers\Central\StockTransferController;
 use App\Http\Controllers\Central\WasteRecordController;
+use App\Http\Controllers\Central\MenuCostingController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -113,6 +114,8 @@ Route::middleware(['auth'])
         Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
         Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
         Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+        Route::get('/menu-costing', [MenuCostingController::class, 'index'])->name('menu-costing.index');
 
         Route::get('/stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
 
