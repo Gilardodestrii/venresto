@@ -131,8 +131,10 @@ class PosController extends Controller
             'items.*.note'            => ['nullable', 'string'],
         ]);
 
+        $createdOrder = null;
+
         try {
-            DB::transaction(function () use ($validated, $tenantModel, $outletId, $inventoryService, $settings) {
+            DB::transaction(function () use ($validated, $tenantModel, $outletId, $inventoryService, $settings, &$createdOrder) {
 
                 $subtotal = collect($validated['items'])->sum(function ($item) {
                     return ((float) $item['qty']) * ((float) $item['price']);
@@ -174,6 +176,8 @@ class PosController extends Controller
                     'payment_method'  => $validated['payment_method'],
                     'cashier_id'      => Auth::id(),
                 ]);
+
+                $createdOrder = $order;
 
                 foreach ($validated['items'] as $item) {
                     OrderItem::create([
@@ -237,9 +241,15 @@ class PosController extends Controller
                 }
             });
 
-            return redirect()
+            $redirect = redirect()
                 ->back()
                 ->with('success', 'Order berhasil dibuat');
+
+            if (($validated['action'] ?? null) === 'paid' && $createdOrder) {
+                $redirect->with('receipt_url', route('tenant.admin.orders.receipt', [$tenant, $createdOrder->id]));
+            }
+
+            return $redirect;
 
         } catch (ValidationException $e) {
             throw $e;
