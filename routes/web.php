@@ -24,6 +24,7 @@ use App\Http\Controllers\Central\RoleManagementController;
 use App\Http\Controllers\Central\InventoryReportController;
 use App\Http\Controllers\Central\SalesReportController;
 use App\Http\Controllers\Central\ProfitReportController;
+use App\Http\Controllers\Central\TenantSettingController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -81,6 +82,9 @@ Route::middleware(['auth'])
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->middleware('permission:dashboard.view')->name('dashboard');
+
+        Route::get('/settings', [TenantSettingController::class, 'index'])->middleware('permission:outlet.manage')->name('settings.index');
+        Route::put('/settings', [TenantSettingController::class, 'update'])->middleware('permission:outlet.manage')->name('settings.update');
 
         Route::get('/roles', [RoleManagementController::class, 'index'])->middleware('permission:users.manage')->name('roles.index');
         Route::put('/roles/users/{user}', [RoleManagementController::class, 'update'])->middleware('permission:users.manage')->name('roles.update');
