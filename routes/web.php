@@ -76,58 +76,58 @@ Route::middleware(['auth'])
     ->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
-        })->name('dashboard');
+        })->middleware('permission:dashboard.view')->name('dashboard');
 
-        Route::resource('outlets', OutletController::class);
+        Route::resource('outlets', OutletController::class)->middleware('permission:outlet.manage');
 
-        Route::get('/outlets/{outlet}/qr', [QrAdminController::class, 'index'])->name('qr.index');
-        Route::get('/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])->name('qr.generate');
-        Route::get('/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])->name('qr.download');
-        Route::post('/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])->name('qr.store');
-        Route::get('/outlets/{outlet}/qr/destroy/{table}', [QrAdminController::class, 'destroy'])->name('qr.destroy');
+        Route::get('/outlets/{outlet}/qr', [QrAdminController::class, 'index'])->middleware('permission:outlet.manage')->name('qr.index');
+        Route::get('/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])->middleware('permission:outlet.manage')->name('qr.generate');
+        Route::get('/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])->middleware('permission:outlet.manage')->name('qr.download');
+        Route::post('/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])->middleware('permission:outlet.manage')->name('qr.store');
+        Route::get('/outlets/{outlet}/qr/destroy/{table}', [QrAdminController::class, 'destroy'])->middleware('permission:outlet.manage')->name('qr.destroy');
 
-        Route::resource('menu-categories', MenuCategoryController::class);
-        Route::resource('menu-items', MenuItemController::class);
+        Route::resource('menu-categories', MenuCategoryController::class)->middleware('permission:menu.manage');
+        Route::resource('menu-items', MenuItemController::class)->middleware('permission:menu.manage');
 
-        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-        Route::post('/pos/store', [PosController::class, 'store'])->name('pos.store');
+        Route::get('/pos', [PosController::class, 'index'])->middleware('permission:pos.access')->name('pos.index');
+        Route::post('/pos/store', [PosController::class, 'store'])->middleware('permission:pos.access')->name('pos.store');
 
-        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->name('orders.updatePayment');
-        Route::post('/orders/{order}/void', [OrderController::class, 'void'])->name('orders.void');
+        Route::get('/orders', [OrderController::class, 'index'])->middleware('permission:orders.view')->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('permission:orders.view')->name('orders.show');
+        Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->middleware('permission:orders.pay')->name('orders.updatePayment');
+        Route::post('/orders/{order}/void', [OrderController::class, 'void'])->middleware('permission:orders.void')->name('orders.void');
 
-        Route::get('/cashier-sessions', [CashierSessionController::class, 'index'])->name('cashier-sessions.index');
-        Route::post('/cashier-sessions/open', [CashierSessionController::class, 'open'])->name('cashier-sessions.open');
-        Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])->name('cashier-sessions.close');
+        Route::get('/cashier-sessions', [CashierSessionController::class, 'index'])->middleware('permission:pos.access')->name('cashier-sessions.index');
+        Route::post('/cashier-sessions/open', [CashierSessionController::class, 'open'])->middleware('permission:pos.access')->name('cashier-sessions.open');
+        Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])->middleware('permission:pos.access')->name('cashier-sessions.close');
 
-        Route::get('/kitchen', [KitchenDisplayController::class, 'index'])->name('kitchen.index');
-        Route::get('/kitchen/live', [KitchenDisplayController::class, 'live'])->name('kitchen.live');
-        Route::post('/kitchen/item/{id}/status', [KitchenDisplayController::class, 'updateStatus'])->name('kitchen.item.status');
+        Route::get('/kitchen', [KitchenDisplayController::class, 'index'])->middleware('permission:kitchen.access')->name('kitchen.index');
+        Route::get('/kitchen/live', [KitchenDisplayController::class, 'live'])->middleware('permission:kitchen.access')->name('kitchen.live');
+        Route::post('/kitchen/item/{id}/status', [KitchenDisplayController::class, 'updateStatus'])->middleware('permission:kitchen.access')->name('kitchen.item.status');
 
-        Route::resource('materials', MaterialController::class)->except(['show']);
-        Route::post('/materials/{material}/stock-in', [StockMovementController::class, 'stockIn'])->name('materials.stock-in');
-        Route::post('/materials/{material}/stock-out', [StockMovementController::class, 'stockOut'])->name('materials.stock-out');
-        Route::post('/materials/{material}/adjustment', [StockMovementController::class, 'adjustment'])->name('materials.adjustment');
+        Route::resource('materials', MaterialController::class)->except(['show'])->middleware('permission:inventory.manage');
+        Route::post('/materials/{material}/stock-in', [StockMovementController::class, 'stockIn'])->middleware('permission:inventory.manage')->name('materials.stock-in');
+        Route::post('/materials/{material}/stock-out', [StockMovementController::class, 'stockOut'])->middleware('permission:inventory.manage')->name('materials.stock-out');
+        Route::post('/materials/{material}/adjustment', [StockMovementController::class, 'adjustment'])->middleware('permission:inventory.manage')->name('materials.adjustment');
 
-        Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
-        Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
-        Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
-        Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+        Route::get('/recipes', [RecipeController::class, 'index'])->middleware('permission:recipe.manage')->name('recipes.index');
+        Route::get('/recipes/create', [RecipeController::class, 'create'])->middleware('permission:recipe.manage')->name('recipes.create');
+        Route::post('/recipes', [RecipeController::class, 'store'])->middleware('permission:recipe.manage')->name('recipes.store');
+        Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->middleware('permission:recipe.manage')->name('recipes.destroy');
 
-        Route::get('/menu-costing', [MenuCostingController::class, 'index'])->name('menu-costing.index');
+        Route::get('/menu-costing', [MenuCostingController::class, 'index'])->middleware('permission:costing.view')->name('menu-costing.index');
 
-        Route::get('/stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
+        Route::get('/stock-movements', [StockMovementController::class, 'index'])->middleware('permission:stock.movement.view')->name('stock-movements.index');
 
-        Route::get('/stock-transfers', [StockTransferController::class, 'index'])->name('stock-transfers.index');
-        Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])->name('stock-transfers.create');
-        Route::post('/stock-transfers', [StockTransferController::class, 'store'])->name('stock-transfers.store');
-        Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])->name('stock-transfers.show');
-        Route::post('/stock-transfers/{stockTransfer}/complete', [StockTransferController::class, 'complete'])->name('stock-transfers.complete');
-        Route::post('/stock-transfers/{stockTransfer}/cancel', [StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
+        Route::get('/stock-transfers', [StockTransferController::class, 'index'])->middleware('permission:stock.transfer')->name('stock-transfers.index');
+        Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])->middleware('permission:stock.transfer')->name('stock-transfers.create');
+        Route::post('/stock-transfers', [StockTransferController::class, 'store'])->middleware('permission:stock.transfer')->name('stock-transfers.store');
+        Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])->middleware('permission:stock.transfer')->name('stock-transfers.show');
+        Route::post('/stock-transfers/{stockTransfer}/complete', [StockTransferController::class, 'complete'])->middleware('permission:stock.transfer')->name('stock-transfers.complete');
+        Route::post('/stock-transfers/{stockTransfer}/cancel', [StockTransferController::class, 'cancel'])->middleware('permission:stock.transfer')->name('stock-transfers.cancel');
 
-        Route::get('/waste-records', [WasteRecordController::class, 'index'])->name('waste-records.index');
-        Route::get('/waste-records/create', [WasteRecordController::class, 'create'])->name('waste-records.create');
-        Route::post('/waste-records', [WasteRecordController::class, 'store'])->name('waste-records.store');
-        Route::get('/waste-records/{wasteRecord}', [WasteRecordController::class, 'show'])->name('waste-records.show');
+        Route::get('/waste-records', [WasteRecordController::class, 'index'])->middleware('permission:waste.manage')->name('waste-records.index');
+        Route::get('/waste-records/create', [WasteRecordController::class, 'create'])->middleware('permission:waste.manage')->name('waste-records.create');
+        Route::post('/waste-records', [WasteRecordController::class, 'store'])->middleware('permission:waste.manage')->name('waste-records.store');
+        Route::get('/waste-records/{wasteRecord}', [WasteRecordController::class, 'show'])->middleware('permission:waste.manage')->name('waste-records.show');
     });
