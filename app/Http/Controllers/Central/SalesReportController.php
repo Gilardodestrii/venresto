@@ -9,6 +9,7 @@ use App\Services\TenantContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SalesReportController extends Controller
 {
@@ -89,5 +90,70 @@ class SalesReportController extends Controller
             'dailySales',
             'orders'
         ));
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $tenant = TenantContext::get();
+        $outletId = session('current_outlet_id');
+
+        $startDate = $request->filled('start_date')
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : now()->startOfMonth();
+
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : now()->endOfDay();
+
+        $fileName = 'sales-report-' . $startDate->format('Ymd') . '-' . $endDate->format('Ymd') . '.csv';
+
+        $query = Order::with(['cashier'])
+            ->where('tenant_id', $tenant->id)
+            ->where('outlet_id', $outletId)
+            ->where('status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->latest();
+
+        return response()->streamDownload(function () use ($query) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, [
+                'Tanggal',
+                'Kode Order',
+                'Customer',
+                'Table',
+                'Cashier',
+                'Payment Method',
+                'Subtotal',
+                'Discount',
+                'Tax',
+                'Service',
+                'Grand Total',
+                'Status',
+            ]);
+
+            $query->chunk(500, function ($orders) use ($handle) {
+                foreach ($orders as $order) {
+                    fputcsv($handle, [
+                        $order->created_at?->format('Y-m-d H:i:s'),
+                        $order->code,
+                        $order->customer_name,
+                        $order->table_code,
+                        $order->cashier?->name,
+                        $order->payment_method,
+                        $order->subtotal,
+                        $order->discount,
+                        $order->tax,
+                        $order->service,
+                        $order->grand_total,
+                        $order->status,
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }
