@@ -20,6 +20,18 @@ window.posCart = {
             });
     },
 
+    bindDiscountInput() {
+        const discountInput = document.getElementById('discountInput');
+
+        if (!discountInput) {
+            return;
+        }
+
+        discountInput.addEventListener('input', () => {
+            this.render();
+        });
+    },
+
     add(item) {
 
         const existing = this.items.find(i => i.id === item.id);
