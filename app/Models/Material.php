@@ -14,6 +14,7 @@ class Material extends Model
         'unit',
         'stock',
         'min_stock',
+        'cost_per_unit',
     ];
 
     protected static function booted()
