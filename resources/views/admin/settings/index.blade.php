@@ -6,7 +6,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
             <h3 class="fw-bold mb-1">Tenant Settings</h3>
-            <div class="text-muted">Kelola pajak, service charge, metode pembayaran, kitchen ticket, dan inventory behavior.</div>
+            <div class="text-muted">Kelola pajak, service charge, metode pembayaran, kitchen ticket, inventory, dan QRIS static.</div>
         </div>
     </div>
 
@@ -124,6 +124,23 @@
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="kitchen_ticket_on_open_for_cash" value="1" id="kitchen_ticket_on_open_for_cash" {{ $settings->kitchen_ticket_on_open_for_cash ? 'checked' : '' }}>
                             <label class="form-check-label fw-semibold" for="kitchen_ticket_on_open_for_cash">Kitchen ticket langsung muncul untuk cash order</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-5">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">QRIS Static Payload</h5>
+                        <div class="text-muted small mb-4">
+                            Paste payload QRIS static merchant. Sistem akan generate QRIS nominal otomatis saat payment method QRIS Static dipilih.
+                        </div>
+
+                        <label class="form-label">Payload QRIS Static</label>
+                        <textarea name="qris_static_payload" rows="6" class="form-control rounded-4" placeholder="000201010211...6304XXXX">{{ old('qris_static_payload', $settings->qris_static_payload) }}</textarea>
+                        <div class="form-text">
+                            Ambil payload dari QRIS static merchant. Jangan paste gambar, tapi string payload QRIS.
                         </div>
                     </div>
                 </div>
