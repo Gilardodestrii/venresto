@@ -32,7 +32,7 @@
         <button class="btn btn-sm btn-light" id="toggleSidebar">
             <i class="bi bi-list"></i>
         </button>
-        <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
+        <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
             <i class="bi bi-grid"></i>
             <span class="text">Dashboard</span>
         </a>
@@ -43,8 +43,7 @@
             <span class="text">Outlet</span>
         </a>
 
-        <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}"
-        class="sidebar-link">
+        <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
             <i class="bi bi-qr-code"></i>
             <span class="text">QR Menu</span>
         </a>
@@ -95,6 +94,18 @@
         class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
             <i class="bi bi-journal-check"></i>
             <span>Recipe</span>
+        </a>
+
+        <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.stock-transfers.*') ? 'active' : '' }}">
+            <i class="bi bi-arrow-left-right"></i>
+            <span>Transfer Stock</span>
+        </a>
+
+        <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
+        class="sidebar-link {{ request()->routeIs('tenant.admin.waste-records.*') ? 'active' : '' }}">
+            <i class="bi bi-trash3"></i>
+            <span>Waste Management</span>
         </a>
 
         <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
