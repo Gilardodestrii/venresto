@@ -64,6 +64,18 @@
         </div>
     </div>
 
+    <div class="card border-0 shadow-sm rounded-5 mb-4">
+        <div class="card-header bg-white border-0 p-4">
+            <h5 class="fw-bold mb-1">Revenue Trend</h5>
+            <div class="text-muted small">Grafik revenue harian berdasarkan transaksi paid</div>
+        </div>
+        <div class="card-body p-4">
+            <div style="height: 320px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4 mb-4">
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm rounded-5 overflow-hidden h-100">
@@ -184,3 +196,53 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const revenueLabels = @json($dailySales->map(fn ($day) => \Illuminate\Support\Carbon::parse($day->sales_date)->format('d M'))->values());
+const revenueData = @json($dailySales->map(fn ($day) => (float) $day->total_revenue)->values());
+
+const revenueCanvas = document.getElementById('revenueChart');
+
+if (revenueCanvas) {
+    new Chart(revenueCanvas, {
+        type: 'line',
+        data: {
+            labels: revenueLabels,
+            datasets: [{
+                label: 'Revenue',
+                data: revenueData,
+                tension: 0.35,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(context.parsed.y || 0);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+@endpush
