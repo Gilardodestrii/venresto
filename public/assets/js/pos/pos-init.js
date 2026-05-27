@@ -7,5 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ui: window.posUi || {},
     };
 
+    if (window.POS.cart?.bindAddToCart) {
+        window.POS.cart.bindAddToCart();
+    }
+
+    if (window.POS.ui?.bindSearchMenu) {
+        window.POS.ui.bindSearchMenu();
+    }
+
+    if (window.POS.ui?.bindCategoryFilter) {
+        window.POS.ui.bindCategoryFilter();
+    }
+
     console.log('VenResto POS initialized', window.POS);
 });
