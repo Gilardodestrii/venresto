@@ -18,6 +18,7 @@ use App\Http\Controllers\Central\MaterialController;
 use App\Http\Controllers\Central\RecipeController;
 use App\Http\Controllers\Central\StockMovementController;
 use App\Http\Controllers\Central\StockTransferController;
+use App\Http\Controllers\Central\WasteRecordController;
 use App\Http\Controllers\QrMenuController;
 
 Route::get('/env-check', function () {
@@ -121,4 +122,9 @@ Route::middleware(['auth'])
         Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])->name('stock-transfers.show');
         Route::post('/stock-transfers/{stockTransfer}/complete', [StockTransferController::class, 'complete'])->name('stock-transfers.complete');
         Route::post('/stock-transfers/{stockTransfer}/cancel', [StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
+
+        Route::get('/waste-records', [WasteRecordController::class, 'index'])->name('waste-records.index');
+        Route::get('/waste-records/create', [WasteRecordController::class, 'create'])->name('waste-records.create');
+        Route::post('/waste-records', [WasteRecordController::class, 'store'])->name('waste-records.store');
+        Route::get('/waste-records/{wasteRecord}', [WasteRecordController::class, 'show'])->name('waste-records.show');
     });
