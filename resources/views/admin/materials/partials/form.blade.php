@@ -37,4 +37,15 @@
                value="{{ old('min_stock', $material?->min_stock ?? 0) }}"
                class="form-control rounded-4">
     </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Harga Per Unit</label>
+        <input type="number"
+               step="0.01"
+               name="cost_per_unit"
+               value="{{ old('cost_per_unit', $material?->cost_per_unit ?? 0) }}"
+               class="form-control rounded-4"
+               placeholder="Contoh: 15000">
+        <div class="form-text">Dipakai untuk hitung HPP menu.</div>
+    </div>
 </div>
