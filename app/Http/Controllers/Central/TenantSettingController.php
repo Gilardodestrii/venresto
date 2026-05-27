@@ -30,6 +30,7 @@ class TenantSettingController extends Controller
                     'qris_snap' => false,
                     'qris_static' => true,
                 ],
+                'qris_static_payload' => null,
             ]
         );
 
@@ -44,6 +45,7 @@ class TenantSettingController extends Controller
             'tax_rate' => ['required', 'numeric', 'min:0', 'max:1'],
             'service_rate' => ['required', 'numeric', 'min:0', 'max:1'],
             'stock_deduct_on' => ['required', 'in:open,paid'],
+            'qris_static_payload' => ['nullable', 'string', 'max:5000'],
         ]);
 
         TenantSetting::updateOrCreate(
@@ -63,6 +65,7 @@ class TenantSettingController extends Controller
                     'qris_snap' => $request->boolean('payment_qris_snap'),
                     'qris_static' => $request->boolean('payment_qris_static'),
                 ],
+                'qris_static_payload' => $validated['qris_static_payload'] ?? null,
             ]
         );
 
