@@ -32,6 +32,9 @@ class Kernel extends HttpKernel
         'web' => [
             // Tenant resolver duluan agar path disesuaikan
             \App\Http\Middleware\ResolveTenantFromPath::class,
+
+            // Set Spatie Permission tenant/team id
+            \App\Http\Middleware\SetPermissionTenant::class,
         
             // middleware bawaan Laravel
             \App\Http\Middleware\EncryptCookies::class,
