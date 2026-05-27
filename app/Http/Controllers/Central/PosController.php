@@ -9,6 +9,7 @@ use App\Models\MenuCategory;
 use App\Models\OutletTable;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\TenantSetting;
 use App\Services\TenantContext;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -42,11 +43,32 @@ class PosController extends Controller
             ->orderBy('table_code')
             ->get();
 
+        $settings = TenantSetting::firstOrCreate(
+            ['tenant_id' => $tenantModel->id],
+            [
+                'tax_enabled' => true,
+                'tax_rate' => 0.11,
+                'tax_inclusive' => false,
+                'service_enabled' => true,
+                'service_rate' => 0.05,
+                'service_inclusive' => false,
+                'kitchen_ticket_on_open_for_cash' => true,
+                'stock_deduct_on' => 'paid',
+                'payments_json' => [
+                    'cash' => true,
+                    'qris' => true,
+                    'qris_snap' => false,
+                    'qris_static' => true,
+                ],
+            ]
+        );
+
         return view('admin.pos.index', compact(
             'categories',
             'menuItems',
             'tables',
-            'tenant'
+            'tenant',
+            'settings'
         ));
     }
 
@@ -64,16 +86,43 @@ class PosController extends Controller
             return back()->with('error', 'Outlet aktif belum dipilih.');
         }
 
+        $settings = TenantSetting::firstOrCreate(
+            ['tenant_id' => $tenantModel->id],
+            [
+                'tax_enabled' => true,
+                'tax_rate' => 0.11,
+                'tax_inclusive' => false,
+                'service_enabled' => true,
+                'service_rate' => 0.05,
+                'service_inclusive' => false,
+                'kitchen_ticket_on_open_for_cash' => true,
+                'stock_deduct_on' => 'paid',
+                'payments_json' => [
+                    'cash' => true,
+                    'qris' => true,
+                    'qris_snap' => false,
+                    'qris_static' => true,
+                ],
+            ]
+        );
+
+        $enabledPayments = collect($settings->payments_json ?? [])
+            ->filter(fn ($enabled) => (bool) $enabled)
+            ->keys()
+            ->implode(',');
+
+        if (!$enabledPayments) {
+            return back()->withInput()->with('error', 'Belum ada metode pembayaran aktif di Tenant Settings.');
+        }
+
         $validated = $request->validate([
             'table_code'              => ['required', 'string'],
             'customer_name'           => ['nullable', 'string', 'max:255'],
             'customer_phone'          => ['nullable', 'string', 'max:50'],
             'customer_note'           => ['nullable', 'string'],
-            'payment_method'          => ['required', 'string', 'in:cash,qris,debit,transfer'],
+            'payment_method'          => ['required', 'string', 'in:' . $enabledPayments],
             'action'                  => ['required', 'string', 'in:hold,paid'],
             'discount'                => ['nullable', 'numeric', 'min:0'],
-            'tax'                     => ['nullable', 'numeric', 'min:0'],
-            'service'                 => ['nullable', 'numeric', 'min:0'],
             'paid_amount'             => ['nullable', 'numeric', 'min:0'],
             'items'                   => ['required', 'array', 'min:1'],
             'items.*.menu_item_id'    => ['required', 'integer'],
@@ -83,17 +132,27 @@ class PosController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $request, $tenantModel, $outletId, $inventoryService) {
+            DB::transaction(function () use ($validated, $tenantModel, $outletId, $inventoryService, $settings) {
 
                 $subtotal = collect($validated['items'])->sum(function ($item) {
                     return ((float) $item['qty']) * ((float) $item['price']);
                 });
 
                 $discount = (float) ($validated['discount'] ?? 0);
-                $tax      = (float) ($validated['tax'] ?? 0);
-                $service  = (float) ($validated['service'] ?? 0);
+                $baseAmount = max(0, $subtotal - $discount);
 
-                $grandTotal = max(0, ($subtotal - $discount) + $tax + $service);
+                $service = 0;
+                if ($settings->service_enabled && !$settings->service_inclusive) {
+                    $service = round($baseAmount * (float) $settings->service_rate);
+                }
+
+                $taxBase = $baseAmount + $service;
+                $tax = 0;
+                if ($settings->tax_enabled && !$settings->tax_inclusive) {
+                    $tax = round($taxBase * (float) $settings->tax_rate);
+                }
+
+                $grandTotal = max(0, $baseAmount + $tax + $service);
 
                 $isPaid = $validated['action'] === 'paid';
 
@@ -105,7 +164,7 @@ class PosController extends Controller
                     'customer_name'   => $validated['customer_name'] ?? null,
                     'customer_phone'  => $validated['customer_phone'] ?? null,
                     'customer_note'   => $validated['customer_note'] ?? null,
-                    'status'          => $isPaid ? 'paid' : 'pending',
+                    'status'          => $isPaid ? 'paid' : 'pending_payment',
                     'paid_at'         => $isPaid ? now() : null,
                     'subtotal'        => $subtotal,
                     'discount'        => $discount,
@@ -127,6 +186,8 @@ class PosController extends Controller
                         'kitchen_status' => 'new',
                     ]);
                 }
+
+                $shouldDeductStock = $settings->stock_deduct_on === 'open';
 
                 if ($isPaid) {
                     $activeSession = CashierSession::where('tenant_id', $tenantModel->id)
@@ -168,6 +229,10 @@ class PosController extends Controller
                         'paid_at'             => now(),
                     ]);
 
+                    $shouldDeductStock = $shouldDeductStock || $settings->stock_deduct_on === 'paid';
+                }
+
+                if ($shouldDeductStock) {
                     $inventoryService->deductFromOrder($order);
                 }
             });
