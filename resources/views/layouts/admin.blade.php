@@ -48,6 +48,14 @@
             </a>
         @endcan
 
+        @can('outlet.manage')
+            <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.settings.*') ? 'active' : '' }}">
+                <i class="bi bi-gear"></i>
+                <span class="text">Settings</span>
+            </a>
+        @endcan
+
         @can('users.manage')
             <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.roles.*') ? 'active' : '' }}">
