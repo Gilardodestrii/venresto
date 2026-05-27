@@ -257,14 +257,19 @@
 <script src="{{ asset('assets/js/app.js') }}"></script>
 
 @if(request()->routeIs('tenant.admin.pos.index'))
+    <script src="{{ asset('assets/js/pos/pos-core.js') }}"></script>
+    <script src="{{ asset('assets/js/pos/pos-ui.js') }}"></script>
+    <script src="{{ asset('assets/js/pos/pos-cart.js') }}"></script>
+    <script src="{{ asset('assets/js/pos/pos-payment.js') }}"></script>
+    <script src="{{ asset('assets/js/pos/pos-receipt.js') }}"></script>
+    <script src="{{ asset('assets/js/pos/pos-init.js') }}"></script>
+
     <script src="{{ asset('assets/js/pos-qris-static.js') }}"></script>
     <script src="{{ asset('assets/js/pos-auto-receipt.js') }}"></script>
 
     <script>
-        if (window.receiptUrl) {
-            setTimeout(() => {
-                openReceiptWindow(window.receiptUrl);
-            }, 600);
+        if (window.receiptUrl && window.POS?.receipt) {
+            window.POS.receipt.autoOpen(window.receiptUrl);
         }
     </script>
 @endif
