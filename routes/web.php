@@ -13,6 +13,7 @@ use App\Http\Controllers\Central\MenuCategoryController;
 use App\Http\Controllers\Central\PosController;
 use App\Http\Controllers\Central\KitchenDisplayController;
 use App\Http\Controllers\Central\OrderController;
+use App\Http\Controllers\Central\ReceiptController;
 use App\Http\Controllers\Central\CashierSessionController;
 use App\Http\Controllers\Central\MaterialController;
 use App\Http\Controllers\Central\RecipeController;
@@ -113,6 +114,7 @@ Route::middleware(['auth'])
 
         Route::get('/orders', [OrderController::class, 'index'])->middleware('permission:orders.view')->name('orders.index');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('permission:orders.view')->name('orders.show');
+        Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->middleware('permission:orders.view')->name('orders.receipt');
         Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->middleware('permission:orders.pay')->name('orders.updatePayment');
         Route::post('/orders/{order}/void', [OrderController::class, 'void'])->middleware('permission:orders.void')->name('orders.void');
 
