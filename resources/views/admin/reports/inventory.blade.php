@@ -10,19 +10,31 @@
             <div class="text-muted">Analisa pergerakan stok, waste, transfer, dan pemakaian bahan</div>
         </div>
 
-        <form method="GET" class="d-flex flex-wrap gap-2 align-items-end">
-            <div>
-                <label class="form-label small text-muted mb-1">Dari</label>
-                <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control rounded-4">
-            </div>
-            <div>
-                <label class="form-label small text-muted mb-1">Sampai</label>
-                <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control rounded-4">
-            </div>
-            <button class="btn btn-primary rounded-4 px-4">
-                <i class="bi bi-funnel me-1"></i> Filter
-            </button>
-        </form>
+        <div class="d-flex flex-wrap gap-2 align-items-end">
+            <form method="GET" class="d-flex flex-wrap gap-2 align-items-end">
+                <div>
+                    <label class="form-label small text-muted mb-1">Dari</label>
+                    <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control rounded-4">
+                </div>
+                <div>
+                    <label class="form-label small text-muted mb-1">Sampai</label>
+                    <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control rounded-4">
+                </div>
+                <button class="btn btn-primary rounded-4 px-4">
+                    <i class="bi bi-funnel me-1"></i> Filter
+                </button>
+            </form>
+
+            <a href="{{ route('tenant.admin.reports.inventory.export', [
+                    $currentTenant->slug,
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'end_date' => $endDate->format('Y-m-d')
+                ]) }}"
+               class="btn btn-success rounded-4 px-4">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                Export CSV
+            </a>
+        </div>
     </div>
 
     <div class="row g-3 mb-4">
