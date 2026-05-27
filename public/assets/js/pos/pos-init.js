@@ -19,5 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         window.POS.ui.bindCategoryFilter();
     }
 
+    if (window.POS.payment?.bindFormValidation) {
+        window.POS.payment.bindFormValidation();
+    }
+
     console.log('VenResto POS initialized', window.POS);
 });
