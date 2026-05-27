@@ -2,6 +2,24 @@ window.posCart = {
 
     items: [],
 
+    bindAddToCart() {
+
+        document.querySelectorAll('.addToCart')
+            .forEach(btn => {
+
+                btn.addEventListener('click', () => {
+
+                    this.add({
+                        id: btn.dataset.id,
+                        name: btn.dataset.name,
+                        price: btn.dataset.price,
+                        qty: 1,
+                        note: '',
+                    });
+                });
+            });
+    },
+
     add(item) {
 
         const existing = this.items.find(i => i.id === item.id);
