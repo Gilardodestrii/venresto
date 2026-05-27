@@ -243,8 +243,21 @@
 
 </div>
 
+@if(request()->routeIs('tenant.admin.pos.index'))
+    @include('admin.pos.partials.qris-static-modal')
+
+    <script>
+        window.qrisStaticGenerateUrl = "{{ route('tenant.admin.qris-static.generate', $currentTenant->slug) }}";
+        window.csrfToken = "{{ csrf_token() }}";
+    </script>
+@endif
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
+
+@if(request()->routeIs('tenant.admin.pos.index'))
+    <script src="{{ asset('assets/js/pos-qris-static.js') }}"></script>
+@endif
 
 @stack('scripts')
 
