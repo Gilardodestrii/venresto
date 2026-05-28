@@ -137,23 +137,28 @@ Route::middleware(['auth'])->group(function () {
                 ]);
             })->name('roles.index');
 
-            Route::put('/roles/{user}', function (\Illuminate\Http\Request $request, \App\Models\User $user) {
-                $tenant = \App\Services\TenantContext::get();
-                abort_if(!$tenant || $user->tenant_id !== $tenant->id, 404);
+            Route::put('/roles/{user}', function (\Illuminate\Http\Request $request, $tenant, $user) {
+                $tenantModel = \App\Services\TenantContext::get();
+                abort_if(!$tenantModel, 404);
+
+                $staff = \App\Models\User::query()
+                    ->where('tenant_id', $tenantModel->id)
+                    ->where('id', $user)
+                    ->firstOrFail();
 
                 $request->validate([
                     'role' => ['required', 'string', 'max:100'],
                 ]);
 
-                setPermissionsTeamId($tenant->id);
+                setPermissionsTeamId($tenantModel->id);
 
                 $role = \Spatie\Permission\Models\Role::query()
-                    ->where('tenant_id', $tenant->id)
+                    ->where('tenant_id', $tenantModel->id)
                     ->where('guard_name', 'web')
                     ->where('name', $request->role)
                     ->firstOrFail();
 
-                $user->syncRoles([$role]);
+                $staff->syncRoles([$role]);
 
                 return back()->with('success', 'Role staff berhasil diperbarui.');
             })->name('roles.update');
