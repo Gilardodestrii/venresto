@@ -65,6 +65,7 @@ class LoginController extends Controller
 
         // Arahkan sesuai role (opsional)
         if (method_exists($user, 'hasRole')) {
+            
             if ($user->hasRole('owner') || $user->hasRole('manager')) {
                 return redirect()->intended(tenant_url('admin/dashboard'));
             }

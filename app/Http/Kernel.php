@@ -30,24 +30,22 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            // Tenant resolver duluan agar path disesuaikan
-            \App\Http\Middleware\ResolveTenantFromPath::class,
-
-            // Set Spatie Permission tenant/team id
-            \App\Http\Middleware\SetPermissionTenant::class,
-        
-            // middleware bawaan Laravel
+            // Middleware bawaan Laravel dulu
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+            // Setelah session aktif, baru resolve tenant
+            \App\Http\Middleware\ResolveTenantFromPath::class,
+
+            // Setelah tenant aktif, baru set Spatie team id
+            \App\Http\Middleware\SetPermissionTenant::class,
         ],
-        
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],

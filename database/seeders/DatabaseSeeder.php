@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PlanSeeder::class);
         // 2) Roles & Permissions (tenant-scoped)
         $this->call(RolesPermissionsSeeder::class);
+        $this->call(DefaultRolePermissionSeeder::class);
       }
 }

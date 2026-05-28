@@ -13,7 +13,10 @@ class SetPermissionTenant
     public function handle(Request $request, Closure $next): Response
     {
         if ($tenant = TenantContext::get()) {
-            app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
+            setPermissionsTeamId($tenant->id);
+
+            app(PermissionRegistrar::class)
+                ->setPermissionsTeamId($tenant->id);
         }
 
         return $next($request);
