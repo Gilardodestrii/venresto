@@ -1,6 +1,32 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Settings')
+
 @section('content')
+
+@php
+    $settings = $settings ?? (object) [
+        'tax_enabled' => false,
+        'tax_rate' => 0,
+        'tax_inclusive' => false,
+        'service_enabled' => false,
+        'service_rate' => 0,
+        'service_inclusive' => false,
+        'payments_json' => [
+            'cash' => true,
+            'qris' => true,
+            'qris_snap' => false,
+            'qris_static' => false,
+        ],
+        'stock_deduct_on' => 'paid',
+        'kitchen_ticket_on_open_for_cash' => true,
+        'qris_static_payload' => '',
+    ];
+
+    $payments = is_array($settings->payments_json ?? null)
+        ? $settings->payments_json
+        : (json_decode($settings->payments_json ?? '{}', true) ?: []);
+@endphp
 
 <div class="container-fluid">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -26,13 +52,8 @@
         </div>
     @endif
 
-    @php
-        $payments = $settings->payments_json ?? [];
-    @endphp
-
     <form method="POST" action="{{ route('tenant.admin.settings.update', $currentTenant->slug) }}">
         @csrf
-        @method('PUT')
 
         <div class="row g-4">
             <div class="col-lg-6">
