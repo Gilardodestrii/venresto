@@ -17,6 +17,10 @@ class QrisStatic
         $payload = self::setPointOfInitiationToDynamic($payload);
         $payload = self::removeTag($payload, '54');
 
+        if (!self::findTagPosition($payload, '62') && str_contains($payload, 'ID.DANA.WWW')) {
+            $payload = self::addDanaAdditionalData($payload);
+        }
+
         $tag54 = self::buildTag('54', (string) $amount);
 
         $insertPos = self::findTagPosition($payload, '55')
@@ -31,6 +35,57 @@ class QrisStatic
             . substr($payload, $insertPos);
 
         return self::appendCrc($payload);
+    }
+
+    private static function addDanaAdditionalData(string $payload): string
+    {
+        $subTag = self::extractDanaMerchantAccountId($payload);
+
+        if (!$subTag) {
+            return $payload;
+        }
+
+        $tag62 = self::buildTag('62', self::buildTag('60', $subTag));
+        $insertPos = self::findTagPosition($payload, '63') ?? strlen($payload);
+
+        return substr($payload, 0, $insertPos) . $tag62 . substr($payload, $insertPos);
+    }
+
+    private static function extractDanaMerchantAccountId(string $payload): ?string
+    {
+        $tag26 = self::getTagValue($payload, '26');
+
+        if (!$tag26) {
+            return null;
+        }
+
+        $subTags = self::parseTags($tag26);
+
+        return $subTags['01'] ?? null;
+    }
+
+    private static function getTagValue(string $payload, string $targetTag): ?string
+    {
+        $offset = 0;
+        $length = strlen($payload);
+
+        while ($offset + 4 <= $length) {
+            $tag = substr($payload, $offset, 2);
+            $valueLength = (int) substr($payload, $offset + 2, 2);
+            $chunkLength = 4 + $valueLength;
+
+            if ($chunkLength < 4 || $offset + $chunkLength > $length) {
+                break;
+            }
+
+            if ($tag === $targetTag) {
+                return substr($payload, $offset + 4, $valueLength);
+            }
+
+            $offset += $chunkLength;
+        }
+
+        return null;
     }
 
     private static function setPointOfInitiationToDynamic(string $payload): string
