@@ -13,7 +13,6 @@
     @php
         $lowStockMaterials = \App\Models\Material::query()
             ->where('tenant_id', $currentTenant->id)
-            ->where('outlet_id', session('current_outlet_id'))
             ->whereColumn('stock', '<=', 'min_stock')
             ->orderBy('stock')
             ->limit(5)
@@ -33,14 +32,12 @@
             <i class="bi bi-list"></i>
         </button>
 
-        @can('dashboard.view')
-            <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-grid"></i>
-                <span class="text">Dashboard</span>
-            </a>
-        @endcan
+        <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
+            <i class="bi bi-grid"></i>
+            <span class="text">Dashboard</span>
+        </a>
 
-        @can('reports.view')
+        @can('reports.view.basic')
             <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.reports.*') ? 'active' : '' }}">
                 <i class="bi bi-bar-chart-line"></i>
@@ -48,7 +45,7 @@
             </a>
         @endcan
 
-        @can('outlet.manage')
+        @can('settings.manage')
             <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.settings.*') ? 'active' : '' }}">
                 <i class="bi bi-gear"></i>
@@ -64,17 +61,19 @@
             </a>
         @endcan
 
-        @can('outlet.manage')
+        @can('outlets.manage')
             <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
                 <i class="bi bi-shop"></i>
                 <span class="text">Outlet</span>
             </a>
 
-            <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
-                <i class="bi bi-qr-code"></i>
-                <span class="text">QR Menu</span>
-            </a>
+            @if(isset($currentOutlet) && $currentOutlet)
+                <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
+                    <i class="bi bi-qr-code"></i>
+                    <span class="text">QR Menu</span>
+                </a>
+            @endif
         @endcan
 
         @can('menu.manage')
@@ -89,7 +88,7 @@
             </a>
         @endcan
 
-        @can('pos.access')
+        @canany(['pos.open_shift', 'pos.close_shift', 'pos.hold', 'pos.split_bill'])
             <a href="{{ url($currentTenant->slug.'/admin/pos') }}" class="sidebar-link">
                 <i class="bi bi-cart-plus"></i>
                 <span class="text">POS Kasir</span>
@@ -99,7 +98,7 @@
                 <i class="bi bi-cash-stack"></i>
                 <span class="text">Cashier Session</span>
             </a>
-        @endcan
+        @endcanany
 
         @can('orders.view')
             <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
@@ -108,14 +107,14 @@
             </a>
         @endcan
 
-        @can('kitchen.access')
+        @can('kitchen.ticket.view')
             <a href="{{ url($currentTenant->slug.'/admin/kitchen') }}" class="sidebar-link">
                 <i class="bi bi-display"></i>
                 <span class="text">Kitchen Display</span>
             </a>
         @endcan
 
-        @can('inventory.manage')
+        @can('inventory.view')
             <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
                 <i class="bi bi-box-seam"></i>
@@ -127,45 +126,25 @@
                     </span>
                 @endif
             </a>
-        @endcan
 
-        @can('recipe.manage')
             <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
                 <i class="bi bi-journal-check"></i>
                 <span>Recipe</span>
             </a>
-        @endcan
 
-        @can('costing.view')
-            <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
-                <i class="bi bi-calculator"></i>
-                <span>HPP Costing</span>
-            </a>
-        @endcan
-
-        @can('stock.transfer')
-            <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.stock-transfers.*') ? 'active' : '' }}">
-                <i class="bi bi-arrow-left-right"></i>
-                <span>Transfer Stock</span>
-            </a>
-        @endcan
-
-        @can('waste.manage')
-            <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.waste-records.*') ? 'active' : '' }}">
-                <i class="bi bi-trash3"></i>
-                <span>Waste Management</span>
-            </a>
-        @endcan
-
-        @can('stock.movement.view')
             <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.stock-movements.*') ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i>
                 <span>Stock Movement</span>
+            </a>
+        @endcan
+
+        @can('inventory.edit')
+            <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
+            class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
+                <i class="bi bi-calculator"></i>
+                <span>HPP Costing</span>
             </a>
         @endcan
 
@@ -184,7 +163,7 @@
             <i class="bi bi-list"></i>
         </button>
 
-            @can('inventory.manage')
+            @can('inventory.view')
                 @if($lowStockMaterials->count())
                     <div class="dropdown">
                         <button class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown">
