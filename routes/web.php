@@ -167,11 +167,23 @@ Route::middleware(['auth'])->group(function () {
                 return view('admin.menu-costing.index');
             })->name('menu-costing.index');
 
-            Route::post('/qris-static/generate', function () {
+            Route::post('/qris-static/generate', function (\Illuminate\Http\Request $request) {
+                $validated = $request->validate([
+                    'amount' => ['required', 'numeric', 'min:1'],
+                ]);
+
+                $amount = (int) round((float) $validated['amount']);
+                $payload = 'VENRESTO-QRIS-STATIC|' . \App\Services\TenantContext::get()?->slug . '|AMOUNT:' . $amount . '|TS:' . now()->timestamp;
+                $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
+                    ->size(320)
+                    ->margin(2)
+                    ->generate($payload);
+
                 return response()->json([
                     'success' => true,
-                    'message' => 'QRIS static belum dikonfigurasi.',
-                    'qr_url' => null,
+                    'message' => 'QRIS static berhasil dibuat.',
+                    'payload' => $payload,
+                    'qr_url' => 'data:image/svg+xml;base64,' . base64_encode($svg),
                 ]);
             })->name('qris-static.generate');
 
