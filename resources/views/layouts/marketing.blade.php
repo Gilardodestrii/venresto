@@ -91,15 +91,26 @@
           <li class="nav-item"><a class="nav-link" href="{{ url('/features') }}">Fitur</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/pricing') }}">Harga</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/documentation') }}">Dokumentasi</a></li>
-          <li class="nav-item ms-lg-3 my-2 my-lg-0">
-            <a class="btn btn-outline-primary"
-            href="{{ isset($currentTenant) ? url($currentTenant->slug.'/login') : url('/login') }}">
-            Masuk
-          </a>
-          </li>
-          <li class="nav-item ms-lg-2">
-            <a class="btn btn-primary" href="{{ url('/signup') }}">Mulai Trial</a>
-          </li>
+
+          @auth
+            @php($authTenant = auth()->user()?->tenant)
+            @if($authTenant)
+              <li class="nav-item ms-lg-3 my-2 my-lg-0">
+                <a class="btn btn-primary" href="{{ url($authTenant->slug . '/admin/dashboard') }}">
+                  <i class="bi bi-grid me-1"></i> Dashboard
+                </a>
+              </li>
+            @endif
+          @else
+            <li class="nav-item ms-lg-3 my-2 my-lg-0">
+              <a class="btn btn-outline-primary" href="{{ url('/login') }}">
+                Masuk
+              </a>
+            </li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn btn-primary" href="{{ url('/signup') }}">Mulai Trial</a>
+            </li>
+          @endauth
         </ul>
       </div>
     </div>
