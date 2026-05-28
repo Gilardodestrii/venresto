@@ -120,10 +120,43 @@ Route::middleware(['auth'])->group(function () {
             })->name('settings.update');
 
             Route::get('/roles', function () {
+                $tenant = \App\Services\TenantContext::get();
+                setPermissionsTeamId($tenant?->id);
+
                 return view('admin.roles.index', [
-                    'users' => \App\Models\User::query()->latest()->paginate(15),
+                    'users' => \App\Models\User::query()
+                        ->where('tenant_id', $tenant?->id)
+                        ->with('roles')
+                        ->latest()
+                        ->paginate(15),
+                    'roles' => \Spatie\Permission\Models\Role::query()
+                        ->where('guard_name', 'web')
+                        ->when($tenant, fn ($query) => $query->where('tenant_id', $tenant->id))
+                        ->orderBy('name')
+                        ->get(),
                 ]);
             })->name('roles.index');
+
+            Route::put('/roles/{user}', function (\Illuminate\Http\Request $request, \App\Models\User $user) {
+                $tenant = \App\Services\TenantContext::get();
+                abort_if(!$tenant || $user->tenant_id !== $tenant->id, 404);
+
+                $request->validate([
+                    'role' => ['required', 'string', 'max:100'],
+                ]);
+
+                setPermissionsTeamId($tenant->id);
+
+                $role = \Spatie\Permission\Models\Role::query()
+                    ->where('tenant_id', $tenant->id)
+                    ->where('guard_name', 'web')
+                    ->where('name', $request->role)
+                    ->firstOrFail();
+
+                $user->syncRoles([$role]);
+
+                return back()->with('success', 'Role staff berhasil diperbarui.');
+            })->name('roles.update');
 
             Route::get('/menu-costing', function () {
                 return view('admin.menu-costing.index');
