@@ -17,7 +17,9 @@ class QrisStatic
         $payload = self::setPointOfInitiationToDynamic($payload);
         $payload = self::removeTag($payload, '54');
 
-        if (!self::findTagPosition($payload, '62') && str_contains($payload, 'ID.DANA.WWW')) {
+        if (str_contains($payload, 'ID.DANA.WWW')) {
+            $payload = self::normalizeDanaMerchantAccountForDynamic($payload);
+            $payload = self::removeTag($payload, '62');
             $payload = self::addDanaAdditionalData($payload);
         }
 
@@ -37,31 +39,44 @@ class QrisStatic
         return self::appendCrc($payload);
     }
 
-    private static function addDanaAdditionalData(string $payload): string
-    {
-        $subTag = self::extractDanaMerchantAccountId($payload);
-
-        if (!$subTag) {
-            return $payload;
-        }
-
-        $tag62 = self::buildTag('62', self::buildTag('60', $subTag));
-        $insertPos = self::findTagPosition($payload, '63') ?? strlen($payload);
-
-        return substr($payload, 0, $insertPos) . $tag62 . substr($payload, $insertPos);
-    }
-
-    private static function extractDanaMerchantAccountId(string $payload): ?string
+    private static function normalizeDanaMerchantAccountForDynamic(string $payload): string
     {
         $tag26 = self::getTagValue($payload, '26');
 
         if (!$tag26) {
-            return null;
+            return $payload;
         }
 
         $subTags = self::parseTags($tag26);
 
-        return $subTags['01'] ?? null;
+        if (!isset($subTags['01']) || strlen($subTags['01']) < 8) {
+            return $payload;
+        }
+
+        $subTags['01'] = substr($subTags['01'], 0, 10) . '0' . substr($subTags['01'], 11);
+
+        $newTag26Value = self::buildNestedTags($subTags);
+
+        return self::replaceTag($payload, '26', $newTag26Value);
+    }
+
+    private static function buildNestedTags(array $tags): string
+    {
+        $result = '';
+
+        foreach ($tags as $tag => $value) {
+            $result .= self::buildTag((string) $tag, (string) $value);
+        }
+
+        return $result;
+    }
+
+    private static function addDanaAdditionalData(string $payload): string
+    {
+        $tag62 = self::buildTag('62', self::buildTag('60', '0011ID.DANA.WWW'));
+        $insertPos = strlen($payload);
+
+        return substr($payload, 0, $insertPos) . $tag62 . substr($payload, $insertPos);
     }
 
     private static function getTagValue(string $payload, string $targetTag): ?string
