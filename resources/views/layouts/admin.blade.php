@@ -37,31 +37,25 @@
             <span class="text">Dashboard</span>
         </a>
 
-        @can('reports.view.basic')
+        @hasanyrole('owner|manager')
             <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.reports.*') ? 'active' : '' }}">
                 <i class="bi bi-bar-chart-line"></i>
                 <span class="text">Reports</span>
             </a>
-        @endcan
 
-        @can('settings.manage')
             <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.settings.*') ? 'active' : '' }}">
                 <i class="bi bi-gear"></i>
                 <span class="text">Settings</span>
             </a>
-        @endcan
 
-        @can('users.manage')
             <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.roles.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i>
                 <span class="text">Staff Management</span>
             </a>
-        @endcan
 
-        @can('outlets.manage')
             <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
                 <i class="bi bi-shop"></i>
@@ -74,9 +68,9 @@
                     <span class="text">QR Menu</span>
                 </a>
             @endif
-        @endcan
+        @endhasanyrole
 
-        @can('menu.manage')
+        @hasanyrole('owner|manager')
             <a href="{{ url($currentTenant->slug.'/admin/menu-categories') }}" class="sidebar-link">
                 <i class="bi bi-collection"></i>
                 <span class="text">Kategori Menu</span>
@@ -86,9 +80,9 @@
                 <i class="bi bi-cup-straw"></i>
                 <span class="text">Menu Item</span>
             </a>
-        @endcan
+        @endhasanyrole
 
-        @canany(['pos.open_shift', 'pos.close_shift', 'pos.hold', 'pos.split_bill'])
+        @hasanyrole('owner|manager|cashier')
             <a href="{{ url($currentTenant->slug.'/admin/pos') }}" class="sidebar-link">
                 <i class="bi bi-cart-plus"></i>
                 <span class="text">POS Kasir</span>
@@ -98,23 +92,23 @@
                 <i class="bi bi-cash-stack"></i>
                 <span class="text">Cashier Session</span>
             </a>
-        @endcanany
+        @endhasanyrole
 
-        @can('orders.view')
+        @hasanyrole('owner|manager|cashier|waiter')
             <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
                 <i class="bi bi-basket"></i>
                 <span class="text">Pesanan</span>
             </a>
-        @endcan
+        @endhasanyrole
 
-        @can('kitchen.ticket.view')
+        @hasanyrole('owner|manager|kitchen')
             <a href="{{ url($currentTenant->slug.'/admin/kitchen') }}" class="sidebar-link">
                 <i class="bi bi-display"></i>
                 <span class="text">Kitchen Display</span>
             </a>
-        @endcan
+        @endhasanyrole
 
-        @can('inventory.view')
+        @hasanyrole('owner|manager')
             <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
                 <i class="bi bi-box-seam"></i>
@@ -138,15 +132,13 @@
                 <i class="bi bi-clock-history"></i>
                 <span>Stock Movement</span>
             </a>
-        @endcan
 
-        @can('inventory.edit')
             <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
             class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
                 <i class="bi bi-calculator"></i>
                 <span>HPP Costing</span>
             </a>
-        @endcan
+        @endhasanyrole
 
 </div>
 
@@ -163,7 +155,7 @@
             <i class="bi bi-list"></i>
         </button>
 
-            @can('inventory.view')
+            @hasanyrole('owner|manager')
                 @if($lowStockMaterials->count())
                     <div class="dropdown">
                         <button class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown">
@@ -190,7 +182,7 @@
                         </div>
                     </div>
                 @endif
-            @endcan
+            @endhasanyrole
 
             <input class="form-control form-control-sm" placeholder="Search...">
 
