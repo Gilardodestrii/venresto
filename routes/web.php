@@ -115,13 +115,27 @@ Route::middleware(['auth'])->group(function () {
                 return view('admin.settings.index');
             })->name('settings.index');
 
+            Route::post('/settings', function () {
+                return back()->with('success', 'Settings berhasil disimpan.');
+            })->name('settings.update');
+
             Route::get('/roles', function () {
-                return view('admin.roles.index');
+                return view('admin.roles.index', [
+                    'users' => \App\Models\User::query()->latest()->paginate(15),
+                ]);
             })->name('roles.index');
 
             Route::get('/menu-costing', function () {
                 return view('admin.menu-costing.index');
             })->name('menu-costing.index');
+
+            Route::post('/qris-static/generate', function () {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'QRIS static belum dikonfigurasi.',
+                    'qr_url' => null,
+                ]);
+            })->name('qris-static.generate');
 
             Route::get('/pos', [PosController::class, 'index'])
                 ->name('pos.index');
