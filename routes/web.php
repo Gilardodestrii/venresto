@@ -52,7 +52,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/{tenant}/admin/dashboard', function () {
     return view('admin.dashboard');
-})->middleware(['auth']);
+})->middleware(['auth'])->name('tenant.admin.dashboard');
 
 Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
@@ -106,6 +106,22 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('{tenant}/admin')
         ->name('tenant.admin.')
         ->group(function () {
+
+            Route::get('/reports/inventory', function () {
+                return view('admin.reports.inventory');
+            })->name('reports.inventory');
+
+            Route::get('/settings', function () {
+                return view('admin.settings.index');
+            })->name('settings.index');
+
+            Route::get('/roles', function () {
+                return view('admin.roles.index');
+            })->name('roles.index');
+
+            Route::get('/menu-costing', function () {
+                return view('admin.menu-costing.index');
+            })->name('menu-costing.index');
 
             Route::get('/pos', [PosController::class, 'index'])
                 ->name('pos.index');
