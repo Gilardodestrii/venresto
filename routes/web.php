@@ -112,10 +112,63 @@ Route::middleware(['auth'])->group(function () {
             })->name('reports.inventory');
 
             Route::get('/settings', function () {
-                return view('admin.settings.index');
+                $tenant = \App\Services\TenantContext::get();
+                $settings = DB::table('tenant_settings')
+                    ->where('tenant_id', $tenant?->id)
+                    ->first();
+
+                return view('admin.settings.index', compact('settings'));
             })->name('settings.index');
 
-            Route::post('/settings', function () {
+            Route::post('/settings', function (\Illuminate\Http\Request $request) {
+                $tenant = \App\Services\TenantContext::get();
+                abort_if(!$tenant, 404);
+
+                $validated = $request->validate([
+                    'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:1'],
+                    'service_rate' => ['nullable', 'numeric', 'min:0', 'max:1'],
+                    'stock_deduct_on' => ['nullable', 'in:paid,open'],
+                    'qris_static_payload' => ['nullable', 'string'],
+                ]);
+
+                $existing = DB::table('tenant_settings')
+                    ->where('tenant_id', $tenant->id)
+                    ->first();
+
+                $payments = json_decode($existing?->payments_json ?? '{}', true) ?: [];
+                $payments['qris_mode'] = $request->boolean('payment_qris_static') ? 'static' : ($payments['qris_mode'] ?? 'snap');
+                $payments['qris_snap'] = $payments['qris_snap'] ?? [
+                    'client_key' => null,
+                    'server_key' => null,
+                    'expiry_minutes' => 15,
+                ];
+                $payments['qris_static'] = [
+                    'qr_payload' => $validated['qris_static_payload'] ?? null,
+                    'qr_image_url' => $payments['qris_static']['qr_image_url'] ?? null,
+                ];
+                $payments['cash_enabled'] = $request->boolean('payment_cash');
+                $payments['qris_enabled'] = $request->boolean('payment_qris')
+                    || $request->boolean('payment_qris_static')
+                    || $request->boolean('payment_qris_snap');
+
+                DB::table('tenant_settings')->updateOrInsert(
+                    ['tenant_id' => $tenant->id],
+                    [
+                        'tax_enabled' => $request->boolean('tax_enabled'),
+                        'tax_rate' => $validated['tax_rate'] ?? 0,
+                        'tax_inclusive' => $request->boolean('tax_inclusive'),
+                        'service_enabled' => $request->boolean('service_enabled'),
+                        'service_rate' => $validated['service_rate'] ?? 0,
+                        'service_inclusive' => $request->boolean('service_inclusive'),
+                        'payments_json' => json_encode($payments),
+                        'stock_deduct_on' => $validated['stock_deduct_on'] ?? 'paid',
+                        'kitchen_ticket_on_open_for_cash' => $request->boolean('kitchen_ticket_on_open_for_cash'),
+                        'qris_static_payload' => $validated['qris_static_payload'] ?? null,
+                        'updated_at' => now(),
+                        'created_at' => $existing?->created_at ?? now(),
+                    ]
+                );
+
                 return back()->with('success', 'Settings berhasil disimpan.');
             })->name('settings.update');
 
@@ -168,12 +221,27 @@ Route::middleware(['auth'])->group(function () {
             })->name('menu-costing.index');
 
             Route::post('/qris-static/generate', function (\Illuminate\Http\Request $request) {
+                $tenant = \App\Services\TenantContext::get();
+                abort_if(!$tenant, 404);
+
                 $validated = $request->validate([
                     'amount' => ['required', 'numeric', 'min:1'],
                 ]);
 
-                $amount = (int) round((float) $validated['amount']);
-                $payload = 'VENRESTO-QRIS-STATIC|' . \App\Services\TenantContext::get()?->slug . '|AMOUNT:' . $amount . '|TS:' . now()->timestamp;
+                $settings = DB::table('tenant_settings')
+                    ->where('tenant_id', $tenant->id)
+                    ->first();
+
+                $payments = json_decode($settings?->payments_json ?? '{}', true) ?: [];
+                $payload = trim($settings?->qris_static_payload ?: ($payments['qris_static']['qr_payload'] ?? ''));
+
+                if (!$payload) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Payload QRIS static belum disimpan di Settings.',
+                    ], 422);
+                }
+
                 $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
                     ->size(320)
                     ->margin(2)
