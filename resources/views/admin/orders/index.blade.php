@@ -112,7 +112,7 @@ body{
 
                     @if($order->status == 'pending_payment')
                     <button class="btn btn-sm btn-primary w-50"
-                            onclick="openPayModal({{ $order->id }})">
+                            onclick="openPayModal({{ $order->id }}, {{ $order->grand_total }})">
                         Pay
                     </button>
                     @endif
@@ -144,18 +144,19 @@ body{
 
         <input type="hidden" id="order_id">
 
-        <label>Status</label>
-        <select id="status" class="form-select mb-2">
-            <option value="paid">Paid</option>
-            <option value="pending_payment">Pending Payment</option>
-        </select>
-
         <label>Payment Method</label>
-        <select id="payment_method" class="form-select">
+        <select id="payment_method" class="form-select mb-3">
             <option value="cash">Cash</option>
             <option value="qris">QRIS</option>
             <option value="transfer">Transfer</option>
         </select>
+
+        <label>Paid Amount</label>
+        <input type="number"
+               id="paid_amount"
+               class="form-control"
+               min="0"
+               value="0">
 
       </div>
 
@@ -170,8 +171,10 @@ body{
 @endsection
 
 <script>
-function openPayModal(id){
+function openPayModal(id, total){
     document.getElementById('order_id').value = id;
+    document.getElementById('paid_amount').value = total;
+
     new bootstrap.Modal(document.getElementById('payModal')).show();
 }
 
@@ -179,20 +182,31 @@ function submitPayment(){
 
     let id = document.getElementById('order_id').value;
 
-    fetch(`/${tenant}/admin/orders/${id}/payment`, {
+    fetch(`/{{ $currentTenant->slug }}/admin/orders/${id}/payment`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         body: JSON.stringify({
-            status: document.getElementById('status').value,
-            payment_method: document.getElementById('payment_method').value
+            payment_method: document.getElementById('payment_method').value,
+            paid_amount: document.getElementById('paid_amount').value
         })
     })
-    .then(res => res.json())
-    .then(res => {
+    .then(async res => {
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message || 'Payment gagal');
+            return;
+        }
+
         location.reload();
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Terjadi kesalahan');
     });
 
 }
