@@ -242,6 +242,11 @@ Route::middleware(['auth'])->group(function () {
                     ], 422);
                 }
 
+                $payload = \App\Support\QrisStatic::withAmount(
+                    $payload,
+                    (int) round((float) $validated['amount'])
+                );
+
                 $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
                     ->size(320)
                     ->margin(2)
