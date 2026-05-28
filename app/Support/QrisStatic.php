@@ -9,130 +9,43 @@ class QrisStatic
         $payload = preg_replace('/\s+/', '', trim($payload));
         $amount = (int) round((float) $amount);
 
-        if ($amount < 1) {
-            return $payload;
-        }
-
         $payload = self::removeCrc($payload);
-        $payload = self::setPointOfInitiationToDynamic($payload);
+        $payload = self::replaceOrInsertTag($payload, '01', '12', '00');
         $payload = self::removeTag($payload, '54');
 
-        if (str_contains($payload, 'ID.DANA.WWW')) {
-            $payload = self::normalizeDanaMerchantAccountForDynamic($payload);
-            $payload = self::removeTag($payload, '62');
-            $payload = self::addDanaAdditionalData($payload);
+        if ($amount > 0) {
+            $tag54 = self::buildTag('54', (string) $amount);
+            $insertPos = self::findTagPosition($payload, '58') ?? strlen($payload);
+
+            $payload = substr($payload, 0, $insertPos)
+                . $tag54
+                . substr($payload, $insertPos);
         }
-
-        $tag54 = self::buildTag('54', (string) $amount);
-
-        $insertPos = self::findTagPosition($payload, '55')
-            ?? self::findTagPosition($payload, '58')
-            ?? self::findTagPosition($payload, '59')
-            ?? self::findTagPosition($payload, '60')
-            ?? self::findTagPosition($payload, '61')
-            ?? strlen($payload);
-
-        $payload = substr($payload, 0, $insertPos)
-            . $tag54
-            . substr($payload, $insertPos);
 
         return self::appendCrc($payload);
-    }
-
-    private static function normalizeDanaMerchantAccountForDynamic(string $payload): string
-    {
-        $tag26 = self::getTagValue($payload, '26');
-
-        if (!$tag26) {
-            return $payload;
-        }
-
-        $subTags = self::parseTags($tag26);
-
-        if (!isset($subTags['01']) || strlen($subTags['01']) < 8) {
-            return $payload;
-        }
-
-        $subTags['01'] = substr($subTags['01'], 0, 10) . '0' . substr($subTags['01'], 11);
-
-        $newTag26Value = self::buildNestedTags($subTags);
-
-        return self::replaceTag($payload, '26', $newTag26Value);
-    }
-
-    private static function buildNestedTags(array $tags): string
-    {
-        $result = '';
-
-        foreach ($tags as $tag => $value) {
-            $result .= self::buildTag((string) $tag, (string) $value);
-        }
-
-        return $result;
-    }
-
-    private static function addDanaAdditionalData(string $payload): string
-    {
-        $tag62 = self::buildTag('62', self::buildTag('60', '0011ID.DANA.WWW'));
-        $insertPos = strlen($payload);
-
-        return substr($payload, 0, $insertPos) . $tag62 . substr($payload, $insertPos);
-    }
-
-    private static function getTagValue(string $payload, string $targetTag): ?string
-    {
-        $offset = 0;
-        $length = strlen($payload);
-
-        while ($offset + 4 <= $length) {
-            $tag = substr($payload, $offset, 2);
-            $valueLength = (int) substr($payload, $offset + 2, 2);
-            $chunkLength = 4 + $valueLength;
-
-            if ($chunkLength < 4 || $offset + $chunkLength > $length) {
-                break;
-            }
-
-            if ($tag === $targetTag) {
-                return substr($payload, $offset + 4, $valueLength);
-            }
-
-            $offset += $chunkLength;
-        }
-
-        return null;
-    }
-
-    private static function setPointOfInitiationToDynamic(string $payload): string
-    {
-        $tags = self::parseTags($payload);
-
-        if (($tags['01'] ?? null) === '11') {
-            return self::replaceTag($payload, '01', '12');
-        }
-
-        if (!isset($tags['01'])) {
-            return self::insertAfterTag($payload, '00', self::buildTag('01', '12'));
-        }
-
-        return $payload;
     }
 
     private static function removeCrc(string $payload): string
     {
         $pos = strrpos($payload, '6304');
 
-        if ($pos === false) {
-            return $payload;
-        }
-
-        return substr($payload, 0, $pos);
+        return $pos === false
+            ? $payload
+            : substr($payload, 0, $pos);
     }
 
     private static function appendCrc(string $payload): string
     {
         $base = $payload . '6304';
-        $crc = strtoupper(str_pad(dechex(self::crc16CcittFalse($base)), 4, '0', STR_PAD_LEFT));
+
+        $crc = strtoupper(
+            str_pad(
+                dechex(self::crc16CcittFalse($base)),
+                4,
+                '0',
+                STR_PAD_LEFT
+            )
+        );
 
         return $base . $crc;
     }
@@ -146,11 +59,9 @@ class QrisStatic
             $crc ^= ord($value[$i]) << 8;
 
             for ($bit = 0; $bit < 8; $bit++) {
-                if (($crc & 0x8000) !== 0) {
-                    $crc = (($crc << 1) ^ 0x1021) & 0xFFFF;
-                } else {
-                    $crc = ($crc << 1) & 0xFFFF;
-                }
+                $crc = ($crc & 0x8000)
+                    ? (($crc << 1) ^ 0x1021) & 0xFFFF
+                    : ($crc << 1) & 0xFFFF;
             }
         }
 
@@ -159,29 +70,9 @@ class QrisStatic
 
     private static function buildTag(string $tag, string $value): string
     {
-        return $tag . str_pad((string) strlen($value), 2, '0', STR_PAD_LEFT) . $value;
-    }
-
-    private static function parseTags(string $payload): array
-    {
-        $tags = [];
-        $offset = 0;
-        $length = strlen($payload);
-
-        while ($offset + 4 <= $length) {
-            $tag = substr($payload, $offset, 2);
-            $valueLength = (int) substr($payload, $offset + 2, 2);
-            $chunkLength = 4 + $valueLength;
-
-            if ($chunkLength < 4 || $offset + $chunkLength > $length) {
-                break;
-            }
-
-            $tags[$tag] = substr($payload, $offset + 4, $valueLength);
-            $offset += $chunkLength;
-        }
-
-        return $tags;
+        return $tag
+            . str_pad((string) strlen($value), 2, '0', STR_PAD_LEFT)
+            . $value;
     }
 
     private static function removeTag(string $payload, string $targetTag): string
@@ -200,10 +91,8 @@ class QrisStatic
                 break;
             }
 
-            $chunk = substr($payload, $offset, $chunkLength);
-
             if ($tag !== $targetTag) {
-                $result .= $chunk;
+                $result .= substr($payload, $offset, $chunkLength);
             }
 
             $offset += $chunkLength;
@@ -216,11 +105,17 @@ class QrisStatic
         return $result;
     }
 
-    private static function replaceTag(string $payload, string $targetTag, string $newValue): string
-    {
+    private static function replaceOrInsertTag(
+        string $payload,
+        string $targetTag,
+        string $newValue,
+        string $insertAfterTag
+    ): string {
         $result = '';
         $offset = 0;
         $length = strlen($payload);
+        $replaced = false;
+        $inserted = false;
 
         while ($offset + 4 <= $length) {
             $tag = substr($payload, $offset, 2);
@@ -233,40 +128,25 @@ class QrisStatic
             }
 
             if ($tag === $targetTag) {
-                $result .= self::buildTag($tag, $newValue);
+                $result .= self::buildTag($targetTag, $newValue);
+                $replaced = true;
             } else {
                 $result .= substr($payload, $offset, $chunkLength);
             }
 
+            if (!$replaced && !$inserted && $tag === $insertAfterTag) {
+                $result .= self::buildTag($targetTag, $newValue);
+                $inserted = true;
+            }
+
             $offset += $chunkLength;
+        }
+
+        if (!$replaced && !$inserted) {
+            return self::buildTag($targetTag, $newValue) . $result;
         }
 
         return $result;
-    }
-
-    private static function insertAfterTag(string $payload, string $targetTag, string $newTag): string
-    {
-        $offset = 0;
-        $length = strlen($payload);
-
-        while ($offset + 4 <= $length) {
-            $tag = substr($payload, $offset, 2);
-            $valueLength = (int) substr($payload, $offset + 2, 2);
-            $chunkLength = 4 + $valueLength;
-
-            if ($chunkLength < 4 || $offset + $chunkLength > $length) {
-                break;
-            }
-
-            if ($tag === $targetTag) {
-                $insertPos = $offset + $chunkLength;
-                return substr($payload, 0, $insertPos) . $newTag . substr($payload, $insertPos);
-            }
-
-            $offset += $chunkLength;
-        }
-
-        return $newTag . $payload;
     }
 
     private static function findTagPosition(string $payload, string $targetTag): ?int
