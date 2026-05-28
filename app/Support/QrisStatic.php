@@ -6,7 +6,7 @@ class QrisStatic
 {
     public static function withAmount(string $payload, int|float $amount): string
     {
-        $payload = preg_replace('/\s+/', '', trim($payload));
+        $payload = self::normalizePayload($payload);
         $amount = (int) round((float) $amount);
 
         $payload = self::removeCrc($payload);
@@ -23,6 +23,11 @@ class QrisStatic
         }
 
         return self::appendCrc($payload);
+    }
+
+    private static function normalizePayload(string $payload): string
+    {
+        return str_replace(["\r", "\n", "\t"], '', trim($payload));
     }
 
     private static function removeCrc(string $payload): string
