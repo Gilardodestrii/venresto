@@ -106,6 +106,8 @@ class PosController extends Controller
             ]
         );
 
+      
+
         $enabledPayments = collect($settings->payments_json ?? [])
             ->filter(fn ($enabled) => (bool) $enabled)
             ->keys()
@@ -114,6 +116,7 @@ class PosController extends Controller
         if (!$enabledPayments) {
             return back()->withInput()->with('error', 'Belum ada metode pembayaran aktif di Tenant Settings.');
         }
+
 
         $validated = $request->validate([
             'table_code'              => ['required', 'string'],

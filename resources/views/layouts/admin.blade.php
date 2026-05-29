@@ -192,7 +192,7 @@
 
             <div class="dropdown">
                 <button class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    Admin
+                    {{ Auth::user()->name }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
