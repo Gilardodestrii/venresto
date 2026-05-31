@@ -1,46 +1,45 @@
 window.posCart = {
-
     items: [],
 
     bindAddToCart() {
-
-        document.querySelectorAll('.addToCart')
-            .forEach(btn => {
-
-                btn.addEventListener('click', () => {
-
-                    this.add({
-                        id: btn.dataset.id,
-                        name: btn.dataset.name,
-                        price: btn.dataset.price,
-                        qty: 1,
-                        note: '',
-                    });
+        document.querySelectorAll('.addToCart').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.add({
+                    id: String(btn.dataset.id),
+                    name: btn.dataset.name,
+                    price: Number(btn.dataset.price),
+                    qty: 1,
+                    note: '',
                 });
             });
+        });
     },
 
     bindDiscountInput() {
-        const discountInput = document.getElementById('discountInput');
+        document.querySelectorAll('#discountInput').forEach(input => {
+            input.addEventListener('input', () => {
+                const value = input.value;
 
-        if (!discountInput) {
-            return;
-        }
+                document.querySelectorAll('#discountInput').forEach(other => {
+                    if (other !== input) {
+                        other.value = value;
+                    }
+                });
 
-        discountInput.addEventListener('input', () => {
-            this.render();
+                this.render();
+            });
         });
     },
 
     add(item) {
-
-        const existing = this.items.find(i => i.id === item.id);
+        const existing = this.items.find(i => String(i.id) === String(item.id));
 
         if (existing) {
             existing.qty += 1;
         } else {
             this.items.push({
                 ...item,
+                price: Number(item.price),
                 qty: 1,
                 note: item.note || '',
             });
@@ -52,36 +51,34 @@ window.posCart = {
     },
 
     remove(id) {
-
-        this.items = this.items.filter(item => item.id !== id);
-
+        this.items = this.items.filter(item => String(item.id) !== String(id));
         this.render();
 
         return this.items;
     },
 
     clear() {
-
         this.items = [];
-
         this.render();
 
         return this.items;
     },
 
     subtotal() {
-
         return this.items.reduce((total, item) => {
-            return total + (item.price * item.qty);
+            return total + Number(item.price) * Number(item.qty);
         }, 0);
     },
 
     increase(index) {
+        if (!this.items[index]) return;
+
         this.items[index].qty++;
         this.render();
     },
 
     decrease(index) {
+        if (!this.items[index]) return;
 
         if (this.items[index].qty > 1) {
             this.items[index].qty--;
@@ -93,36 +90,49 @@ window.posCart = {
     },
 
     note(index, value) {
+        if (!this.items[index]) return;
+
         this.items[index].note = value;
+
+        document.querySelectorAll(`[data-cart-note-index="${index}"]`).forEach(el => {
+            if (el.value !== value) {
+                el.value = value;
+            }
+        });
     },
 
-    render() {
+    getDiscount() {
+        const input = document.querySelector('#discountInput');
+        return parseFloat(input?.value || 0);
+    },
 
-        const container = document.getElementById('cartContainer');
+    syncDiscount(value) {
+        document.querySelectorAll('#discountInput').forEach(input => {
+            input.value = value;
+        });
+    },
 
-        if (!container) {
-            return;
+    renderCartHtml() {
+        if (this.items.length === 0) {
+            return `
+                <div class="text-center text-muted py-4">
+                    <div style="font-size:34px;">
+                        <i class="bi bi-cart-x"></i>
+                    </div>
+                    <div class="fw-semibold mt-2">Keranjang kosong</div>
+                    <small>Pilih menu untuk mulai order.</small>
+                </div>
+            `;
         }
 
         let html = '';
 
-        const discount = parseFloat(
-            document.getElementById('discountInput')?.value || 0
-        );
-
-        const totals = POS.core.calculateTotals(
-            this.items,
-            window.posSettings || {},
-            discount
-        );
-
         this.items.forEach((item, index) => {
-
             html += `
                 <div class="cart-item">
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between gap-2">
                         <div>
-                            <div class="fw-bold">${item.name}</div>
+                            <div class="fw-bold">${this.escapeHtml(item.name)}</div>
                             <small class="text-secondary">
                                 ${POS.core.formatRupiah(item.price)}
                             </small>
@@ -147,48 +157,92 @@ window.posCart = {
 
                     <textarea class="form-control mt-3"
                         placeholder="Catatan item..."
-                        oninput="POS.cart.note(${index}, this.value)">${item.note ?? ''}</textarea>
+                        data-cart-note-index="${index}"
+                        oninput="POS.cart.note(${index}, this.value)">${this.escapeHtml(item.note ?? '')}</textarea>
 
                     <input type="hidden" name="items[${index}][menu_item_id]" value="${item.id}">
                     <input type="hidden" name="items[${index}][qty]" value="${item.qty}">
                     <input type="hidden" name="items[${index}][price]" value="${item.price}">
-                    <input type="hidden" name="items[${index}][note]" value="${item.note ? item.note : ''}">
+                    <input type="hidden" name="items[${index}][note]" value="${this.escapeHtml(item.note ?? '')}">
                 </div>
             `;
         });
 
-        container.innerHTML = html;
+        return html;
+    },
 
-        const subtotalText = document.getElementById('subtotalText');
-        const serviceText = document.getElementById('serviceText');
-        const taxText = document.getElementById('taxText');
-        const grandTotalText = document.getElementById('grandTotalText');
+    renderMobileBar(totals) {
+        const countEl = document.getElementById('mobileCartCount');
+        const totalEl = document.getElementById('mobileCartTotal');
+        const barEl = document.getElementById('mobileCartBar');
 
-        if (subtotalText) {
-            subtotalText.innerHTML = POS.core.formatRupiah(totals.subtotal);
+        const totalQty = this.items.reduce((total, item) => {
+            return total + Number(item.qty);
+        }, 0);
+
+        if (countEl) {
+            countEl.innerHTML = `${totalQty} Item`;
         }
 
-        if (serviceText) {
-            serviceText.innerHTML = POS.core.formatRupiah(totals.service);
+        if (totalEl) {
+            totalEl.innerHTML = POS.core.formatRupiah(totals.grandTotal);
         }
 
-        if (taxText) {
-            taxText.innerHTML = POS.core.formatRupiah(totals.tax);
+        if (barEl) {
+            barEl.style.display = this.items.length > 0 ? 'block' : 'none';
         }
+    },
 
-        if (grandTotalText) {
-            grandTotalText.innerHTML = POS.core.formatRupiah(totals.grandTotal);
-        }
+    render() {
+        const discount = this.getDiscount();
 
-        const serviceInput = document.getElementById('serviceInput');
-        const taxInput = document.getElementById('taxInput');
+        this.syncDiscount(discount);
 
-        if (serviceInput) {
-            serviceInput.value = totals.service;
-        }
+        const totals = POS.core.calculateTotals(
+            this.items,
+            window.posSettings || {},
+            discount
+        );
 
-        if (taxInput) {
-            taxInput.value = totals.tax;
-        }
+        const html = this.renderCartHtml();
+
+        document.querySelectorAll('#cartContainer').forEach(container => {
+            container.innerHTML = html;
+        });
+
+        document.querySelectorAll('#subtotalText').forEach(el => {
+            el.innerHTML = POS.core.formatRupiah(totals.subtotal);
+        });
+
+        document.querySelectorAll('#serviceText').forEach(el => {
+            el.innerHTML = POS.core.formatRupiah(totals.service);
+        });
+
+        document.querySelectorAll('#taxText').forEach(el => {
+            el.innerHTML = POS.core.formatRupiah(totals.tax);
+        });
+
+        document.querySelectorAll('#grandTotalText').forEach(el => {
+            el.innerHTML = POS.core.formatRupiah(totals.grandTotal);
+        });
+
+        document.querySelectorAll('#serviceInput').forEach(el => {
+            el.value = totals.service;
+        });
+
+        document.querySelectorAll('#taxInput').forEach(el => {
+            el.value = totals.tax;
+        });
+
+        this.renderMobileBar(totals);
+    },
+
+    escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
     }
 };

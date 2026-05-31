@@ -132,7 +132,6 @@ body{background:var(--bg);}
             <select id="payment_method" class="form-select">
                 <option value="cash">Cash</option>
                 <option value="qris">QRIS</option>
-                <option value="transfer">Transfer</option>
             </select>
         </div>
         <div class="mb-3">

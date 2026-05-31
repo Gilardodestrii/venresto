@@ -148,7 +148,6 @@ body{
         <select id="payment_method" class="form-select mb-3">
             <option value="cash">Cash</option>
             <option value="qris">QRIS</option>
-            <option value="transfer">Transfer</option>
         </select>
 
         <label>Paid Amount</label>
