@@ -100,7 +100,14 @@ body{background:var(--bg);}
                     </button>
                 @endif
 
+
                 @if($order->status == 'paid')
+                    <a href="{{ route('tenant.admin.orders.receipt', [$currentTenant->slug, $order->id]) }}"
+                        target="_blank"
+                        class="btn btn-success w-100 mb-2">
+                            <i class="bi bi-printer"></i>
+                            Print Receipt
+                    </a>
                     <form method="POST"
                           action="{{ route('tenant.admin.orders.void', [$currentTenant->slug, $order->id]) }}"
                           onsubmit="return confirm('Void order ini? Stock akan dikembalikan.')">

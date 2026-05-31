@@ -46,8 +46,8 @@ body{ background:var(--bg); }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h3 class="fw-bold mb-1">POS Cashier</h3>
-        <div class="text-secondary">Premium modern cashier system</div>
+        <h3 class="fw-bold mb-1">POS Cashier </h3>
+        <div class="text-secondary">cashier system</div>
     </div>
 </div>
 
@@ -225,6 +225,7 @@ window.posSettings = {
     service_rate: Number(@json((float) $settings->service_rate)),
     service_inclusive: @json((bool) $settings->service_inclusive),
 };
+window.receiptUrl = @json(session('receipt_url'));
 </script>
 
 @endsection

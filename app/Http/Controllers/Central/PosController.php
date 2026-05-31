@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Payment;
 use App\Models\CashierSession;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use App\Services\InventoryService;
 
@@ -136,16 +137,34 @@ class PosController extends Controller
             ]
         );
 
-      
+    
+        $payments = $settings->payments_json ?? [];
 
-        $enabledPayments = collect($settings->payments_json ?? [])
-            ->filter(fn ($enabled) => (bool) $enabled)
-            ->keys()
-            ->implode(',');
+        $enabledPaymentMethods = [];
 
-        if (!$enabledPayments) {
-            return back()->withInput()->with('error', 'Belum ada metode pembayaran aktif di Tenant Settings.');
+        if (!empty($payments['cash_enabled'])) {
+            $enabledPaymentMethods[] = 'cash';
         }
+
+        if (!empty($payments['qris_enabled'])) {
+            $qrisMode = $payments['qris_mode'] ?? 'snap';
+
+            if ($qrisMode === 'snap') {
+                $enabledPaymentMethods[] = 'qris_snap';
+            }
+
+            if ($qrisMode === 'static') {
+                $enabledPaymentMethods[] = 'qris_static';
+            }
+        }
+
+        if (empty($enabledPaymentMethods)) {
+            return back()
+                ->withInput()
+                ->with('error', 'Belum ada metode pembayaran aktif di Tenant Settings.');
+        }
+
+        $enabledPayments = implode(',', $enabledPaymentMethods);
 
 
         $validated = $request->validate([
@@ -163,6 +182,10 @@ class PosController extends Controller
             'items.*.price'           => ['required', 'numeric', 'min:0'],
             'items.*.note'            => ['nullable', 'string'],
         ]);
+            // Log::info('validasi pos', [
+            //     $validated
+            // ]);
+
 
         $createdOrder = null;
 
@@ -211,6 +234,7 @@ class PosController extends Controller
                 ]);
 
                 $createdOrder = $order;
+                
 
                 foreach ($validated['items'] as $item) {
                     OrderItem::create([

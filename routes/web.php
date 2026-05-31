@@ -259,7 +259,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])
                 ->name('cashier-sessions.close');
-            Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->middleware('permission:orders.view')->name('orders.receipt');
+            Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->name('orders.receipt');
         });
 
     Route::prefix('{tenant}/admin/kitchen')
