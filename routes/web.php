@@ -19,8 +19,10 @@ use App\Http\Controllers\Central\CashierSessionController;
 use App\Http\Controllers\Central\MaterialController;
 use App\Http\Controllers\Central\MenuCostingController;
 use App\Http\Controllers\Central\RecipeController;
+use App\Http\Controllers\Central\ReceiptController;
 use App\Http\Controllers\Central\StockMovementController;
 use App\Http\Controllers\Central\StockTransferController;
+use App\Http\Controllers\Central\TenantSettingController;
 use App\Http\Controllers\Central\WasteRecordController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -139,66 +141,11 @@ Route::middleware(['auth'])->group(function () {
                 return view('admin.reports.inventory');
             })->name('reports.inventory');
 
-            Route::get('/settings', function () {
-                $tenant = \App\Services\TenantContext::get();
-                $settings = DB::table('tenant_settings')
-                    ->where('tenant_id', $tenant?->id)
-                    ->first();
+            Route::get('/settings', [TenantSettingController::class, 'index'])
+                ->name('settings.index');
 
-                return view('admin.settings.index', compact('settings'));
-            })->name('settings.index');
-
-            Route::post('/settings', function (\Illuminate\Http\Request $request) {
-                $tenant = \App\Services\TenantContext::get();
-                abort_if(!$tenant, 404);
-
-                $validated = $request->validate([
-                    'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:1'],
-                    'service_rate' => ['nullable', 'numeric', 'min:0', 'max:1'],
-                    'stock_deduct_on' => ['nullable', 'in:paid,open'],
-                    'qris_static_payload' => ['nullable', 'string'],
-                ]);
-
-                $existing = DB::table('tenant_settings')
-                    ->where('tenant_id', $tenant->id)
-                    ->first();
-
-                $payments = json_decode($existing?->payments_json ?? '{}', true) ?: [];
-                $payments['qris_mode'] = $request->boolean('payment_qris_static') ? 'static' : ($payments['qris_mode'] ?? 'snap');
-                $payments['qris_snap'] = $payments['qris_snap'] ?? [
-                    'client_key' => null,
-                    'server_key' => null,
-                    'expiry_minutes' => 15,
-                ];
-                $payments['qris_static'] = [
-                    'qr_payload' => $validated['qris_static_payload'] ?? null,
-                    'qr_image_url' => $payments['qris_static']['qr_image_url'] ?? null,
-                ];
-                $payments['cash_enabled'] = $request->boolean('payment_cash');
-                $payments['qris_enabled'] = $request->boolean('payment_qris')
-                    || $request->boolean('payment_qris_static')
-                    || $request->boolean('payment_qris_snap');
-
-                DB::table('tenant_settings')->updateOrInsert(
-                    ['tenant_id' => $tenant->id],
-                    [
-                        'tax_enabled' => $request->boolean('tax_enabled'),
-                        'tax_rate' => $validated['tax_rate'] ?? 0,
-                        'tax_inclusive' => $request->boolean('tax_inclusive'),
-                        'service_enabled' => $request->boolean('service_enabled'),
-                        'service_rate' => $validated['service_rate'] ?? 0,
-                        'service_inclusive' => $request->boolean('service_inclusive'),
-                        'payments_json' => json_encode($payments),
-                        'stock_deduct_on' => $validated['stock_deduct_on'] ?? 'paid',
-                        'kitchen_ticket_on_open_for_cash' => $request->boolean('kitchen_ticket_on_open_for_cash'),
-                        'qris_static_payload' => $validated['qris_static_payload'] ?? null,
-                        'updated_at' => now(),
-                        'created_at' => $existing?->created_at ?? now(),
-                    ]
-                );
-
-                return back()->with('success', 'Settings berhasil disimpan.');
-            })->name('settings.update');
+            Route::post('/settings', [TenantSettingController::class, 'update'])
+                ->name('settings.update');
 
             Route::get('/roles', function () {
                 $tenant = \App\Services\TenantContext::get();
@@ -312,6 +259,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])
                 ->name('cashier-sessions.close');
+            Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->middleware('permission:orders.view')->name('orders.receipt');
         });
 
     Route::prefix('{tenant}/admin/kitchen')

@@ -41,17 +41,6 @@ body{ background:var(--bg); }
 @media(max-width:991px){ .pos-wrapper{ grid-template-columns:1fr; } }
 </style>
 
-@php
-    $paymentOptions = [
-        'cash' => 'Cash',
-        'qris' => 'QRIS',
-        'qris_snap' => 'QRIS Snap',
-        'qris_static' => 'QRIS Static',
-    ];
-
-    $activePayments = collect($settings->payments_json ?? [])
-        ->filter(fn ($enabled) => (bool) $enabled);
-@endphp
 
 <div class="container-fluid py-4">
 
@@ -191,13 +180,24 @@ body{ background:var(--bg); }
 
                 <div class="mb-4">
                     <label class="form-label fw-semibold">Payment Method</label>
-                    <select name="payment_method" class="form-select form-select-lg" required>
-                        @forelse($activePayments as $key => $enabled)
-                            <option value="{{ $key }}">{{ $paymentOptions[$key] ?? strtoupper($key) }}</option>
+
+                    <select name="payment_method"
+                            class="form-select form-select-lg"
+                            {{ count($paymentOptions) ? 'required' : 'disabled' }}>
+
+                        @forelse($paymentOptions as $key => $label)
+                            <option value="{{ $key }}">{{ $label }}</option>
                         @empty
                             <option value="">Tidak ada payment aktif</option>
                         @endforelse
+
                     </select>
+
+                    @if(count($paymentOptions) === 0)
+                        <div class="small text-danger mt-2">
+                            Belum ada metode pembayaran yang aktif. Aktifkan Cash atau QRIS di Tenant Settings.
+                        </div>
+                    @endif
                 </div>
 
                 <div class="mb-4">

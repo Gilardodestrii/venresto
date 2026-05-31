@@ -47,7 +47,7 @@ class PosController extends Controller
             ['tenant_id' => $tenantModel->id],
             [
                 'tax_enabled' => true,
-                'tax_rate' => 0.11,
+                'tax_rate' => 0.10,
                 'tax_inclusive' => false,
                 'service_enabled' => true,
                 'service_rate' => 0.05,
@@ -55,20 +55,50 @@ class PosController extends Controller
                 'kitchen_ticket_on_open_for_cash' => true,
                 'stock_deduct_on' => 'paid',
                 'payments_json' => [
-                    'cash' => true,
-                    'qris' => true,
-                    'qris_snap' => false,
-                    'qris_static' => true,
+                    'qris_mode' => 'snap',
+                    'qris_snap' => [
+                        'client_key' => null,
+                        'server_key' => null,
+                        'expiry_minutes' => 15,
+                    ],
+                    'qris_static' => [
+                        'qr_payload' => null,
+                        'qr_image_url' => null,
+                    ],
+                    'cash_enabled' => true,
+                    'qris_enabled' => true,
                 ],
             ]
         );
+
+        $payments = $settings->payments_json ?? [];
+
+        $paymentOptions = [];
+
+        if (!empty($payments['cash_enabled'])) {
+            $paymentOptions['cash'] = 'Cash';
+        }
+
+        if (!empty($payments['qris_enabled'])) {
+            $qrisMode = $payments['qris_mode'] ?? null;
+
+            if ($qrisMode === 'snap') {
+                $paymentOptions['qris_snap'] = 'QRIS Snap';
+            }
+
+            if ($qrisMode === 'static') {
+                $paymentOptions['qris_static'] = 'QRIS Static';
+            }
+        }
+
 
         return view('admin.pos.index', compact(
             'categories',
             'menuItems',
             'tables',
             'tenant',
-            'settings'
+            'settings',
+            'paymentOptions'
         ));
     }
 

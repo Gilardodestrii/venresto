@@ -10,7 +10,7 @@ class SettingsService
   {
     $defaults = [
       'tax_enabled' => true,
-      'tax_rate' => 0.11,
+      'tax_rate' => 0.10,
       'tax_inclusive' => false,
       'service_enabled' => true,
       'service_rate' => 0.05,
