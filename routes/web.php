@@ -69,9 +69,13 @@ Route::middleware('guest')->group(function () {
         ->middleware('throttle:login');
 });
 
-Route::get('/{tenant}/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware(['auth'])->name('tenant.admin.dashboard');
+Route::middleware(['auth'])
+    ->prefix('{tenant}/admin')
+    ->name('tenant.admin.')
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Central\DashboardController::class, 'index'])
+            ->name('dashboard');
+    });
 
 Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
