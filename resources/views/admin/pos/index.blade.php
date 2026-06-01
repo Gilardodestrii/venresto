@@ -137,6 +137,72 @@ body{
     flex:0 0 auto;
 }
 
+.order-type-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.order-type-box{
+    position:relative;
+    cursor:pointer;
+    min-height:64px;
+    border-radius:18px;
+    border:1px solid #e5e7eb;
+    background:rgba(255,255,255,.92);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    transition:.2s ease;
+    user-select:none;
+}
+
+.order-type-box:hover{
+    border-color:var(--primary);
+    transform:translateY(-1px);
+}
+
+.order-type-box.active{
+    border-color:var(--primary);
+    background:rgba(14,165,233,.08);
+    box-shadow:0 12px 26px rgba(14,165,233,.12);
+}
+
+.order-type-input{
+    display:none;
+}
+
+.order-type-icon{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f1f5f9;
+    color:#0f172a;
+    flex:0 0 auto;
+}
+
+.order-type-box.active .order-type-icon{
+    background:var(--primary);
+    color:#fff;
+}
+
+.order-type-box strong{
+    display:block;
+    font-size:14px;
+    line-height:1.1;
+}
+
+.order-type-box small{
+    display:block;
+    font-size:11px;
+    color:#64748b;
+    margin-top:3px;
+}
+
 .cart-item{
     padding:14px;
     border-radius:18px;
@@ -574,6 +640,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     syncCartControls();
+    document.querySelectorAll('.order-type-box').forEach(box => {
+        box.addEventListener('click', function () {
+            const wrapper = this.closest('.pos-card, .offcanvas-body, form') || document;
+
+            wrapper.querySelectorAll('.order-type-box').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            this.classList.add('active');
+
+            const input = this.querySelector('input[type="radio"]');
+
+            if (input) {
+                input.checked = true;
+            }
+        });
+    });
 
     window.addEventListener('resize', syncCartControls);
 

@@ -1,4 +1,42 @@
 <div class="mb-3">
+    <label class="form-label fw-semibold">Tipe Pesanan</label>
+
+    <div class="order-type-grid">
+        <label class="order-type-box active">
+            <input type="radio"
+                   name="order_type"
+                   value="dine_in"
+                   checked
+                   class="order-type-input">
+
+            <span class="order-type-icon">
+                <i class="bi bi-cup-hot"></i>
+            </span>
+
+            <span>
+                <strong>Dine In</strong>
+                <small>Makan di tempat</small>
+            </span>
+        </label>
+
+        <label class="order-type-box">
+            <input type="radio"
+                   name="order_type"
+                   value="takeaway"
+                   class="order-type-input">
+
+            <span class="order-type-icon">
+                <i class="bi bi-bag-check"></i>
+            </span>
+
+            <span>
+                <strong>Takeaway</strong>
+                <small>Bungkus</small>
+            </span>
+        </label>
+    </div>
+</div>
+<div class="mb-3">
     <label class="form-label fw-semibold">Pilih Meja</label>
     <select name="table_code" class="form-select form-select-lg" required>
         <option value="">-- Pilih Meja --</option>

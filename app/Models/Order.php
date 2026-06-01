@@ -16,6 +16,7 @@ class Order extends Model
         'outlet_id',
         'code',
         'table_code',
+        'order_type',
         'customer_name',
         'customer_phone',
         'customer_note',

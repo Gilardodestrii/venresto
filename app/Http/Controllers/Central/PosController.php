@@ -168,6 +168,7 @@ class PosController extends Controller
 
 
         $validated = $request->validate([
+            'order_type'             => ['required', 'string', 'in:dine_in,takeaway'],
             'table_code'              => ['required', 'string'],
             'customer_name'           => ['nullable', 'string', 'max:255'],
             'customer_phone'          => ['nullable', 'string', 'max:50'],
@@ -219,6 +220,7 @@ class PosController extends Controller
                     'outlet_id'       => $outletId,
                     'code'            => 'ORD-' . strtoupper(Str::random(8)),
                     'table_code'      => $validated['table_code'],
+                    'order_type' => $validated['order_type'] ?? 'dine_in',
                     'customer_name'   => $validated['customer_name'] ?? null,
                     'customer_phone'  => $validated['customer_phone'] ?? null,
                     'customer_note'   => $validated['customer_note'] ?? null,

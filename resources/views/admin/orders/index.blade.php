@@ -40,6 +40,72 @@ body{
     font-size:12px;
 }
 
+.order-head{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.order-head-top,
+.order-head-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+}
+
+.order-head-bottom{
+    align-items:center;
+}
+
+.order-status-wrap{
+    flex-shrink:0;
+}
+
+.order-type-badge{
+    flex-shrink:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.order-type-dinein{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.order-type-takeaway{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.min-w-0{
+    min-width:0;
+}
+
+@media(max-width:575px){
+    .order-card{
+        padding:14px;
+    }
+
+    .order-head-top,
+    .order-head-bottom{
+        gap:8px;
+    }
+
+    .order-type-badge,
+    .badge-soft{
+        font-size:11px;
+        padding:5px 9px;
+    }
+}
+
 .badge-paid{background:#dcfce7;color:#166534;}
 .badge-pending{background:#fef9c3;color:#854d0e;}
 .badge-open{background:#dbeafe;color:#1e40af;}
@@ -70,23 +136,47 @@ body{
 
             <div class="order-card">
 
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <div class="fw-bold">#{{ $order->code }} {{ $order->created_at->format('d M Y') }}</div>
-                        <small class="text-muted">
-                            {{ $order->customer_name ?? 'Guest' }} - {{ $order->table_code ?? '-' }}
-                        </small>
+                <div class="order-head">
+
+                    <div class="order-head-top">
+                        <div class="min-w-0">
+                            <div class="fw-bold text-truncate">
+                                #{{ $order->code }}
+                            </div>
+                            <small class="text-muted">
+                                {{ $order->created_at->format('d M Y') }}
+                            </small>
+                        </div>
+
+                        <div class="order-status-wrap">
+                            @if($order->status == 'paid')
+                                <span class="badge-soft badge-paid">Paid</span>
+                            @elseif($order->status == 'pending_payment')
+                                <span class="badge-soft badge-pending">Pending</span>
+                            @else
+                                <span class="badge-soft badge-open">Open</span>
+                            @endif
+                        </div>
                     </div>
 
-                    <div>
-                        @if($order->status == 'paid')
-                            <span class="badge-soft badge-paid">Paid</span>
-                        @elseif($order->status == 'pending_payment')
-                            <span class="badge-soft badge-pending">Pending</span>
+                    <div class="order-head-bottom">
+                        <small class="text-muted text-truncate">
+                            {{ $order->customer_name ?? 'Guest' }} - {{ $order->table_code ?? '-' }}
+                        </small>
+
+                        @if($order->order_type === 'takeaway')
+                            <span class="order-type-badge order-type-takeaway">
+                                <i class="bi bi-bag-check me-1"></i>
+                                Takeaway
+                            </span>
                         @else
-                            <span class="badge-soft badge-open">Open</span>
+                            <span class="order-type-badge order-type-dinein">
+                                <i class="bi bi-cup-hot me-1"></i>
+                                Dine In
+                            </span>
                         @endif
                     </div>
+
                 </div>
 
                 <hr>

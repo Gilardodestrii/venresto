@@ -28,29 +28,29 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\QrMenuController;
 
-Route::get('/env-check', function () {
-    return [
-        'host' => env('DB_HOST'),
-        'port' => env('DB_PORT'),
-        'database' => env('DB_DATABASE'),
-        'username' => env('DB_USERNAME'),
-    ];
-});
+// Route::get('/env-check', function () {
+//     return [
+//         'host' => env('DB_HOST'),
+//         'port' => env('DB_PORT'),
+//         'database' => env('DB_DATABASE'),
+//         'username' => env('DB_USERNAME'),
+//     ];
+// });
 
-Route::get('/db-check', function () {
-    try {
-        DB::connection()->getPdo();
+// Route::get('/db-check', function () {
+//     try {
+//         DB::connection()->getPdo();
 
-        return [
-            'success' => true,
-            'db' => DB::connection()->getDatabaseName()
-        ];
-    } catch (\Throwable $e) {
-        return [
-            'error' => $e->getMessage()
-        ];
-    }
-});
+//         return [
+//             'success' => true,
+//             'db' => DB::connection()->getDatabaseName()
+//         ];
+//     } catch (\Throwable $e) {
+//         return [
+//             'error' => $e->getMessage()
+//         ];
+//     }
+// });
 
 Route::middleware('guest')->group(function () {
 
@@ -104,26 +104,32 @@ Route::post('/signup', [SignupController::class,'store']);
 Route::post('/webhooks/midtrans', MidtransWebhookController::class);
 
 Route::prefix('{tenant}/qr')->group(function () {
-    Route::get('/{table}', [QrMenuController::class, 'index'])->name('qr.menu');
-    Route::post('/order', [QrMenuController::class, 'store'])->name('qr.order.store');
+    Route::get('/outlets/{outlet}/tables/{table}', [QrMenuController::class, 'index'])
+        ->name('qr.menu');
+
+    Route::post('/outlets/{outlet}/order', [QrMenuController::class, 'store'])
+        ->name('qr.order.store');
+
+    Route::get('/outlets/{outlet}/tables/{table}/svg', [QrMenuController::class, 'tableQr'])
+        ->name('qr.table.svg');
 });
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('{tenant}/admin/outlets/{outlet}/qr', [QrAdminController::class, 'index'])
-        ->name('admin.qr.index');
+Route::get('{tenant}/admin/outlets/{outlet}/qr', [QrAdminController::class, 'index'])
+    ->name('admin.qr.index');
 
-    Route::get('{tenant}/admin/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])
-        ->name('admin.qr.generate');
+Route::get('{tenant}/admin/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])
+    ->name('admin.qr.generate');
 
-    Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
-        ->name('admin.qr.download');
+Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
+    ->name('admin.qr.download');
 
-    Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
-        ->name('admin.qr.store');
+Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
+    ->name('admin.qr.store');
 
-    Route::get('{tenant}/admin/outlets/{outlet}/qr/destroy/{table}', [QrAdminController::class, 'destroy'])
-        ->name('admin.qr.destroy');
+Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::class, 'destroy'])
+    ->name('admin.qr.destroy');
 
     Route::resource(
         '{tenant}/admin/outlets',

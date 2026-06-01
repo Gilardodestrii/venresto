@@ -2,78 +2,221 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MenuCategory;
 use Illuminate\Http\Request;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Outlet;
+use App\Models\OutletTable;
 use App\Services\TenantContext;
+use App\Models\TenantSetting;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class QrMenuController extends Controller
 {
-    public function index($tenantSlug, $table)
-    {
-        $tenant = TenantContext::get();
+public function index($tenantSlug, Outlet $outlet, OutletTable $table)
+{
+    $tenant = TenantContext::get();
 
-        abort_unless($tenant, 404, 'Tenant tidak ditemukan');
+    abort_unless($tenant, 404, 'Tenant tidak ditemukan');
 
-        $menus = MenuItem::where('tenant_id', $tenant->id)
-            ->where('is_active', 1)
-            ->get();
+    abort_unless(
+        $outlet->tenant_id === $tenant->id,
+        404,
+        'Outlet tidak ditemukan'
+    );
 
-        return view('qr.index', compact('menus', 'table', 'tenant'));
+    abort_unless(
+        $table->tenant_id === $tenant->id && $table->outlet_id === $outlet->id,
+        404,
+        'Meja tidak ditemukan'
+    );
+
+    $menus = MenuItem::with('category')
+        ->where('tenant_id', $tenant->id)
+        ->where('is_active', 1)
+        ->orderBy('name')
+        ->get();
+
+    $categories = MenuCategory::where('tenant_id', $tenant->id)
+        ->orderBy('seq')
+        ->get();
+
+    $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
+
+    $payments = $settings->payments_json ?? [];
+    $paymentOptions = [];
+
+    if (!empty($payments['cash_enabled'])) {
+        $paymentOptions['cash'] = 'Cash';
     }
 
-    public function store(Request $request, $tenantSlug)
-    {
-        $tenant = TenantContext::get();
-        abort_unless($tenant, 404);
+    if (!empty($payments['qris_enabled'])) {
+        $qrisMode = $payments['qris_mode'] ?? null;
 
-        $request->validate([
-            'table' => 'required|string',
-            'items' => 'required|array|min:1',
-            'items.*.id' => 'required|integer',
-            'items.*.qty' => 'required|integer|min:1',
-            'items.*.price' => 'required|integer|min:0',
-        ]);
-
-        $subtotal = collect($request->items)->sum(function ($item) {
-            return $item['qty'] * $item['price'];
-        });
-
-        $order = Order::create([
-            'tenant_id' => $tenant->id,
-            'outlet_id' => $request->outlet_id ?? null,
-            'code' => 'QR-' . strtoupper(Str::random(6)),
-            'table_code' => $request->table,
-            'customer_name' => $request->customer_name ?? 'Guest',
-            'status' => 'open',
-            'subtotal' => $subtotal,
-            'grand_total' => $subtotal,
-        ]);
-
-        foreach ($request->items as $item) {
-            OrderItem::create([
-                'tenant_id' => $tenant->id,
-                'order_id' => $order->id,
-                'menu_item_id' => $item['id'],
-                'qty' => $item['qty'],
-                'price' => $item['price'],
-                'kitchen_status' => 'new'
-            ]);
+        if ($qrisMode === 'snap') {
+            $paymentOptions['qris_snap'] = 'QRIS Snap';
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Order berhasil dibuat',
-            'order_code' => $order->code
-        ]);
+        if ($qrisMode === 'static') {
+            $paymentOptions['qris_static'] = 'QRIS Static';
+        }
     }
 
-    public function tableQr($tenantSlug, $table)
+    return view('qr.index', compact(
+        'tenant',
+        'outlet',
+        'table',
+        'menus',
+        'categories',
+        'paymentOptions',
+        'settings'
+    ));
+}
+
+    public function store(Request $request, $tenantSlug, Outlet $outlet)
     {
-        $url = url("/{$tenantSlug}/qr/{$table}");
+        $tenant = TenantContext::get();
+        abort_unless($tenant, 404, 'Tenant tidak ditemukan');
+
+        abort_unless($outlet->tenant_id === $tenant->id, 404, 'Outlet tidak ditemukan');
+
+        $validated = $request->validate([
+            'customer_name' => ['nullable', 'string', 'max:100'],
+            'customer_phone' => ['nullable', 'string', 'max:30'],
+            'table_id' => ['required', 'integer'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.id' => ['required', 'integer'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
+            'items.*.note' => ['nullable', 'string', 'max:255'],
+            'payment_method' => ['required', 'string'],
+            'customer_note' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        return DB::transaction(function () use ($validated, $tenant, $outlet) {
+            $table = OutletTable::where('tenant_id', $tenant->id)
+                ->where('outlet_id', $outlet->id)
+                ->where('id', $validated['table_id'])
+                ->firstOrFail();
+
+            $menuIds = collect($validated['items'])->pluck('id')->unique()->values();
+
+            $menus = MenuItem::where('tenant_id', $tenant->id)
+                ->where('is_active', 1)
+                ->whereIn('id', $menuIds)
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            abort_if($menus->count() !== $menuIds->count(), 422, 'Menu tidak valid');
+
+            $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
+
+            $subtotal = 0;
+            $items = [];
+
+            foreach ($validated['items'] as $cartItem) {
+                $menu = $menus->get($cartItem['id']);
+
+                $qty = (int) $cartItem['qty'];
+                $price = (int) $menu->price;
+                $lineTotal = $qty * $price;
+
+                $subtotal += $lineTotal;
+
+                $Items[] = [
+                    'tenant_id' => $tenant->id,
+                    'menu_item_id' => $menu->id,
+                    'qty' => $qty,
+                    'price' => $price,
+                    'note' => $cartItem['note'] ?? null,
+                    'kitchen_status' => 'new',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            $discount = 0;
+            $afterDiscount = $subtotal;
+
+            $tax = ($settings && $settings->tax_enabled && !$settings->tax_inclusive)
+                ? round($afterDiscount * ((float) $settings->tax_rate / 100))
+                : 0;
+
+            $service = ($settings && $settings->service_enabled && !$settings->service_inclusive)
+                ? round($afterDiscount * ((float) $settings->service_rate / 100))
+                : 0;
+
+            $grandTotal = $afterDiscount + $tax + $service;
+
+            $order = Order::create([
+                'tenant_id' => $tenant->id,
+                'outlet_id' => $outlet->id,
+                'code' => $this->generateQrOrderCode(),
+                'table_code' => $table->table_code,
+                'customer_name' => !empty($validated['customer_name'])
+                    ? trim($validated['customer_name'])
+                    : 'Guest',
+
+                'customer_phone' => $validated['customer_phone'] ?? null,
+                'customer_note' => $validated['customer_note'] ?? null,
+                'status' => 'open',
+                'payment_status' => 'unpaid',
+                'payment_method' => $validated['payment_method'],
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'tax' => $tax,
+                'service' => $service,
+                'grand_total' => $grandTotal,
+            ]);
+
+            foreach ($items as &$item) {
+                $item['order_id'] = $order->id;
+            }
+
+            OrderItem::insert($items);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order berhasil dibuat',
+                'order_code' => $order->code,
+                'data' => [
+                    'id' => $order->id,
+                    'code' => $order->code,
+                    'outlet_id' => $order->outlet_id,
+                    'table_code' => $order->table_code,
+                    'grand_total' => $order->grand_total,
+                ],
+            ]);
+        });
+    }
+
+    private function generateQrOrderCode(): string
+    {
+        do {
+            $code = 'QR-' . now()->format('ymdHis') . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+        } while (\App\Models\Order::where('code', $code)->exists());
+
+        return $code;
+    }
+
+    public function tableQr($tenantSlug, Outlet $outlet, OutletTable $table)
+    {
+        $tenant = TenantContext::get();
+
+        abort_unless($tenant, 404);
+        abort_unless($outlet->tenant_id === $tenant->id, 404);
+        abort_unless($table->tenant_id === $tenant->id && $table->outlet_id === $outlet->id, 404);
+
+        $url = route('qr.menu', [
+            'tenant' => $tenant->slug,
+            'outlet' => $outlet->id,
+            'table' => $table->id,
+        ]);
 
         return response(
             QrCode::format('svg')->size(250)->generate($url),

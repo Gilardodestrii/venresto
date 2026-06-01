@@ -60,10 +60,26 @@ body{background:var(--bg);}
                         <small class="text-muted">Phone</small>
                         <div>{{ $order->customer_phone ?? '-' }}</div>
                     </div>
+                    
                 </div>
-                <div class="mt-2">
-                    <small class="text-muted">Note</small>
-                    <div>{{ $order->customer_note ?? '-' }}</div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mt-2">
+                            <small class="text-muted">Note</small>
+                            <div>{{ $order->customer_note ?? '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @if($order->order_type === 'takeaway')
+                            <span class="badge rounded-pill text-bg-success">
+                                <i class="bi bi-bag-check me-1"></i> Takeaway
+                            </span>
+                        @else
+                            <span class="badge rounded-pill text-bg-primary">
+                                <i class="bi bi-cup-hot me-1"></i> Dine In
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
 
