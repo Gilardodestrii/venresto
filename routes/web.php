@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Central\LandingController;
 use App\Http\Controllers\Central\LoginController;
 use App\Http\Controllers\Central\SignupController;
+use App\Http\Controllers\Central\GoogleTrialSignupController;
 use App\Http\Controllers\Central\MidtransWebhookController;
 use App\Http\Controllers\Central\QrAdminController;
 use App\Http\Controllers\Central\OutletController;
@@ -45,6 +46,18 @@ Route::get('/db-check', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/{tenant}/login',  [LoginController::class, 'show'])->name('login');
     Route::post('/{tenant}/login', [LoginController::class, 'store'])->middleware('throttle:login');
+
+    Route::get('/signup/google/redirect', [GoogleTrialSignupController::class, 'redirect'])
+        ->name('signup.google.redirect');
+
+    Route::get('/signup/google/callback', [GoogleTrialSignupController::class, 'callback'])
+        ->name('signup.google.callback');
+
+    Route::get('/signup/google/complete', [GoogleTrialSignupController::class, 'complete'])
+        ->name('signup.google.complete');
+
+    Route::post('/signup/google/complete', [GoogleTrialSignupController::class, 'store'])
+        ->name('signup.google.store');
 });
 
 Route::get('/{tenant}/admin/dashboard', function () {
