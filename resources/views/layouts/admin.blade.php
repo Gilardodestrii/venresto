@@ -5,12 +5,15 @@
 
 
 @section('layout-body')
-<div class="flex min-h-screen bg-gray-50">
+<div class="flex min-h-screen bg-gray-50" x-data="{ sidebarOpen: false }">
 
     {{-- =========================
-        SIDEBAR
+        SIDEBAR (mobile-responsive with Alpine.js)
     ========================== --}}
-    <aside class="w-64 min-h-screen bg-gray-900 text-white flex flex-col fixed left-0 top-0 bottom-0 z-40" id="sidebar">
+    <aside class="w-64 min-h-screen bg-gray-900 text-white flex flex-col fixed left-0 top-0 bottom-0 z-40
+                  -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out"
+           id="sidebar"
+           :class="{ 'translate-x-0': sidebarOpen, 'shadow-2xl': sidebarOpen }">
 
         {{-- LOGO --}}
         <div class="px-6 py-5 border-b border-gray-700">
@@ -204,6 +207,14 @@
 
     </aside>
 
+    {{-- BACKDROP for mobile sidebar --}}
+    <div x-show="sidebarOpen"
+         @click="sidebarOpen = false"
+         x-transition.opacity
+         class="fixed inset-0 bg-black/50 z-30 lg:hidden"
+         style="display: none;">
+    </div>
+
     {{-- =========================
         MAIN CONTENT
     ========================== --}}
@@ -214,8 +225,9 @@
             <div class="flex items-center justify-between">
 
                 <div class="flex items-center gap-4">
-                    <button id="toggleSidebar" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors lg:hidden">
-                        <i class="bi bi-list text-xl"></i>
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors lg:hidden">
+                        <i class="bi bi-list text-xl" x-show="!sidebarOpen"></i>
+                        <i class="bi bi-x text-xl" x-show="sidebarOpen"></i>
                     </button>
 
                     {{-- Breadcrumb --}}
@@ -296,12 +308,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    // Sidebar toggle for mobile
-    document.getElementById('toggleSidebar')?.addEventListener('click', function() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('-translate-x-full');
-        sidebar.classList.toggle('translate-x-0');
-    });
-</script>
+{{-- Sidebar toggle handled by Alpine.js (sidebarOpen state in parent div) --}}
 @endpush

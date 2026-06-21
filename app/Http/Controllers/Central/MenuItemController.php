@@ -11,14 +11,23 @@ use Illuminate\Http\Request;
 class MenuItemController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
-        $items = MenuItem::with('category')
-            ->where('tenant_id', auth()->user()->tenant_id)
-            ->latest()
-            ->get();
+        $query = MenuItem::with('category')
+            ->where('tenant_id', auth()->user()->tenant_id);
 
-        return view('admin.menu_items.index', compact('items'));
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $menuItems = $query->latest()->paginate(15)->withQueryString();
+        $categories = MenuCategory::where('tenant_id', auth()->user()->tenant_id)->get();
+
+        return view('admin.menu_items.index', compact('menuItems', 'categories'));
     }
 
     public function create()
