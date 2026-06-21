@@ -39,11 +39,11 @@
 
                 {{-- CTA --}}
                 <div class="hidden md:flex items-center gap-3">
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('central.login') }}"
                        class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}"
+                    <a href="{{ route('central.signup') }}"
                        class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:shadow-blue-200 hover:-translate-y-0.5">
                         Get Started Free
                     </a>
@@ -65,8 +65,8 @@
                 <a href="#testimonials" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Testimonials</a>
                 <a href="#faq" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">FAQ</a>
                 <hr class="my-2">
-                <a href="{{ route('login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Sign In</a>
-                <a href="{{ route('register') }}" class="block px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl text-center">Get Started Free</a>
+                <a href="{{ route('central.login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Sign In</a>
+                <a href="{{ route('central.signup') }}" class="block px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl text-center">Get Started Free</a>
             </div>
         </div>
     </nav>

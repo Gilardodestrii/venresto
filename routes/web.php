@@ -63,11 +63,14 @@ Route::middleware('guest')->group(function () {
 
     // Tenant login (legacy support)
     Route::get('/{tenant}/login', [LoginController::class, 'show'])
-        ->name('login');
+        ->name('tenant.login');
 
     Route::post('/{tenant}/login', [LoginController::class, 'store'])
         ->middleware('throttle:login');
 });
+
+Route::get('/signup', [SignupController::class,'show'])->name('central.signup');
+Route::post('/signup', [SignupController::class,'store'])->name('central.signup.store');
 
 Route::middleware(['auth'])
     ->prefix('{tenant}/admin')
@@ -102,8 +105,6 @@ Route::post('/contact', function (Request $request) {
     return back()->with('success', 'Pesan berhasil dikirim. Tim VenResto akan segera menghubungi Anda.');
 })->name('landing.contact.submit');
 
-Route::get('/signup', [SignupController::class,'show']);
-Route::post('/signup', [SignupController::class,'store']);
 
 Route::post('/webhooks/midtrans', MidtransWebhookController::class);
 
