@@ -150,15 +150,12 @@ Route::middleware(['auth'])
         Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::class, 'destroy'])
             ->name('qr.destroy');
 
-        // Resource routes (automatically get tenant.admin. prefix)
-        Route::resource('{tenant}/admin/outlets', OutletController::class)
-            ->names('tenant.admin.outlets');
+        // Resource routes (automatically get tenant.admin. prefix from parent group)
+        Route::resource('outlets', OutletController::class);
 
-        Route::resource('{tenant}/admin/menu-categories', MenuCategoryController::class)
-            ->names('tenant.admin.menu-categories');
+        Route::resource('menu-categories', MenuCategoryController::class);
 
-        Route::resource('{tenant}/admin/menu-items', MenuItemController::class)
-            ->names('tenant.admin.menu-items');
+        Route::resource('menu-items', MenuItemController::class);
 
         Route::resource('materials', MaterialController::class)
             ->except(['show']);
