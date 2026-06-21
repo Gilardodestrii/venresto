@@ -144,7 +144,7 @@
             @endcan
 
             @can('view reports')
-            <a href="{{ route('tenant.admin.reports.sales', $currentTenant->slug) }}"
+            <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
                class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
                {{ Request::routeIs('tenant.admin.reports*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
                 <i class="bi bi-bar-chart text-base"></i>
