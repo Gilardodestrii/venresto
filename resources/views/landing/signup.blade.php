@@ -2,167 +2,167 @@
 
 @section('title', 'Daftar Trial — VenResto')
 @section('content')
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-7">
-      <div class="mb-4 text-center">
-        <h1 class="fw-bold">Mulai Trial 7 Hari</h1>
-        <p class="text-secondary mb-0">Buat tenant & akun owner. Tanpa kartu kredit.</p>
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="flex justify-center">
+    <div class="w-full lg:w-7/12">
+      <div class="mb-6 text-center">
+        <h1 class="font-bold">Mulai Trial 7 Hari</h1>
+        <p class="text-slate-500 mb-0">Buat tenant & akun owner. Tanpa kartu kredit.</p>
       </div>
 
       {{-- Alert global (opsional) --}}
       @if(session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
+        <div class="bg-green-100 text-green-800 p-4 rounded-lg">{{ session('status') }}</div>
       @endif
 
       <form method="POST" action="{{ url('/signup') }}" id="signup-form" novalidate>
         @csrf
 
         {{-- Nama Restoran --}}
-        <div class="mb-3">
-          <label for="restaurant_name" class="form-label">Nama Restoran</label>
+        <div class="mb-4">
+          <label for="restaurant_name" class="block text-sm font-medium text-slate-700 mb-1">Nama Restoran</label>
           <input
             id="restaurant_name"
             type="text"
-            class="form-control @error('restaurant_name') is-invalid @enderror"
+            class="w-full h-11 px-4 rounded-xl border border-slate-200 @error('restaurant_name') border-red-500 ring-1 ring-red-500 @enderror"
             name="restaurant_name"
             placeholder="Contoh: Warung Aji"
             value="{{ old('restaurant_name') }}"
             required
             autofocus>
           @error('restaurant_name')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
           @else
-            <div class="form-text">Gunakan nama brand yang dikenali pelanggan.</div>
+            <div class="text-sm text-slate-500 mt-1">Gunakan nama brand yang dikenali pelanggan.</div>
           @enderror
         </div>
 
         {{-- Tenant Slug + preview subdomain --}}
-        <div class="mb-3">
-          <label for="tenant_slug" class="form-label">Tenant Slug</label>
-          <div class="input-group">
+        <div class="mb-4">
+          <label for="tenant_slug" class="block text-sm font-medium text-slate-700 mb-1">Tenant Slug</label>
+          <div class="flex">
             <input
               id="tenant_slug"
               type="text"
-              class="form-control @error('tenant_slug') is-invalid @enderror"
+              class="w-full h-11 px-4 rounded-l-xl border border-slate-200 @error('tenant_slug') border-red-500 ring-1 ring-red-500 @enderror"
               name="tenant_slug"
               placeholder="warung-aji"
               value="{{ old('tenant_slug') }}"
               pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
               inputmode="lowercase"
               required>
-            <span class="input-group-text d-none d-sm-inline" id="domain-preview">.appku.com</span>
+            <span class="hidden sm:inline-flex items-center px-3 rounded-r-lg bg-slate-100 border border-l-0 border-slate-200 text-slate-600" id="domain-preview">.appku.com</span>
             @error('tenant_slug')
-              <div class="invalid-feedback d-block">{{ $message }}</div>
+              <div class="text-red-600 text-sm mt-1 block">{{ $message }}</div>
             @else
-              <div class="form-text">Hanya huruf kecil, angka, dan tanda minus (-). Contoh: <code>warung-aji</code></div>
+              <div class="text-sm text-slate-500 mt-1">Hanya huruf kecil, angka, dan tanda minus (-). Contoh: <code>warung-aji</code></div>
             @enderror
           </div>
-          <div class="small mt-1">
-            Subdomain: <code id="full-domain">https://{{ old('tenant_slug','slug-kamu') }}.appku.com</code>
+          <div class="mt-2 text-sm text-slate-600">
+            Subdomain: <code id="full-domain" class="font-mono">https://{{ old('tenant_slug','slug-kamu') }}.appku.com</code>
           </div>
         </div>
 
         {{-- Nama Owner --}}
-        <div class="mb-3">
-          <label for="owner_name" class="form-label">Nama Owner</label>
+        <div class="mb-4">
+          <label for="owner_name" class="block text-sm font-medium text-slate-700 mb-1">Nama Owner</label>
           <input
             id="owner_name"
             type="text"
-            class="form-control @error('owner_name') is-invalid @enderror"
+            class="w-full h-11 px-4 rounded-xl border border-slate-200 @error('owner_name') border-red-500 ring-1 ring-red-500 @enderror"
             name="owner_name"
             placeholder="Nama lengkap"
             value="{{ old('owner_name') }}"
             required>
           @error('owner_name')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
           @enderror
         </div>
 
         {{-- Email --}}
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
           <input
             id="email"
             type="email"
-            class="form-control @error('email') is-invalid @enderror"
+            class="w-full h-11 px-4 rounded-xl border border-slate-200 @error('email') border-red-500 ring-1 ring-red-500 @enderror"
             name="email"
             placeholder="email@domain.com"
             value="{{ old('email') }}"
             required>
           @error('email')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
           @else
-            <div class="form-text">Kami akan kirim konfirmasi ke email ini.</div>
+            <div class="text-sm text-slate-500 mt-1">Kami akan kirim konfirmasi ke email ini.</div>
           @enderror
         </div>
 
         {{-- No HP --}}
-        <div class="mb-3">
-          <label for="phone" class="form-label">No HP</label>
+        <div class="mb-4">
+          <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">No HP</label>
           <input
             id="phone"
             type="tel"
-            class="form-control @error('phone') is-invalid @enderror"
+            class="w-full h-11 px-4 rounded-xl border border-slate-200 @error('phone') border-red-500 ring-1 ring-red-500 @enderror"
             name="phone"
             placeholder="08xxxxxxxxxx"
             value="{{ old('phone') }}"
             pattern="^0[0-9]{9,15}$"
             required>
           @error('phone')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
           @else
-            <div class="form-text">Format Indonesia, mulai dengan 0. Contoh: 081234567890.</div>
+            <div class="text-sm text-slate-500 mt-1">Format Indonesia, mulai dengan 0. Contoh: 081234567890.</div>
           @enderror
         </div>
 
         {{-- Password + strength meter --}}
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <div class="input-group">
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+          <div class="flex">
             <input
               id="password"
               type="password"
-              class="form-control @error('password') is-invalid @enderror"
+              class="w-full h-11 px-4 rounded-l-xl border border-slate-200 @error('password') border-red-500 ring-1 ring-red-500 @enderror"
               name="password"
               placeholder="Min. 8 karakter"
               minlength="8"
               required>
-            <button class="btn btn-outline-secondary" type="button" id="togglePass">
+            <button class="px-4 rounded-r-xl border border-l-0 border-slate-200 bg-white text-slate-600 hover:bg-slate-50" type="button" id="togglePass">
               <i class="bi bi-eye"></i>
             </button>
             @error('password')
-              <div class="invalid-feedback d-block">{{ $message }}</div>
+              <div class="text-red-600 text-sm mt-1 block">{{ $message }}</div>
             @enderror
           </div>
 
-          <div class="progress mt-2" style="height:6px;">
-            <div id="pwd-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+          <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mt-2">
+            <div id="pwd-bar" class="h-full bg-slate-500 rounded-full transition-all duration-300" style="width: 0%;" role="progressbar"></div>
           </div>
-          <div id="pwd-hint" class="small text-secondary mt-1">Gunakan kombinasi huruf, angka, dan simbol.</div>
+          <div id="pwd-hint" class="text-sm text-slate-500 mt-1">Gunakan kombinasi huruf, angka, dan simbol.</div>
         </div>
 
         {{-- Paket (radio cards) --}}
         {{-- di form --}}
-        <div class="mb-3">
-          <label class="form-label">Paket</label>
-          <div class="row g-3">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-slate-700 mb-2">Paket</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @forelse($plans as $p)
-              <div class="col-sm-6">
-                <label class="w-100">
-                  <input class="btn-check" type="radio" name="plan"
+              <div class="col-span-1">
+                <label class="cursor-pointer">
+                  <input class="peer sr-only" type="radio" name="plan"
                         value="{{ $p->code }}"
                         {{ old('plan', $selected) === $p->code ? 'checked' : '' }}>
-                  <div class="btn btn-outline-primary w-100 text-start p-3">
-                    <div class="d-flex justify-content-between">
-                      <span class="fw-semibold">{{ $p->name }}</span>
+                  <div class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition-all">
+                    <div class="flex items-center justify-between">
+                      <span class="font-semibold">{{ $p->name }}</span>
                       @if(!is_null($p->price_monthly))
-                        <span class="badge bg-primary-subtle text-primary border">
+                        <span class="inline-flex items-center rounded-full bg-sky-100 text-sky-700 px-2 py-0.5 text-sm font-medium">
                           Rp {{ number_format($p->price_monthly,0,',','.') }}/bln
                         </span>
                       @endif
                     </div>
-                    <div class="small text-secondary mt-1">
+                    <div class="text-sm text-slate-500 mt-1">
                       {{-- contoh highlight fitur utama --}}
                       @if(data_get($p->features_json,'printer_kitchen')) Printer dapur @else Tanpa printer dapur @endif
                     </div>
@@ -170,36 +170,36 @@
                 </label>
               </div>
             @empty
-              <div class="alert alert-warning">
+              <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg col-span-2">
                 Paket belum tersedia. Hubungi admin.
               </div>
             @endforelse
           </div>
-          @error('plan')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+          @error('plan')<div class="text-red-600 text-sm mt-1 block">{{ $message }}</div>@enderror
         </div>
 
 
         {{-- Terms --}}
-        <div class="form-check mb-3">
-          <input class="form-check-input @error('agree') is-invalid @enderror" type="checkbox" value="1" id="agree" name="agree" {{ old('agree') ? 'checked' : '' }} required>
-          <label class="form-check-label" for="agree">
-            Saya menyetujui <a href="{{ url('/terms') }}" target="_blank">Syarat Layanan</a> dan <a href="{{ url('/privacy') }}" target="_blank">Kebijakan Privasi</a>.
+        <div class="flex items-start mb-4">
+          <input class="w-4 h-4 mt-0.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500 @error('agree') border-red-500 @enderror" type="checkbox" value="1" id="agree" name="agree" {{ old('agree') ? 'checked' : '' }} required>
+          <label class="ml-2 text-sm text-slate-700" for="agree">
+            Saya menyetujui <a href="{{ url('/terms') }}" target="_blank" class="text-sky-600 hover:underline">Syarat Layanan</a> dan <a href="{{ url('/privacy') }}" target="_blank" class="text-sky-600 hover:underline">Kebijakan Privasi</a>.
           </label>
           @error('agree')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
+            <div class="text-red-600 text-sm mt-1 block">{{ $message }}</div>
           @enderror
         </div>
 
         {{-- Submit --}}
-        <div class="d-grid">
-          <button class="btn btn-primary btn-lg" id="submitBtn" type="submit">
-            <span class="spinner-border spinner-border-sm me-2 d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
+        <div class="block">
+          <button class="w-full inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-sky-500 text-white font-bold text-base hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors" id="submitBtn" type="submit">
+            <span class="mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin hidden" id="btnSpinner" role="status" aria-hidden="true"></span>
             Daftar & Buat Tenant
           </button>
         </div>
 
-        <div class="text-center mt-3">
-          <span class="small text-secondary">Sudah punya akun? <a href="{{ url('/login') }}">Masuk</a></span>
+        <div class="text-center mt-4">
+          <span class="text-sm text-slate-500">Sudah punya akun? <a href="{{ url('/login') }}" class="text-sky-600 hover:underline">Masuk</a></span>
         </div>
       </form>
     </div>
@@ -267,9 +267,9 @@ function calcStrength(pwd){
   passEl.addEventListener('input', () => {
     const score = calcStrength(passEl.value);
     bar.style.width = score + '%';
-    bar.classList.toggle('bg-danger', score < 40);
-    bar.classList.toggle('bg-warning', score >= 40 && score < 70);
-    bar.classList.toggle('bg-success', score >= 70);
+    bar.classList.toggle('bg-red-500', score < 40);
+    bar.classList.toggle('bg-yellow-500', score >= 40 && score < 70);
+    bar.classList.toggle('bg-green-500', score >= 70);
     if (score < 40)      hint.textContent = 'Password lemah. Tambah panjang & kombinasi.';
     else if (score < 70) hint.textContent = 'Cukup. Bisa ditingkatkan dengan simbol & huruf besar.';
     else                 hint.textContent = 'Kuat. Jangan gunakan ulang di tempat lain.';
@@ -285,7 +285,7 @@ function calcStrength(pwd){
   // Submit UX
   form.addEventListener('submit', () => {
     submit.setAttribute('disabled', 'disabled');
-    spinner.classList.remove('d-none');
+    spinner.classList.remove('hidden');
   });
 })();
 </script>
