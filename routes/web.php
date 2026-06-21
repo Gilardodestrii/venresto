@@ -134,21 +134,21 @@ Route::middleware(['auth'])
     ->name('tenant.admin.')
     ->group(function () {
 
-        // QR Menu routes
+        // QR Menu routes (outside tenant.admin. prefix - use admin.qr.*)
         Route::get('{tenant}/admin/outlets/{outlet}/qr', [QrAdminController::class, 'index'])
-            ->name('qr.index');
+            ->name('admin.qr.index');
 
         Route::get('{tenant}/admin/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])
-            ->name('qr.generate');
+            ->name('admin.qr.generate');
 
         Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
-            ->name('qr.download');
+            ->name('admin.qr.download');
 
         Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
-            ->name('qr.store');
+            ->name('admin.qr.store');
 
         Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::class, 'destroy'])
-            ->name('qr.destroy');
+            ->name('admin.qr.destroy');
 
         // Resource routes (automatically get tenant.admin. prefix from parent group)
         Route::resource('outlets', OutletController::class);
