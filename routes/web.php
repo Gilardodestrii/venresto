@@ -163,6 +163,16 @@ Route::middleware(['auth'])
         Route::resource('materials', MaterialController::class)
             ->except(['show']);
 
+        // Recipe routes
+        Route::get('/recipes', [RecipeController::class, 'index'])
+            ->name('recipes.index');
+        Route::get('/recipes/create', [RecipeController::class, 'create'])
+            ->name('recipes.create');
+        Route::post('/recipes', [RecipeController::class, 'store'])
+            ->name('recipes.store');
+        Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])
+            ->name('recipes.destroy');
+
         Route::get('/reports/inventory', function () {
             return view('admin.reports.inventory');
         })->name('reports.inventory');
