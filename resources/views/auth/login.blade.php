@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title','Masuk — VenResto')
-@section('content')
+@section('layout-body')
 
 @php
   $loginAction = isset($currentTenant) && $currentTenant
