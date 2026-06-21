@@ -274,7 +274,7 @@ Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::
         });
 
     Route::prefix('{tenant}/admin/kitchen')
-        ->name('kitchen.')
+        ->name('tenant.admin.kitchen.')
         ->group(function () {
 
             Route::get('/', [KitchenDisplayController::class, 'index'])
