@@ -299,6 +299,40 @@ Route::middleware(['auth'])
         Route::post('/cashier-sessions/{session}/close', [CashierSessionController::class, 'close'])
             ->name('cashier-sessions.close');
         Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->name('orders.receipt');
+
+        // Stock routes
+        Route::get('/stock-movements', [StockMovementController::class, 'index'])
+            ->name('stock-movements.index');
+
+        Route::get('/stock-transfers', [StockTransferController::class, 'index'])
+            ->name('stock-transfers.index');
+
+        Route::get('/stock-transfers/create', [StockTransferController::class, 'create'])
+            ->name('stock-transfers.create');
+
+        Route::post('/stock-transfers', [StockTransferController::class, 'store'])
+            ->name('stock-transfers.store');
+
+        Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show'])
+            ->name('stock-transfers.show');
+
+        Route::post('/stock-transfers/{stockTransfer}/complete', [StockTransferController::class, 'complete'])
+            ->name('stock-transfers.complete');
+
+        Route::post('/stock-transfers/{stockTransfer}/cancel', [StockTransferController::class, 'cancel'])
+            ->name('stock-transfers.cancel');
+
+        Route::get('/waste-records', [WasteRecordController::class, 'index'])
+            ->name('waste-records.index');
+
+        Route::get('/waste-records/create', [WasteRecordController::class, 'create'])
+            ->name('waste-records.create');
+
+        Route::post('/waste-records', [WasteRecordController::class, 'store'])
+            ->name('waste-records.store');
+
+        Route::get('/waste-records/{wasteRecord}', [WasteRecordController::class, 'show'])
+            ->name('waste-records.show');
     });
 
 // Kitchen route - separate group with tenant.admin.kitchen. prefix
