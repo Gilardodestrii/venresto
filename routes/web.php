@@ -272,6 +272,9 @@ Route::middleware(['auth'])
         Route::get('/pos', [PosController::class, 'index'])
             ->name('pos.index');
 
+        Route::get('/menu-costing', [MenuCostingController::class, 'index'])
+            ->name('menu-costing.index');
+
         Route::post('/pos/store', [PosController::class, 'store'])
             ->name('pos.store');
 
