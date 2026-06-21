@@ -227,8 +227,6 @@ Route::middleware(['auth'])
             return back()->with('success', 'Role staff berhasil diperbarui.');
         })->name('roles.update');
 
-        Route::get('/menu-costing', [MenuCostingController::class, 'index'])->name('menu-costing.index');
-
         Route::post('/qris-static/generate', function (\Illuminate\Http\Request $request) {
             $tenant = \App\Services\TenantContext::get();
             abort_if(!$tenant, 404);
