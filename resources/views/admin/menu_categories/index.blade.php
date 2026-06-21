@@ -8,13 +8,13 @@
         {{-- =========================
         HEADER
     ========================== --}}
-    <div class="outlet-header-card mb-4">
+    <div class="outlet-header-card mb-6">
 
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
             <div>
 
-                <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="flex items-center gap-3 mb-2">
 
                     <div class="header-icon">
                         <i class="bi bi-tags"></i>
@@ -22,11 +22,11 @@
 
                     <div>
 
-                        <h2 class="fw-bold mb-1">
+                        <h2 class="font-bold mb-1 text-lg text-slate-900">
                             Kategori Menu
                         </h2>
 
-                        <p class="text-muted mb-0">
+                        <p class="text-slate-500 mb-0 text-sm">
                             Kelola kategori menu untuk outlet
                         </p>
 
@@ -36,13 +36,13 @@
 
             </div>
 
-                <div class="d-flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2">
 
 
 
-                <a href="{{ route('menu-categories.create', $currentTenant->slug) }}" class="btn btn-primary-premium"">
+                <a href="{{ route('menu-categories.create', $currentTenant->slug) }}" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-semibold hover:bg-sky-600 shadow-sm transition">
 
-                    <i class="bi bi-plus-circle me-1"></i>
+                    <i class="bi bi-plus-circle me-1.5"></i>
                     Tambah Kategori
 
                 </a>
@@ -61,39 +61,38 @@
 
         {{-- SEARCH --}}
         <div class="table-topbar">
-            <div class="d-flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2">
                 <div class="search-box">
 
                     <i class="bi bi-search"></i>
 
                     <input type="text"
-                        class="form-control"
+                        class="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                         placeholder="Cari outlet...">
 
                 </div>
 
-                <button class="btn btn-light-premium">
+                <button class="inline-flex items-center px-3 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
 
-                        <i class="bi bi-funnel me-1"></i>
+                        <i class="bi bi-funnel me-1.5"></i>
                         Filter
 
                 </button>
             </div>
 
-            
 
         </div>
 
-        <div class="table-responsive">
+        <div class="overflow-x-auto">
 
-            <table class="table premium-table align-middle mb-0">
+            <table class="w-full text-sm text-left">
 
                 {{-- TABLE HEAD --}}
                 <thead>
-                    <tr>
-                        <th>Nama Kategori</th>
-                        <th class="text-center">Urutan</th>
-                        <th class="text-center">Aksi</th>
+                    <tr class="border-b border-slate-200">
+                        <th class="px-4 py-3 font-semibold text-slate-700">Nama Kategori</th>
+                        <th class="px-4 py-3 font-semibold text-slate-700 text-center">Urutan</th>
+                        <th class="px-4 py-3 font-semibold text-slate-700 text-center">Aksi</th>
                     </tr>
                 </thead>
 
@@ -101,28 +100,28 @@
                 <tbody>
 
                     @forelse($categories as $cat)
-                    <tr>
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
 
                         {{-- NAME --}}
-                        <td class="fw-semibold">
+                        <td class="px-4 py-3 font-medium text-slate-900">
                             {{ $cat->name }}
                         </td>
 
                         {{-- ORDER --}}
-                        <td class="text-center">
-                            <span class="badge badge-info">
+                        <td class="px-4 py-3 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800">
                                 {{ $cat->seq }}
                             </span>
                         </td>
 
                         {{-- ACTION --}}
-                        <td class="text-end">
+                        <td class="px-4 py-3 text-center">
 
-                            <div class="flex justify-center gap-2">
+                            <div class="flex items-center justify-center gap-2">
 
                                 <a href="{{ route('menu-categories.edit', [$currentTenant->slug, $cat->id]) }}"
-                                   class="btn btn-sm btn-outline-warning">
-                                    <i class="bi bi-pencil"></i> Edit
+                                   class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border border-amber-400 text-amber-600 hover:bg-amber-50 transition">
+                                    <i class="bi bi-pencil me-1"></i> Edit
                                 </a>
 
                                 <form action="{{ route('menu-categories.destroy', [$currentTenant->slug, $cat->id]) }}"
@@ -133,8 +132,8 @@
                                     @method('DELETE')
 
                                     <button type="submit"
-                                            class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash3"></i>
+                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border border-red-400 text-red-600 hover:bg-red-50 transition">
+                                        <i class="bi bi-trash3 me-1"></i>
                                         Hapus
                                     </button>
 
@@ -150,17 +149,17 @@
 
                     {{-- EMPTY STATE --}}
                     <tr>
-                        <td colspan="3" class="text-center py-5 text-muted">
+                        <td colspan="3" class="px-4 py-12 text-center">
 
-                            <div class="flex flex-column items-center gap-2">
+                            <div class="flex flex-col items-center gap-2">
 
-                                <div class="fs-lg">📂</div>
+                                <div class="text-2xl">📂</div>
 
-                                <div class="fw-semibold">
+                                <div class="font-semibold text-slate-700">
                                     Belum ada kategori menu
                                 </div>
 
-                                <div class="fs-sm text-muted">
+                                <div class="text-sm text-slate-500">
                                     Silakan tambah kategori terlebih dahulu
                                 </div>
 

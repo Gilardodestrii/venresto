@@ -2,24 +2,24 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="container-fluid px-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-6">
         <div>
-            <h3 class="fw-bold mb-1">Tambah Waste Record</h3>
-            <div class="text-muted">Kurangi stock karena waste atau pemakaian non-penjualan</div>
+            <h3 class="font-bold text-xl mb-1">Tambah Waste Record</h3>
+            <div class="text-gray-500 text-sm">Kurangi stock karena waste atau pemakaian non-penjualan</div>
         </div>
 
         <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
-           class="btn btn-light rounded-4 px-4">
-            <i class="bi bi-arrow-left me-1"></i>
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">
+            <i class="bi bi-arrow-left"></i>
             Kembali
         </a>
     </div>
 
     @if($errors->any())
-        <div class="alert alert-danger border-0 rounded-4 shadow-sm">
-            <ul class="mb-0 ps-3">
+        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-800 rounded-xl shadow-sm">
+            <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -27,17 +27,17 @@
         </div>
     @endif
 
-    <div class="card border-0 shadow-sm rounded-5">
-        <div class="card-body p-4">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="p-5">
 
             <form method="POST"
                   action="{{ route('tenant.admin.waste-records.store', $currentTenant->slug) }}">
                 @csrf
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Reason</label>
-                        <select name="reason" class="form-select rounded-4" required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Reason</label>
+                        <select name="reason" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                             <option value="">Pilih Reason</option>
                             <option value="expired">Expired</option>
                             <option value="damaged">Damaged</option>
@@ -48,23 +48,23 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Catatan</label>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan</label>
                         <input type="text"
                                name="notes"
-                               class="form-control rounded-4"
+                               class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="Optional note waste">
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h5 class="fw-bold mb-1">Item Waste</h5>
-                        <div class="text-muted small">Tambah bahan yang akan dikurangi dari inventory</div>
+                        <h5 class="font-bold text-lg mb-1">Item Waste</h5>
+                        <div class="text-gray-500 text-sm">Tambah bahan yang akan dikurangi dari inventory</div>
                     </div>
 
                     <button type="button"
-                            class="btn btn-dark rounded-4"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-colors"
                             onclick="addRow()">
                         <i class="bi bi-plus-lg"></i>
                         Tambah Item
@@ -73,9 +73,9 @@
 
                 <div id="wasteRows"></div>
 
-                <div class="text-end mt-4">
-                    <button class="btn btn-danger rounded-4 px-5">
-                        <i class="bi bi-trash3 me-1"></i>
+                <div class="flex justify-end mt-6">
+                    <button class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors">
+                        <i class="bi bi-trash3"></i>
                         Simpan Waste
                     </button>
                 </div>
@@ -92,12 +92,12 @@ const materials = @json($materials);
 
 function rowTemplate(index){
     return `
-        <div class="border rounded-4 p-3 mb-3 waste-row">
-            <div class="row g-3 align-items-end">
+        <div class="border border-gray-200 rounded-xl p-4 mb-3 bg-gray-50 waste-row">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
 
-                <div class="col-md-7">
-                    <label class="form-label">Bahan</label>
-                    <select name="items[${index}][material_id]" class="form-select rounded-4" required>
+                <div class="md:col-span-7">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Bahan</label>
+                    <select name="items[${index}][material_id]" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                         <option value="">Pilih bahan</option>
                         ${materials.map(material => `
                             <option value="${material.id}">
@@ -107,19 +107,19 @@ function rowTemplate(index){
                     </select>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Qty</label>
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Qty</label>
                     <input type="number"
                            step="0.001"
                            min="0.001"
                            name="items[${index}][qty]"
-                           class="form-control rounded-4"
+                           class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            required>
                 </div>
 
-                <div class="col-md-2">
+                <div class="md:col-span-2">
                     <button type="button"
-                            class="btn btn-outline-danger rounded-4 w-100"
+                            class="w-full px-3 py-2 text-sm font-medium rounded-xl border border-red-300 text-red-600 hover:bg-red-50 transition-colors"
                             onclick="removeRow(this)">
                         Hapus
                     </button>

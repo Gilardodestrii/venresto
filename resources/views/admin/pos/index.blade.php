@@ -2,459 +2,18 @@
 
 @section('content')
 
-<style>
-:root{
-    --primary:#0ea5e9;
-    --bg:#f4f8fc;
-    --card:#ffffff;
-    --border:#e5e7eb;
-}
+<div class="min-h-screen bg-slate-100 pb-8 px-3 lg:px-4">
 
-body{
-    background:var(--bg);
-    overflow-x:hidden;
-}
-
-.pos-page{
-    padding-bottom:32px;
-}
-
-.pos-wrapper{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 420px;
-    gap:24px;
-    align-items:start;
-}
-
-.pos-card{
-    background:rgba(255,255,255,.88);
-    border:1px solid rgba(255,255,255,.5);
-    backdrop-filter:blur(16px);
-    border-radius:24px;
-    box-shadow:0 10px 30px rgba(15,23,42,.05);
-}
-
-.pos-cart-card{
-    position:sticky;
-    top:90px;
-    overflow:visible;
-}
-
-
-.search-box{ position:relative; }
-
-.search-box i{
-    position:absolute;
-    left:16px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#94a3b8;
-}
-
-.search-input{
-    border:none;
-    width:100%;
-    height:54px;
-    border-radius:18px;
-    padding-left:46px;
-    background:#fff;
-}
-
-.search-input:focus{ outline:none; }
-
-.category-scroll{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    padding-bottom:6px;
-    scrollbar-width:none;
-}
-
-.category-scroll::-webkit-scrollbar{
-    display:none;
-}
-
-.category-btn{
-    border:none;
-    background:#fff;
-    border-radius:16px;
-    padding:10px 18px;
-    white-space:nowrap;
-    font-weight:600;
-    transition:.2s;
-    border:1px solid #e2e8f0;
-}
-
-.category-btn.active,
-.category-btn:hover{
-    background:var(--primary);
-    color:white;
-}
-
-.menu-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:18px;
-}
-
-.menu-item{
-    overflow:hidden;
-    transition:.2s;
-}
-
-.menu-item:hover{
-    transform:translateY(-4px);
-}
-
-.menu-image{
-    width:100%;
-    height:170px;
-    object-fit:cover;
-}
-
-.menu-content{
-    padding:16px;
-}
-
-.menu-title{
-    font-weight:700;
-    font-size:16px;
-}
-
-.menu-price{
-    font-weight:700;
-    color:var(--primary);
-}
-
-.btn-add{
-    width:44px;
-    height:44px;
-    border:none;
-    border-radius:14px;
-    background:var(--primary);
-    color:white;
-    font-size:22px;
-    flex:0 0 auto;
-}
-
-.order-type-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-}
-
-.order-type-box{
-    position:relative;
-    cursor:pointer;
-    min-height:64px;
-    border-radius:18px;
-    border:1px solid #e5e7eb;
-    background:rgba(255,255,255,.92);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px;
-    transition:.2s ease;
-    user-select:none;
-}
-
-.order-type-box:hover{
-    border-color:var(--primary);
-    transform:translateY(-1px);
-}
-
-.order-type-box.active{
-    border-color:var(--primary);
-    background:rgba(14,165,233,.08);
-    box-shadow:0 12px 26px rgba(14,165,233,.12);
-}
-
-.order-type-input{
-    display:none;
-}
-
-.order-type-icon{
-    width:38px;
-    height:38px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#f1f5f9;
-    color:#0f172a;
-    flex:0 0 auto;
-}
-
-.order-type-box.active .order-type-icon{
-    background:var(--primary);
-    color:#fff;
-}
-
-.order-type-box strong{
-    display:block;
-    font-size:14px;
-    line-height:1.1;
-}
-
-.order-type-box small{
-    display:block;
-    font-size:11px;
-    color:#64748b;
-    margin-top:3px;
-}
-
-.cart-item{
-    padding:14px;
-    border-radius:18px;
-    background:#f8fafc;
-    margin-bottom:14px;
-}
-
-.qty-box{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.qty-btn{
-    width:28px;
-    height:28px;
-    border:none;
-    border-radius:8px;
-    background:white;
-}
-
-.summary-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:10px;
-    gap:12px;
-}
-
-.summary-total{
-    font-size:22px;
-    font-weight:800;
-}
-
-.checkout-btn{
-    height:56px;
-    border:none;
-    border-radius:18px;
-    font-weight:700;
-}
-
-.btn-hold{ background:#f1f5f9; }
-.btn-pay{ background:var(--primary); color:white; }
-
-.alert{
-    backdrop-filter:blur(14px);
-    background:rgba(255,255,255,.9);
-}
-
-.cart-scroll{
-    max-height:none;
-    overflow:visible;
-}
-
-.mobile-cart-bar{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    z-index:1040;
-    padding:12px;
-    background:linear-gradient(to top, rgba(244,248,252,1), rgba(244,248,252,.75), transparent);
-}
-
-.mobile-cart-btn{
-    width:100%;
-    border:none;
-    border-radius:22px;
-    padding:14px 18px;
-    background:var(--primary);
-    color:white;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 18px 45px rgba(14,165,233,.35);
-}
-
-.mobile-cart-btn strong{
-    display:block;
-    font-size:15px;
-}
-
-.mobile-cart-btn div div{
-    font-size:13px;
-    opacity:.9;
-}
-
-.mobile-cart-btn span{
-    width:44px;
-    height:44px;
-    border-radius:16px;
-    background:rgba(255,255,255,.2);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:22px;
-}
-
-.mobile-cart-drawer{
-    height:100vh !important;
-    max-height:100vh !important;
-    border-radius:0;
-}
-
-.mobile-cart-drawer .offcanvas-body{
-    overflow-y:auto;
-    padding-bottom:110px;
-}
-
-.mobile-cart-action{
-    position:sticky;
-    bottom:0;
-    background:#fff;
-    padding-top:12px;
-    padding-bottom:12px;
-}
-
-/* Tablet */
-@media(max-width:991px){
-    .pos-wrapper{
-        grid-template-columns:1fr;
-    }
-
-    .pos-cart-desktop{
-        display:none;
-    }
-}
-
-/* Mobile */
-@media(max-width:575px){
-    .container-fluid{
-        padding-left:12px;
-        padding-right:12px;
-    }
-
-    .pos-page{
-        padding-top:12px !important;
-        padding-bottom:115px;
-    }
-
-    .pos-header{
-        flex-direction:column;
-        align-items:flex-start !important;
-        gap:4px;
-        margin-bottom:14px !important;
-    }
-
-    .pos-header h3{
-        font-size:22px;
-    }
-
-    .pos-card{
-        border-radius:20px;
-    }
-
-    .pos-filter-card{
-        padding:14px !important;
-        margin-bottom:14px !important;
-        position:sticky;
-        top:70px;
-        z-index:20;
-    }
-
-    .search-input{
-        height:48px;
-        border-radius:16px;
-    }
-
-    .category-btn{
-        padding:9px 14px;
-        font-size:14px;
-        border-radius:14px;
-    }
-
-    .menu-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:12px;
-    }
-
-    .menu-image{
-        height:110px;
-    }
-
-    .menu-content{
-        padding:12px;
-    }
-
-    .menu-title{
-        font-size:14px;
-        line-height:1.25;
-    }
-
-    .menu-price{
-        font-size:14px;
-    }
-
-    .btn-add{
-        width:36px;
-        height:36px;
-        border-radius:12px;
-        font-size:20px;
-    }
-
-    .form-select-lg,
-    .form-control-lg{
-        font-size:15px;
-        min-height:46px;
-        border-radius:14px;
-    }
-
-    .cart-scroll{
-        max-height:260px;
-    }
-
-    .summary-row{
-        font-size:14px;
-    }
-
-    .summary-total{
-        font-size:18px;
-    }
-
-    .checkout-btn{
-        height:52px;
-        border-radius:16px;
-    }
-}
-
-/* Extra small */
-@media(max-width:390px){
-    .menu-grid{
-        grid-template-columns:1fr;
-    }
-
-    .menu-image{
-        height:150px;
-    }
-}
-</style>
-
-<div class="container-fluid py-4 pos-page">
-
-    <div class="d-flex justify-content-between align-items-center mb-4 pos-header">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2 mb-6 pos-header">
         <div>
-            <h3 class="fw-bold mb-1">POS Cashier</h3>
-            <div class="text-secondary">cashier system</div>
+            <h3 class="font-bold text-xl lg:text-2xl mb-1">POS Cashier</h3>
+            <div class="text-slate-500">cashier system</div>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center mb-4">
-            <div class="me-3 d-flex align-items-center justify-content-center" style="width:48px;height:48px;border-radius:16px;background:rgba(34,197,94,.15);color:#22c55e;font-size:22px;">
+        <div class="bg-white/90 backdrop-blur-sm border-0 shadow-sm rounded-4xl flex items-center mb-4 p-4 alert">
+            <div class="me-3 flex items-center justify-center" style="width:48px;height:48px;border-radius:16px;background:rgba(34,197,94,.15);color:#22c55e;font-size:22px;">
                 <i class="bi bi-check-circle-fill"></i>
             </div>
             <div>
@@ -465,8 +24,8 @@ body{
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center mb-4">
-            <div class="me-3 d-flex align-items-center justify-content-center" style="width:48px;height:48px;border-radius:16px;background:rgba(239,68,68,.15);color:#ef4444;font-size:22px;">
+        <div class="bg-white/90 backdrop-blur-sm border-0 shadow-sm rounded-4xl flex items-center mb-4 p-4 alert">
+            <div class="me-3 flex items-center justify-center" style="width:48px;height:48px;border-radius:16px;background:rgba(239,68,68,.15);color:#ef4444;font-size:22px;">
                 <i class="bi bi-x-circle-fill"></i>
             </div>
             <div>
@@ -477,8 +36,8 @@ body{
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4">
-            <div class="fw-bold mb-2">Validasi gagal</div>
+        <div class="bg-white/90 backdrop-blur-sm border-0 shadow-sm rounded-4xl mb-4 p-4">
+            <div class="font-bold mb-2">Validasi gagal</div>
             <ul class="mb-0 ps-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -490,45 +49,51 @@ body{
     <form action="{{ route('tenant.admin.pos.store', $currentTenant->slug) }}" method="POST" id="posForm">
         @csrf
 
-        <div class="pos-wrapper">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 items-start pos-wrapper">
+
+            {{-- LEFT: Menu --}}
             <div>
-                <div class="pos-card pos-filter-card p-4 mb-4">
-                    <div class="search-box mb-4">
-                        <i class="bi bi-search"></i>
-                        <input type="text" class="search-input" id="searchMenu" placeholder="Cari menu...">
+                {{-- Search & Categories Card --}}
+                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 mb-4 pos-card pos-filter-card">
+                    {{-- Search Box --}}
+                    <div class="relative mb-4 search-box">
+                        <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" class="search-input w-full h-14 rounded-2xl pl-12 bg-white border-none focus:outline-none" id="searchMenu" placeholder="Cari menu...">
                     </div>
 
-                    <div class="category-scroll">
-                        <button type="button" class="category-btn active" data-category="all">Semua</button>
+                    {{-- Category Scroll --}}
+                    <div class="flex gap-3 overflow-x-auto pb-1.5 category-scroll scrollbar-none">
+                        <button type="button" class="shrink-0 px-4 py-2.5 rounded-2xl font-semibold bg-sky-500 text-white border border-slate-200 transition hover:bg-sky-500 hover:text-white category-btn active" data-category="all">Semua</button>
                         @foreach($categories as $category)
-                            <button type="button" class="category-btn" data-category="{{ $category->id }}">
+                            <button type="button" class="shrink-0 px-4 py-2.5 rounded-2xl font-semibold bg-white text-slate-700 border border-slate-200 transition hover:bg-sky-500 hover:text-white category-btn" data-category="{{ $category->id }}">
                                 {{ $category->name }}
                             </button>
                         @endforeach
                     </div>
                 </div>
 
-                <div class="menu-grid">
+                {{-- Menu Grid --}}
+                <div class="grid grid-cols-1 max-[390px]:grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 menu-grid">
                     @foreach($menuItems as $item)
-                        <div class="pos-card menu-item menu-filter"
+                        <div class="overflow-hidden transition hover:-translate-y-1 bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] pos-card menu-item menu-filter"
                              data-name="{{ strtolower($item->name) }}"
                              data-category="{{ $item->category_id }}">
 
                             <img src="{{ $item->image_url ?: 'https://placehold.co/600x400/png' }}"
-                                 class="menu-image">
+                                 class="w-full h-[170px] max-[390px]:h-[150px] object-cover menu-image">
 
-                            <div class="menu-content">
-                                <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div class="p-4 menu-content">
+                                <div class="flex justify-between items-start gap-2">
                                     <div>
-                                        <div class="menu-title">{{ $item->name }}</div>
-                                        <div class="small text-secondary mb-2">{{ $item->category?->name }}</div>
-                                        <div class="menu-price">
+                                        <div class="font-bold text-base menu-title">{{ $item->name }}</div>
+                                        <div class="small text-slate-500 mb-2">{{ $item->category?->name }}</div>
+                                        <div class="font-bold text-sky-500 menu-price">
                                             Rp {{ number_format($item->price, 0, ',', '.') }}
                                         </div>
                                     </div>
 
                                     <button type="button"
-                                            class="btn-add addToCart"
+                                            class="w-11 h-11 rounded-xl bg-sky-500 text-white text-xl flex items-center justify-center shrink-0 btn-add addToCart"
                                             data-id="{{ $item->id }}"
                                             data-name="{{ $item->name }}"
                                             data-price="{{ $item->price }}">
@@ -541,16 +106,16 @@ body{
                 </div>
             </div>
 
-            {{-- DESKTOP CART --}}
-            <div class="pos-cart-desktop">
-                <div class="pos-card pos-cart-card p-4">
+            {{-- RIGHT: Desktop Cart --}}
+            <div class="pos-cart-desktop hidden lg:block">
+                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 sticky top-[90px] overflow-visible pos-card pos-cart-card">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
         </div>
 
         {{-- MOBILE CART DRAWER --}}
-        <div class="offcanvas offcanvas-bottom mobile-cart-drawer d-lg-none"
+        <div class="offcanvas offcanvas-bottom mobile-cart-drawer d-lg-none lg:hidden"
              style="height:100vh;"
              tabindex="-1"
              id="mobileCartDrawer"
@@ -572,26 +137,26 @@ body{
             </div>
 
             <div class="offcanvas-body">
-                <div class="pos-card p-3 shadow-none border">
+                <div class="bg-white rounded-3xl shadow-none border p-3">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
         </div>
 
         {{-- MOBILE CART BAR --}}
-        <div class="mobile-cart-bar d-lg-none" id="mobileCartBar">
+        <div class="fixed left-0 right-0 bottom-0 z-[1040] p-3 bg-gradient-to-t from-slate-100 via-slate-100/75 to-transparent lg:hidden mobile-cart-bar" id="mobileCartBar">
             <button type="button"
-                    class="mobile-cart-btn"
+                    class="w-full rounded-3xl p-4 bg-sky-500 text-white flex justify-between items-center shadow-[0_18px_45px_rgba(14,165,233,.35)] mobile-cart-btn"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#mobileCartDrawer"
                     aria-controls="mobileCartDrawer">
 
                 <div>
-                    <strong id="mobileCartCount">0 Item</strong>
-                    <div id="mobileCartTotal">Rp 0</div>
+                    <strong id="mobileCartCount" class="block text-base">0 Item</strong>
+                    <div id="mobileCartTotal" class="text-sm opacity-90">Rp 0</div>
                 </div>
 
-                <span>
+                <span class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-2xl">
                     <i class="bi bi-cart3"></i>
                 </span>
             </button>

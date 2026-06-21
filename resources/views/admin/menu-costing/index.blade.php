@@ -2,85 +2,85 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="container mx-auto px-4 py-6">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
         <div>
-            <h3 class="fw-bold mb-1">HPP & Menu Costing</h3>
-            <div class="text-muted">Analisa food cost dan profitabilitas menu</div>
+            <h3 class="font-bold mb-1 text-xl">HPP & Menu Costing</h3>
+            <div class="text-gray-500">Analisa food cost dan profitabilitas menu</div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-5 overflow-hidden">
-        <div class="card-header bg-white border-0 p-4">
-            <h5 class="fw-bold mb-1">Menu Cost Analysis</h5>
-            <div class="text-muted small">Perhitungan otomatis berdasarkan recipe dan harga bahan</div>
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-white border-0 p-6">
+            <h5 class="font-bold mb-1 text-lg">Menu Cost Analysis</h5>
+            <div class="text-gray-500 text-sm">Perhitungan otomatis berdasarkan recipe dan harga bahan</div>
         </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead class="table-light">
+        <div class="overflow-x-auto">
+            <table class="w-full align-middle">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3">Menu</th>
-                        <th>Harga Jual</th>
-                        <th>HPP</th>
-                        <th>Margin</th>
-                        <th>Food Cost</th>
-                        <th>Recipe</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Menu</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Harga Jual</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">HPP</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Margin</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Food Cost</th>
+                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Recipe</th>
                     </tr>
                 </thead>
                 <tbody>
                 @forelse($costings as $costing)
-                    <tr>
-                        <td class="px-4">
-                            <div class="fw-bold">{{ $costing->menu->name }}</div>
-                            <small class="text-muted">{{ $costing->recipes->count() }} bahan</small>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="px-4 py-4">
+                            <div class="font-bold">{{ $costing->menu->name }}</div>
+                            <small class="text-gray-500">{{ $costing->recipes->count() }} bahan</small>
                         </td>
 
-                        <td>
-                            <span class="fw-semibold text-primary">
+                        <td class="px-4 py-4">
+                            <span class="font-semibold text-blue-600">
                                 Rp {{ number_format($costing->price, 0, ',', '.') }}
                             </span>
                         </td>
 
-                        <td>
-                            <span class="fw-bold text-danger">
+                        <td class="px-4 py-4">
+                            <span class="font-bold text-red-600">
                                 Rp {{ number_format($costing->hpp, 0, ',', '.') }}
                             </span>
                         </td>
 
-                        <td>
+                        <td class="px-4 py-4">
                             @if($costing->margin > 0)
-                                <span class="fw-bold text-success">
+                                <span class="font-bold text-green-600">
                                     Rp {{ number_format($costing->margin, 0, ',', '.') }}
                                 </span>
                             @else
-                                <span class="fw-bold text-danger">
+                                <span class="font-bold text-red-600">
                                     Rp {{ number_format($costing->margin, 0, ',', '.') }}
                                 </span>
                             @endif
                         </td>
 
-                        <td>
+                        <td class="px-4 py-4">
                             @if($costing->food_cost_percent <= 35)
-                                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                     {{ number_format($costing->food_cost_percent, 1) }}%
                                 </span>
                             @elseif($costing->food_cost_percent <= 50)
-                                <span class="badge bg-warning-subtle text-warning rounded-pill px-3 py-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">
                                     {{ number_format($costing->food_cost_percent, 1) }}%
                                 </span>
                             @else
-                                <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">
                                     {{ number_format($costing->food_cost_percent, 1) }}%
                                 </span>
                             @endif
                         </td>
 
-                        <td>
-                            <div class="d-flex flex-column gap-1">
+                        <td class="px-4 py-4">
+                            <div class="flex flex-col gap-1">
                                 @foreach($costing->recipes as $recipe)
-                                    <small>
+                                    <small class="text-gray-600">
                                         {{ $recipe->material?->name }}
                                         ({{ $recipe->qty }})
                                     </small>
@@ -90,8 +90,8 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
-                            <i class="bi bi-calculator fs-1 d-block mb-2"></i>
+                        <td colspan="6" class="text-center py-12 text-gray-500">
+                            <i class="bi bi-calculator text-4xl d-block mb-2"></i>
                             Belum ada data menu costing.
                         </td>
                     </tr>

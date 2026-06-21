@@ -10,7 +10,7 @@ body{background:var(--bg);} .page-hero{padding:110px 0 60px;background:linear-gr
 </style>
 
 <section class="page-hero">
-    <div class="container">
+    <div class="max-w-7xl mx-auto px-4">
         <div class="soft-badge"><i class="bi bi-chat-dots"></i> Hubungi VenResto</div>
         <h1 class="page-title">Butuh bantuan setup<br>POS restoran modern?</h1>
         <p class="page-subtitle">Kirim pertanyaan Anda tentang POS cashier, QR menu, kitchen display, inventory, multi outlet, printer thermal, atau kebutuhan implementasi VenResto untuk bisnis F&B Anda.</p>
@@ -18,61 +18,61 @@ body{background:var(--bg);} .page-hero{padding:110px 0 60px;background:linear-gr
 </section>
 
 <section class="pb-5">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-7">
-                <div class="premium-card p-4 p-lg-5">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div class="lg:col-span-7">
+                <div class="premium-card p-4 lg:p-5">
                     @if(session('success'))
-                        <div class="alert alert-success rounded-4 border-0 mb-4"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}</div>
+                        <div class="bg-green-100 text-green-800 rounded-2xl p-4 mb-4"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}</div>
                     @endif
 
                     <form method="POST" action="{{ route('landing.contact.submit') }}">
                         @csrf
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Nama Lengkap</label>
-                                <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" placeholder="Nama Anda" required>
-                                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold mb-1">Nama Lengkap</label>
+                                <input type="text" name="name" value="{{ old('name') }}" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 @error('name') is-invalid @enderror" placeholder="Nama Anda" required>
+                                @error('name')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" placeholder="nama@email.com" required>
-                                @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div>
+                                <label class="block font-semibold mb-1">Email</label>
+                                <input type="email" name="email" value="{{ old('email') }}" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 @error('email') is-invalid @enderror" placeholder="nama@email.com" required>
+                                @error('email')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">No. WhatsApp</label>
-                                <input type="text" name="phone" value="{{ old('phone') }}" class="form-control @error('phone') is-invalid @enderror" placeholder="08xxxxxxxxxx">
-                                @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div>
+                                <label class="block font-semibold mb-1">No. WhatsApp</label>
+                                <input type="text" name="phone" value="{{ old('phone') }}" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 @error('phone') is-invalid @enderror" placeholder="08xxxxxxxxxx">
+                                @error('phone')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Topik</label>
-                                <select name="topic" class="form-select @error('topic') is-invalid @enderror" required>
+                            <div>
+                                <label class="block font-semibold mb-1">Topik</label>
+                                <select name="topic" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 @error('topic') is-invalid @enderror" required>
                                     <option value="">Pilih topik</option>
                                     @foreach(['Demo Produk','Harga & Paket','Implementasi Restoran','Integrasi Printer','QRIS & Pembayaran','Lainnya'] as $topic)
                                         <option value="{{ $topic }}" @selected(old('topic') === $topic)>{{ $topic }}</option>
                                     @endforeach
                                 </select>
-                                @error('topic')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                @error('topic')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Pesan</label>
-                                <textarea name="message" rows="6" class="form-control @error('message') is-invalid @enderror" placeholder="Ceritakan kebutuhan restoran Anda..." required>{{ old('message') }}</textarea>
-                                @error('message')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block font-semibold mb-1">Pesan</label>
+                                <textarea name="message" rows="6" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 @error('message') is-invalid @enderror" placeholder="Ceritakan kebutuhan restoran Anda..." required>{{ old('message') }}</textarea>
+                                @error('message')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-12 d-grid d-md-flex align-items-center gap-3">
-                                <button class="btn btn-primary btn-send"><i class="bi bi-send me-2"></i>Kirim Pesan</button>
-                                <span class="small text-secondary">Tim VenResto akan menindaklanjuti pesan Anda.</span>
+                            <div class="col-span-1 md:col-span-2 flex flex-col md:flex-row items-start md:items-center gap-3">
+                                <button class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-sky-500 text-white font-bold text-sm hover:bg-sky-600"><i class="bi bi-send me-2"></i>Kirim Pesan</button>
+                                <span class="text-sm text-slate-500">Tim VenResto akan menindaklanjuti pesan Anda.</span>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="col-lg-5">
-                <div class="d-grid gap-3">
-                    <div class="info-row"><div class="contact-icon"><i class="bi bi-envelope"></i></div><div><h5 class="fw-bold mb-1">Email</h5><div class="mini-muted">support@venresto.id<br>Untuk pertanyaan produk dan kerja sama.</div></div></div>
-                    <div class="info-row"><div class="contact-icon"><i class="bi bi-clock-history"></i></div><div><h5 class="fw-bold mb-1">Jam Operasional</h5><div class="mini-muted">Senin - Jumat, 09.00 - 18.00 WIB<br>Dukungan prioritas untuk pelanggan aktif.</div></div></div>
-                    <div class="info-row"><div class="contact-icon"><i class="bi bi-shop-window"></i></div><div><h5 class="fw-bold mb-1">Untuk Restoran</h5><div class="mini-muted">Cocok untuk restoran, kafe, warung, food court, cloud kitchen, dan bisnis multi outlet.</div></div></div>
+            <div class="lg:col-span-5">
+                <div class="grid gap-3">
+                    <div class="info-row"><div class="contact-icon"><i class="bi bi-envelope"></i></div><div><h5 class="font-bold mb-1">Email</h5><div class="mini-muted">support@venresto.id<br>Untuk pertanyaan produk dan kerja sama.</div></div></div>
+                    <div class="info-row"><div class="contact-icon"><i class="bi bi-clock-history"></i></div><div><h5 class="font-bold mb-1">Jam Operasional</h5><div class="mini-muted">Senin - Jumat, 09.00 - 18.00 WIB<br>Dukungan prioritas untuk pelanggan aktif.</div></div></div>
+                    <div class="info-row"><div class="contact-icon"><i class="bi bi-shop-window"></i></div><div><h5 class="font-bold mb-1">Untuk Restoran</h5><div class="mini-muted">Cocok untuk restoran, kafe, warung, food court, cloud kitchen, dan bisnis multi outlet.</div></div></div>
                 </div>
             </div>
         </div>

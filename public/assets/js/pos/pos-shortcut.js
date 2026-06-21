@@ -12,14 +12,10 @@ window.posShortcut = {
             }
 
             if (event.key === 'Escape') {
-                const activeModal = document.querySelector('.modal.show');
+                const activeModal = document.querySelector('.modal:not(.hidden)');
 
                 if (activeModal) {
-                    const modalInstance = bootstrap.Modal.getInstance(activeModal);
-
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
+                    activeModal.classList.add('hidden');
                 }
             }
         });

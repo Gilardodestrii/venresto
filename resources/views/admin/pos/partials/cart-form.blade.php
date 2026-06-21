@@ -1,44 +1,47 @@
-<div class="mb-3">
-    <label class="form-label fw-semibold">Tipe Pesanan</label>
+{{-- Order Type Selection --}}
+<div class="mb-4">
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Tipe Pesanan</label>
 
-    <div class="order-type-grid">
-        <label class="order-type-box active">
+    <div class="grid grid-cols-2 gap-2.5 order-type-grid">
+        <label class="order-type-box relative cursor-pointer min-h-16 rounded-2xl border-2 border-slate-200 bg-white/92 flex items-center gap-2.5 p-3 transition hover:-translate-y-0.5 hover:border-sky-500 has-[:checked]:!border-sky-500 has-[:checked]:bg-sky-500/10 has-[:checked]:shadow-xl has-[:checked]:shadow-sky-500/20 user-select-none">
             <input type="radio"
                    name="order_type"
                    value="dine_in"
                    checked
-                   class="order-type-input">
+                   class="order-type-input hidden peer">
 
-            <span class="order-type-icon">
+            <span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 order-type-icon peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
                 <i class="bi bi-cup-hot"></i>
             </span>
 
             <span>
-                <strong>Dine In</strong>
-                <small>Makan di tempat</small>
+                <strong class="block text-sm leading-tight">Dine In</strong>
+                <small class="block text-xs text-slate-500 mt-0.5">Makan di tempat</small>
             </span>
         </label>
 
-        <label class="order-type-box">
+        <label class="order-type-box relative cursor-pointer min-h-16 rounded-2xl border-2 border-slate-200 bg-white/92 flex items-center gap-2.5 p-3 transition hover:-translate-y-0.5 hover:border-sky-500 has-[:checked]:!border-sky-500 has-[:checked]:bg-sky-500/10 has-[:checked]:shadow-xl has-[:checked]:shadow-sky-500/20 user-select-none">
             <input type="radio"
                    name="order_type"
                    value="takeaway"
-                   class="order-type-input">
+                   class="order-type-input hidden peer">
 
-            <span class="order-type-icon">
+            <span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 order-type-icon peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
                 <i class="bi bi-bag-check"></i>
             </span>
 
             <span>
-                <strong>Takeaway</strong>
-                <small>Bungkus</small>
+                <strong class="block text-sm leading-tight">Takeaway</strong>
+                <small class="block text-xs text-slate-500 mt-0.5">Bungkus</small>
             </span>
         </label>
     </div>
 </div>
-<div class="mb-3">
-    <label class="form-label fw-semibold">Pilih Meja</label>
-    <select name="table_code" class="form-select form-select-lg" required>
+
+{{-- Table Selection --}}
+<div class="mb-4">
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Pilih Meja</label>
+    <select name="table_code" class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" required>
         <option value="">-- Pilih Meja --</option>
         @foreach($tables as $table)
             <option value="{{ $table->table_code }}">{{ $table->table_code }}</option>
@@ -46,77 +49,87 @@
     </select>
 </div>
 
-<div class="mb-3">
-    <label class="form-label fw-semibold">Nama Customer</label>
-    <input type="text" name="customer_name" class="form-control form-control-lg" required>
+{{-- Customer Name --}}
+<div class="mb-4">
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Nama Customer</label>
+    <input type="text" name="customer_name" class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" required>
 </div>
 
-<div class="mb-3">
-    <label class="form-label fw-semibold">No HP</label>
-    <input type="text" name="customer_phone" class="form-control form-control-lg">
+{{-- Customer Phone --}}
+<div class="mb-4">
+    <label class="block font-semibold text-sm text-slate-700 mb-2">No HP</label>
+    <input type="text" name="customer_phone" class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
 </div>
 
-<hr>
+<hr class="border-slate-200 my-4">
 
-<div id="cartContainer" class="cart-scroll"></div>
+{{-- Cart Items --}}
+<div id="cartContainer" class="cart-scroll max-h-none overflow-visible"></div>
 
-<hr>
+<hr class="border-slate-200 my-4">
 
-<div class="summary-row">
-    <span>Subtotal</span>
-    <strong id="subtotalText">Rp 0</strong>
+{{-- Subtotal --}}
+<div class="flex justify-between items-center mb-2.5 gap-3 summary-row">
+    <span class="text-slate-600">Subtotal</span>
+    <strong id="subtotalText" class="text-slate-900">Rp 0</strong>
 </div>
 
-<div class="summary-row">
-    <span>Discount</span>
+{{-- Discount --}}
+<div class="flex justify-between items-center mb-2.5 gap-3 summary-row">
+    <span class="text-slate-600">Discount</span>
     <input type="number"
-           class="form-control w-50"
+           class="w-1/2 h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
            name="discount"
            id="discountInput"
            value="0"
            min="0">
 </div>
 
-<div class="summary-row">
-    <span>
+{{-- Service --}}
+<div class="flex justify-between items-center mb-2.5 gap-3 summary-row">
+    <span class="text-slate-600">
         Service
-        <small class="text-muted">
+        <small class="text-slate-400">
             ({{ $settings->service_enabled ? number_format((float)$settings->service_rate * 100, 1) . '%' : 'Off' }})
         </small>
     </span>
-    <strong id="serviceText">Rp 0</strong>
+    <strong id="serviceText" class="text-slate-900">Rp 0</strong>
 </div>
 
-<div class="summary-row">
-    <span>
+{{-- Tax --}}
+<div class="flex justify-between items-center mb-2.5 gap-3 summary-row">
+    <span class="text-slate-600">
         Tax
-        <small class="text-muted">
+        <small class="text-slate-400">
             ({{ $settings->tax_enabled ? number_format((float)$settings->tax_rate * 100, 1) . '%' : 'Off' }})
         </small>
     </span>
-    <strong id="taxText">Rp 0</strong>
+    <strong id="taxText" class="text-slate-900">Rp 0</strong>
 </div>
 
 <input type="hidden" name="service" id="serviceInput" value="0">
 <input type="hidden" name="tax" id="taxInput" value="0">
 
-<hr>
+<hr class="border-slate-200 my-4">
 
-<div class="summary-row summary-total">
+{{-- Grand Total --}}
+<div class="flex justify-between items-center mb-4 text-xl font-extrabold summary-row summary-total">
     <span>Grand Total</span>
     <span id="grandTotalText">Rp 0</span>
 </div>
 
-<div class="mb-3">
-    <label class="form-label fw-semibold">Customer Note</label>
-    <textarea name="customer_note" class="form-control form-control-lg"></textarea>
+{{-- Customer Note --}}
+<div class="mb-4">
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Customer Note</label>
+    <textarea name="customer_note" class="w-full h-24 px-4 py-3 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 resize-none"></textarea>
 </div>
 
+{{-- Payment Method --}}
 <div class="mb-4">
-    <label class="form-label fw-semibold">Payment Method</label>
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Payment Method</label>
 
     <select name="payment_method"
-            class="form-select form-select-lg"
+            class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
             {{ count($paymentOptions) ? 'required' : 'disabled' }}>
 
         @forelse($paymentOptions as $key => $label)
@@ -127,27 +140,31 @@
     </select>
 
     @if(count($paymentOptions) === 0)
-        <div class="small text-danger mt-2">
+        <div class="text-xs text-red-500 mt-1.5">
             Belum ada metode pembayaran yang aktif. Aktifkan Cash atau QRIS di Tenant Settings.
         </div>
     @endif
 </div>
 
+{{-- Paid Amount --}}
 <div class="mb-4">
-    <label class="form-label fw-semibold">Nominal Dibayar</label>
+    <label class="block font-semibold text-sm text-slate-700 mb-2">Nominal Dibayar</label>
     <input type="number"
            name="paid_amount"
-           class="form-control form-control-lg"
+           class="w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500"
            value="0"
            min="0">
 </div>
 
-<div class="d-grid gap-3">
-    <button type="submit" name="action" value="hold" class="checkout-btn btn-hold">
+{{-- Action Buttons --}}
+<div class="grid gap-3 mb-2">
+    <button type="submit" name="action" value="hold" class="h-14 rounded-2xl font-bold bg-slate-100 text-slate-700 border-none transition hover:bg-slate-200 checkout-btn btn-hold">
         Simpan / Hold
     </button>
 
-    <button type="submit" name="action" value="paid" class="checkout-btn btn-pay">
+    <button type="submit" name="action" value="paid" class="h-14 rounded-2xl font-bold bg-sky-500 text-white border-none transition hover:bg-sky-600 shadow-lg checkout-btn btn-pay">
         Bayar
     </button>
 </div>
+
+

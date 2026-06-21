@@ -2,94 +2,6 @@
 
 @section('title','Masuk — VenResto')
 @section('content')
-<style>
-:root{
-  --primary:#0ea5e9;
-  --bg:#f8fbff;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#0f172a;
-  --muted:#64748b;
-}
-
-body{
-  background:
-    radial-gradient(circle at top left, rgba(14,165,233,.14), transparent 34%),
-    linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
-}
-
-.auth-shell{
-  min-height:calc(100vh - 40px);
-  display:flex;
-  align-items:center;
-  padding:56px 0;
-}
-
-.auth-card{
-  background:rgba(255,255,255,.88);
-  border:1px solid rgba(226,232,240,.9);
-  backdrop-filter:blur(18px);
-  border-radius:28px;
-  box-shadow:0 24px 70px rgba(15,23,42,.09);
-  overflow:hidden;
-}
-
-.auth-brand{
-  width:54px;
-  height:54px;
-  border-radius:18px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  background:linear-gradient(135deg,#38bdf8,#0ea5e9);
-  box-shadow:0 14px 34px rgba(14,165,233,.28);
-}
-
-.auth-title{
-  color:var(--text);
-  font-weight:900;
-  letter-spacing:-.03em;
-}
-
-.auth-subtitle{
-  color:var(--muted);
-  line-height:1.7;
-}
-
-.form-control{
-  min-height:50px;
-  border-radius:16px;
-  border-color:var(--border);
-}
-
-.form-control:focus{
-  border-color:var(--primary);
-  box-shadow:0 0 0 .25rem rgba(14,165,233,.12);
-}
-
-.btn-auth{
-  min-height:50px;
-  border-radius:16px;
-  font-weight:800;
-}
-
-.input-group .form-control{
-  border-top-left-radius:16px;
-  border-bottom-left-radius:16px;
-}
-
-.input-group .btn{
-  border-top-right-radius:16px;
-  border-bottom-right-radius:16px;
-}
-
-.auth-meta{
-  border-radius:18px;
-  background:#f8fafc;
-  border:1px solid var(--border);
-}
-</style>
 
 @php
   $loginAction = isset($currentTenant) && $currentTenant
@@ -97,90 +9,90 @@ body{
       : url('/login');
 @endphp
 
-<div class="auth-shell">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-7 col-lg-5">
-        <div class="auth-card p-4 p-lg-5">
-          <div class="text-center mb-4">
-            <div class="auth-brand mb-3">
-              <i class="bi bi-shop fs-3"></i>
-            </div>
-            <h1 class="h3 auth-title mb-2">Masuk ke VenResto</h1>
-            <p class="auth-subtitle mb-0">
-              Kelola POS, QR menu, kitchen display, inventory, dan laporan restoran dari satu dashboard.
-            </p>
+<div class="min-h-screen flex items-center justify-center px-4 py-14" style="background: radial-gradient(circle at top left, rgba(14,165,233,.14), transparent 34%), linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);">
+  <div class="w-full max-w-md">
 
-            @isset($currentTenant)
-              <div class="auth-meta small text-secondary mt-3 px-3 py-2">
-                Tenant aktif: <code>{{ $currentTenant->slug }}</code>
-              </div>
-            @endisset
+    <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden">
+
+      <div class="p-6 lg:p-8">
+
+        <div class="text-center mb-5">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl text-white mb-3" style="background: linear-gradient(135deg, #38bdf8, #0ea5e9); box-shadow: 0 14px 34px rgba(14,165,233,.28);">
+            <i class="bi bi-shop text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">Masuk ke VenResto</h1>
+          <p class="text-slate-500 leading-relaxed text-sm">
+            Kelola POS, QR menu, kitchen display, inventory, dan laporan restoran dari satu dashboard.
+          </p>
+
+          @isset($currentTenant)
+            <div class="mt-3 px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600">
+              Tenant aktif: <code class="font-mono">{{ $currentTenant->slug }}</code>
+            </div>
+          @endisset
+        </div>
+
+        @if(session('status'))
+          <div class="mb-4 px-4 py-3 rounded-xl bg-green-100 text-green-800 text-sm flex items-center gap-2">
+            <i class="bi bi-check-circle"></i>{{ session('status') }}
+          </div>
+        @endif
+
+        <form method="POST" action="{{ $loginAction }}" novalidate>
+          @csrf
+
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
+            <input id="email" type="email" name="email"
+                   class="w-full h-12 px-4 rounded-2xl border @error('email') border-red-400 ring-2 ring-red-100 @else border-slate-200 @enderror bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                   value="{{ old('email') }}"
+                   placeholder="nama@email.com"
+                   autocomplete="email"
+                   required autofocus>
+            @error('email')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
           </div>
 
-          @if(session('status'))
-            <div class="alert alert-success rounded-4 border-0">
-              <i class="bi bi-check-circle me-2"></i>{{ session('status') }}
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-1.5">
+              <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+              <span class="text-xs text-slate-500">Gunakan akun tenant Anda</span>
             </div>
-          @endif
-
-          <form method="POST" action="{{ $loginAction }}" novalidate>
-            @csrf
-
-            <div class="mb-3">
-              <label for="email" class="form-label fw-semibold">Email</label>
-              <input id="email" type="email" name="email"
-                     class="form-control @error('email') is-invalid @enderror"
-                     value="{{ old('email') }}"
-                     placeholder="nama@email.com"
-                     autocomplete="email"
-                     required autofocus>
-              @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="mb-3">
-              <div class="d-flex justify-content-between align-items-center">
-                <label for="password" class="form-label fw-semibold">Password</label>
-                <span class="small text-secondary">Gunakan akun tenant Anda</span>
-              </div>
-              <div class="input-group">
-                <input id="password" type="password" name="password"
-                       class="form-control @error('password') is-invalid @enderror"
-                       placeholder="••••••••"
-                       autocomplete="current-password"
-                       required>
-                <button type="button" class="btn btn-outline-secondary" id="togglePass" aria-label="Tampilkan password">
-                  <i class="bi bi-eye"></i>
-                </button>
-              </div>
-              @error('password')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Ingat saya</label>
-              </div>
-            </div>
-
-            <div class="d-grid">
-              <button class="btn btn-primary btn-auth" type="submit">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
+            <div class="flex">
+              <input id="password" type="password" name="password"
+                     class="flex-1 h-12 px-4 rounded-l-2xl border @error('password') border-red-400 ring-2 ring-red-100 @else border-slate-200 @enderror bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                     placeholder="••••••••"
+                     autocomplete="current-password"
+                     required>
+              <button type="button" class="px-4 rounded-r-2xl border border-l-0 border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" id="togglePass" aria-label="Tampilkan password">
+                <i class="bi bi-eye"></i>
               </button>
             </div>
-          </form>
-
-          <div class="text-center mt-4 small text-secondary">
-            Belum punya akun?
-            <a href="{{ url('/signup') }}" class="fw-semibold text-decoration-none">Mulai Trial</a>
+            @error('password')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
           </div>
 
-          <div class="text-center mt-3">
-            <a href="{{ url('/') }}" class="small text-secondary text-decoration-none">
-              <i class="bi bi-arrow-left me-1"></i>Kembali ke landing page
-            </a>
+          <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-2">
+              <input class="w-4 h-4 rounded border-slate-300 text-sky-500 focus:ring-sky-500" type="checkbox" value="1" id="remember" name="remember">
+              <label class="text-sm text-slate-600" for="remember">Ingat saya</label>
+            </div>
           </div>
+
+          <button class="w-full h-12 rounded-2xl bg-sky-500 text-white text-sm font-extrabold hover:bg-sky-600 shadow-sm transition flex items-center justify-center gap-2" type="submit">
+            <i class="bi bi-box-arrow-in-right"></i>Masuk
+          </button>
+        </form>
+
+        <div class="text-center mt-4">
+          <span class="text-sm text-slate-500">Belum punya akun?</span>
+          <a href="{{ url('/signup') }}" class="text-sm font-semibold text-sky-600 hover:text-sky-700 no-underline">Mulai Trial</a>
         </div>
+
+        <div class="text-center mt-3">
+          <a href="{{ url('/') }}" class="text-sm text-slate-500 hover:text-slate-700 no-underline flex items-center justify-center gap-1">
+            <i class="bi bi-arrow-left"></i>Kembali ke landing page
+          </a>
+        </div>
+
       </div>
     </div>
   </div>

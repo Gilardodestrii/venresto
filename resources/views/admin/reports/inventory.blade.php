@@ -17,94 +17,86 @@
     $movements = $movements ?? new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
 @endphp
 
-<div class="container-fluid">
+<div class="container-fluid px-4 mx-auto">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
         <div>
-            <h3 class="fw-bold mb-1">Inventory Report</h3>
-            <div class="text-muted">Analisa pergerakan stok dan pemakaian bahan</div>
+            <h3 class="font-bold text-gray-900 mb-1">Inventory Report</h3>
+            <div class="text-gray-500 text-sm">Analisa pergerakan stok dan pemakaian bahan</div>
         </div>
 
-        <form method="GET" class="d-flex flex-wrap gap-2 align-items-end">
+        <form method="GET" class="flex flex-wrap gap-2 items-end">
             <div>
-                <label class="form-label small text-muted mb-1">Dari</label>
-                <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control rounded-4">
+                <label class="block text-xs text-gray-500 mb-1">Dari</label>
+                <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
-                <label class="form-label small text-muted mb-1">Sampai</label>
-                <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control rounded-4">
+                <label class="block text-xs text-gray-500 mb-1">Sampai</label>
+                <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <button class="btn btn-primary rounded-4 px-4">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
                 <i class="bi bi-funnel me-1"></i> Filter
             </button>
         </form>
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-5"><div class="card-body p-4">
-                <div class="text-muted small mb-1">Stock In</div>
-                <h4 class="fw-bold text-success mb-0">{{ number_format($stockInQty, 3) }}</h4>
-            </div></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="text-gray-500 text-xs mb-1">Stock In</div>
+            <h4 class="font-bold text-green-600 mb-0">{{ number_format($stockInQty, 3) }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-5"><div class="card-body p-4">
-                <div class="text-muted small mb-1">Stock Out</div>
-                <h4 class="fw-bold text-danger mb-0">{{ number_format($stockOutQty, 3) }}</h4>
-            </div></div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="text-gray-500 text-xs mb-1">Stock Out</div>
+            <h4 class="font-bold text-red-600 mb-0">{{ number_format($stockOutQty, 3) }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-5"><div class="card-body p-4">
-                <div class="text-muted small mb-1">Waste</div>
-                <h4 class="fw-bold text-warning mb-0">{{ number_format($wasteQty, 3) }}</h4>
-            </div></div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="text-gray-500 text-xs mb-1">Waste</div>
+            <h4 class="font-bold text-yellow-600 mb-0">{{ number_format($wasteQty, 3) }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-5"><div class="card-body p-4">
-                <div class="text-muted small mb-1">Low Stock</div>
-                <h4 class="fw-bold text-danger mb-0">{{ $lowStockCount }}</h4>
-            </div></div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="text-gray-500 text-xs mb-1">Low Stock</div>
+            <h4 class="font-bold text-red-600 mb-0">{{ $lowStockCount }}</h4>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-5 overflow-hidden">
-        <div class="card-header bg-white border-0 p-4">
-            <h5 class="fw-bold mb-1">Movement History</h5>
-            <div class="text-muted small">Detail pergerakan stok sesuai filter tanggal</div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+        <div class="border-b border-gray-100 px-5 py-4">
+            <h5 class="font-bold text-gray-900 mb-1">Movement History</h5>
+            <div class="text-gray-500 text-xs">Detail pergerakan stok sesuai filter tanggal</div>
         </div>
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead class="table-light">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-gray-600 text-xs uppercase">
                     <tr>
-                        <th class="px-4 py-3">Tanggal</th>
-                        <th>Bahan</th>
-                        <th>Type</th>
-                        <th>Qty</th>
-                        <th>Ref</th>
+                        <th class="px-5 py-3 font-medium">Tanggal</th>
+                        <th class="px-4 py-3 font-medium">Bahan</th>
+                        <th class="px-4 py-3 font-medium">Type</th>
+                        <th class="px-4 py-3 font-medium">Qty</th>
+                        <th class="px-4 py-3 font-medium">Ref</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
                     @forelse($movements as $movement)
-                        <tr>
-                            <td class="px-4">
-                                <div class="fw-semibold">{{ $movement->created_at?->format('d M Y') }}</div>
-                                <small class="text-muted">{{ $movement->created_at?->format('H:i') }}</small>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-5 py-3">
+                                <div class="font-semibold text-gray-900">{{ $movement->created_at?->format('d M Y') }}</div>
+                                <small class="text-gray-400">{{ $movement->created_at?->format('H:i') }}</small>
                             </td>
-                            <td>{{ $movement->material?->name ?? '-' }}</td>
-                            <td>
+                            <td class="px-4 py-3 text-gray-700">{{ $movement->material?->name ?? '-' }}</td>
+                            <td class="px-4 py-3">
                                 @if($movement->type === 'in')
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">IN</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">IN</span>
                                 @else
-                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">OUT</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">OUT</span>
                                 @endif
                             </td>
-                            <td class="fw-bold">{{ number_format($movement->qty, 3) }}</td>
-                            <td>{{ $movement->ref }}</td>
+                            <td class="px-4 py-3 font-bold text-gray-900">{{ number_format($movement->qty, 3) }}</td>
+                            <td class="px-4 py-3 text-gray-500">{{ $movement->ref }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="bi bi-graph-up fs-1 d-block mb-2"></i>
+                            <td colspan="5" class="text-center py-12 text-gray-400">
+                                <i class="bi bi-graph-up text-4xl d-block mb-2"></i>
                                 Modul reports sedang disiapkan. Data movement akan tampil setelah controller report diaktifkan.
                             </td>
                         </tr>
@@ -114,7 +106,7 @@
         </div>
 
         @if(method_exists($movements, 'hasPages') && $movements->hasPages())
-            <div class="card-footer bg-white border-0 px-4 py-3">
+            <div class="border-t border-gray-100 px-5 py-3">
                 {{ $movements->links() }}
             </div>
         @endif

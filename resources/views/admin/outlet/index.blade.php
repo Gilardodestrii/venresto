@@ -9,25 +9,25 @@
     {{-- =========================
         HEADER
     ========================== --}}
-    <div class="outlet-header-card mb-4">
+    <div class="bg-white rounded-3xl p-5 mb-6 border border-gray-100 shadow-sm">
 
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
             <div>
 
-                <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="flex items-center gap-4 mb-3">
 
-                    <div class="header-icon">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center text-2xl text-sky-600">
                         <i class="bi bi-shop"></i>
                     </div>
 
                     <div>
 
-                        <h2 class="fw-bold mb-1">
+                        <h2 class="font-bold text-xl mb-1">
                             Outlet Management
                         </h2>
 
-                        <p class="text-muted mb-0">
+                        <p class="text-gray-500 mb-0">
                             Kelola seluruh cabang restoran tenant VenResto
                         </p>
 
@@ -37,22 +37,20 @@
 
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-3">
 
-                <button class="btn btn-light-premium">
+                <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors inline-flex items-center gap-2">
 
-                    <i class="bi bi-funnel me-1"></i>
+                    <i class="bi bi-funnel"></i>
                     Filter
 
                 </button>
 
-                <button class="btn btn-primary-premium"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCreateOutlet">
+                <button class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors inline-flex items-center gap-2"
+                        onclick="openOutletModal()">
 
-                    <i class="bi bi-plus-circle me-1"></i>
+                    <i class="bi bi-plus-circle"></i>
                     Tambah Outlet
-
                 </button>
 
             </div>
@@ -64,27 +62,27 @@
     {{-- =========================
         STATS
     ========================== --}}
-    <div class="row g-3 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
-        <div class="col-md-4 col-sm-6">
+        <div>
 
-            <div class="premium-stat-card">
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
 
-                <div class="stat-content">
+                <div class="flex items-center justify-between">
 
                     <div>
 
-                        <div class="stat-label">
+                        <div class="text-sm text-gray-500 mb-1">
                             Total Outlet
                         </div>
 
-                        <div class="stat-number">
+                        <div class="text-3xl font-bold text-gray-900">
                             {{ $outlets->count() }}
                         </div>
 
                     </div>
 
-                    <div class="stat-icon primary">
+                    <div class="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center text-xl text-sky-600">
                         <i class="bi bi-shop"></i>
                     </div>
 
@@ -94,25 +92,25 @@
 
         </div>
 
-        <div class="col-md-4 col-sm-6">
+        <div>
 
-            <div class="premium-stat-card">
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
 
-                <div class="stat-content">
+                <div class="flex items-center justify-between">
 
                     <div>
 
-                        <div class="stat-label">
+                        <div class="text-sm text-gray-500 mb-1">
                             Outlet Active
                         </div>
 
-                        <div class="stat-number">
+                        <div class="text-3xl font-bold text-gray-900">
                             {{ $outlets->where('is_active', true)->count() }}
                         </div>
 
                     </div>
 
-                    <div class="stat-icon success">
+                    <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-xl text-green-600">
                         <i class="bi bi-check-circle"></i>
                     </div>
 
@@ -122,25 +120,25 @@
 
         </div>
 
-        <div class="col-md-4 col-sm-6">
+        <div>
 
-            <div class="premium-stat-card">
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
 
-                <div class="stat-content">
+                <div class="flex items-center justify-between">
 
                     <div>
 
-                        <div class="stat-label">
+                        <div class="text-sm text-gray-500 mb-1">
                             Non Active
                         </div>
 
-                        <div class="stat-number">
+                        <div class="text-3xl font-bold text-gray-900">
                             {{ $outlets->where('is_active', false)->count() }}
                         </div>
 
                     </div>
 
-                    <div class="stat-icon danger">
+                    <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-xl text-red-600">
                         <i class="bi bi-x-circle"></i>
                     </div>
 
@@ -155,17 +153,17 @@
     {{-- =========================
         TABLE CARD
     ========================== --}}
-    <div class="premium-table-card">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
         {{-- SEARCH --}}
-        <div class="table-topbar">
+        <div class="p-4 border-b border-gray-100">
 
-            <div class="search-box">
+            <div class="relative">
 
-                <i class="bi bi-search"></i>
+                <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
                 <input type="text"
-                       class="form-control"
+                       class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                        placeholder="Cari outlet...">
 
             </div>
@@ -173,33 +171,33 @@
         </div>
 
         {{-- TABLE --}}
-        <div class="table-responsive">
+        <div class="overflow-x-auto">
 
-            <table class="table premium-table align-middle mb-0">
+            <table class="w-full">
 
                 <thead>
 
-                    <tr>
-                        <th>Outlet</th>
-                        <th>Kontak</th>
-                        <th>Status</th>
-                        <th class="text-end">Action</th>
+                    <tr class="bg-gray-50 border-b border-gray-100">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Outlet</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kontak</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                     </tr>
 
                 </thead>
 
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
 
                     @forelse($outlets as $outlet)
 
-                        <tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
 
                             {{-- OUTLET --}}
-                            <td>
+                            <td class="px-6 py-4">
 
-                                <div class="d-flex align-items-center gap-3">
+                                <div class="flex items-center gap-4">
 
-                                    <div class="outlet-avatar">
+                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center text-lg text-sky-600 flex-shrink-0">
 
                                         <i class="bi bi-shop"></i>
 
@@ -207,11 +205,11 @@
 
                                     <div>
 
-                                        <div class="fw-semibold">
+                                        <div class="font-semibold text-gray-900">
                                             {{ $outlet->name }}
                                         </div>
 
-                                        <div class="small text-muted">
+                                        <div class="text-sm text-gray-500">
                                             {{ $outlet->address ?? 'Alamat belum tersedia' }}
                                         </div>
 
@@ -222,17 +220,17 @@
                             </td>
 
                             {{-- CONTACT --}}
-                            <td>
+                            <td class="px-6 py-4">
 
-                                <div class="small">
+                                <div class="text-sm">
 
-                                    <div class="mb-1">
-                                        <i class="bi bi-telephone me-1"></i>
+                                    <div class="mb-1 text-gray-700">
+                                        <i class="bi bi-telephone mr-1 text-gray-400"></i>
                                         {{ $outlet->phone ?? '-' }}
                                     </div>
 
-                                    <div class="text-muted">
-                                        <i class="bi bi-envelope me-1"></i>
+                                    <div class="text-gray-500">
+                                        <i class="bi bi-envelope mr-1 text-gray-400"></i>
                                         {{ $outlet->email ?? '-' }}
                                     </div>
 
@@ -241,17 +239,17 @@
                             </td>
 
                             {{-- STATUS --}}
-                            <td>
+                            <td class="px-6 py-4">
 
                                 @if($outlet->is_active)
 
-                                    <span class="badge-premium success">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                                         Active
                                     </span>
 
                                 @else
 
-                                    <span class="badge-premium danger">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
                                         Non Active
                                     </span>
 
@@ -260,12 +258,13 @@
                             </td>
 
                             {{-- ACTION --}}
-                            <td class="text-end">
+                            <td class="px-6 py-4">
 
-                                <div class="d-flex justify-content-end gap-2">
+                                <div class="flex justify-end gap-2">
+
                                 {{-- VIEW --}}
                                 <a href="{{ route('tenant.admin.outlets.show', [$currentTenant->slug, $outlet->id]) }}"
-                                class="action-btn">
+                                class="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
 
                                     <i class="bi bi-eye"></i>
 
@@ -273,7 +272,7 @@
 
                                 {{-- EDIT --}}
                                 <a href="{{ route('tenant.admin.outlets.edit', [$currentTenant->slug, $outlet->id]) }}"
-                                class="action-btn">
+                                class="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
 
                                     <i class="bi bi-pencil"></i>
 
@@ -285,7 +284,7 @@
                                         @csrf
                                         @method('DELETE')
 
-                                        <button class="action-btn danger"
+                                        <button class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-600 transition-colors"
                                                 onclick="return confirm('Hapus outlet ini?')">
 
                                             <i class="bi bi-trash"></i>
@@ -306,26 +305,26 @@
 
                             <td colspan="4">
 
-                                <div class="empty-state">
+                                <div class="py-16 text-center">
 
-                                    <div class="empty-icon">
+                                    <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl text-gray-400 mx-auto mb-4">
 
                                         <i class="bi bi-shop"></i>
 
                                     </div>
 
-                                    <h5 class="fw-bold mb-2">
+                                    <h5 class="font-bold text-gray-900 mb-2">
                                         Belum Ada Outlet
                                     </h5>
 
-                                    <p class="text-muted mb-4">
+                                    <p class="text-gray-500 mb-6 max-w-sm mx-auto">
                                         Tambahkan outlet pertama untuk memulai sistem POS restoran.
                                     </p>
 
                                     <a href="#"
-                                       class="btn btn-primary-premium">
+                                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors">
 
-                                        <i class="bi bi-plus-circle me-1"></i>
+                                        <i class="bi bi-plus-circle"></i>
                                         Tambah Outlet
 
                                     </a>
@@ -351,56 +350,64 @@
 {{-- ======================================
     MODAL CREATE OUTLET
 ====================================== --}}
-<div class="modal fade"
-     id="modalCreateOutlet"
-     tabindex="-1">
+<div id="modalCreateOutlet"
+     class="fixed inset-0 z-50 hidden">
 
-    <div class="modal-dialog modal-dialog-centered">
+    {{-- Backdrop --}}
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+         onclick="closeOutletModal()"></div>
 
-        <div class="modal-content premium-modal border-0">
+    {{-- Panel --}}
+    <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md pointer-events-auto">
 
             <form method="POST"
                   action="{{ route('tenant.admin.outlets.store', $currentTenant->slug) }}">
 
                 @csrf
 
-                <div class="modal-header border-0 pb-0">
+                <div class="border-0 pb-0 px-6 pt-6">
 
                     <div>
 
-                        <h5 class="fw-bold mb-1">
+                        <h5 class="font-bold mb-1">
                             Tambah Outlet
                         </h5>
 
-                        <p class="text-muted small mb-0">
+                        <p class="text-gray-500 text-sm mb-0">
                             Tambahkan cabang restoran baru
                         </p>
 
                     </div>
 
                     <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            onclick="closeOutletModal()">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
 
                 </div>
 
-                <div class="modal-body">
+                <div class="px-6 py-5">
 
                     {{-- NAME --}}
-                    <div class="mb-3">
+                    <div class="mb-5">
 
-                        <label class="form-label fw-semibold">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Nama Outlet
                         </label>
 
                         <input type="text"
                                name="name"
-                               class="form-control premium-input @error('name') is-invalid @enderror"
+                               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') is-invalid @enderror"
                                placeholder="Contoh: Outlet Bogor">
 
                         @error('name')
 
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback text-red-600 text-sm mt-1">
                                 {{ $message }}
                             </div>
 
@@ -409,20 +416,20 @@
                     </div>
 
                     {{-- ADDRESS --}}
-                    <div class="mb-3">
+                    <div class="mb-5">
 
-                        <label class="form-label fw-semibold">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Alamat
                         </label>
 
                         <textarea name="address"
                                   rows="4"
-                                  class="form-control premium-input @error('address') is-invalid @enderror"
+                                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none @error('address') is-invalid @enderror"
                                   placeholder="Masukkan alamat outlet"></textarea>
 
                         @error('address')
 
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback text-red-600 text-sm mt-1">
                                 {{ $message }}
                             </div>
 
@@ -432,20 +439,20 @@
 
                 </div>
 
-                <div class="modal-footer border-0 pt-0">
+                <div class="border-0 pt-0 px-6 pb-6 flex justify-end gap-3">
 
                     <button type="button"
-                            class="btn btn-light-premium"
-                            data-bs-dismiss="modal">
+                            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors"
+                            onclick="closeOutletModal()">
 
                         Cancel
 
                     </button>
 
                     <button type="submit"
-                            class="btn btn-primary-premium">
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors inline-flex items-center gap-2">
 
-                        <i class="bi bi-check-circle me-1"></i>
+                        <i class="bi bi-check-circle"></i>
                         Simpan Outlet
 
                     </button>
@@ -460,50 +467,14 @@
 
 </div>
 
+<script>
+    function openOutletModal() {
+        document.getElementById('modalCreateOutlet').classList.remove('hidden');
+    }
+
+    function closeOutletModal() {
+        document.getElementById('modalCreateOutlet').classList.add('hidden');
+    }
+</script>
+
 @endsection
-
-
-@push('styles')
-
-<style>
-
-
-
-
-
-
-
-
-
-
-
-/* ===============================
-    MOBILE
-================================ */
-
-@media(max-width:768px){
-
-    .outlet-header-card{
-        padding:20px;
-        border-radius:24px;
-    }
-
-    .header-icon{
-        width:58px;
-        height:58px;
-        font-size:24px;
-    }
-
-    .stat-number{
-        font-size:26px;
-    }
-
-    .premium-table tbody td{
-        min-width:180px;
-    }
-
-}
-
-</style>
-
-@endpush

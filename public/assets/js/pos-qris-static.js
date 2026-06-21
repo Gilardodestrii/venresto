@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
     syncQrisStaticBoxes();
 });
 
+function showModal(modalEl) { if(modalEl) modalEl.classList.remove('hidden'); }
+function hideModal(modalEl) { if(modalEl) modalEl.classList.add('hidden'); }
+
 function initQrisStaticButtons()
 {
     document.querySelectorAll('select[name="payment_method"]').forEach(function (paymentSelect, index) {
@@ -160,8 +163,6 @@ async function generateQrisStatic()
         return;
     }
 
-    const modal = new bootstrap.Modal(modalEl);
-
     const amountText = document.getElementById('qrisAmountText');
     const loading = document.getElementById('qrisLoading');
     const result = document.getElementById('qrisResult');
@@ -186,7 +187,7 @@ async function generateQrisStatic()
         errorBox.innerText = '';
     }
 
-    modal.show();
+    showModal(modalEl);
 
     try {
         const response = await fetch(window.qrisStaticGenerateUrl, {

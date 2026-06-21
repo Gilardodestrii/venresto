@@ -139,7 +139,7 @@ body{background:var(--bg);}
 </style>
 
 <section class="documentation-hero">
-    <div class="container">
+    <div class="max-w-7xl mx-auto px-4">
         <div class="doc-badge"><i class="bi bi-book"></i> VenResto Documentation</div>
         <h1 class="doc-title">Panduan Lengkap<br>Menggunakan VenResto</h1>
         <p class="doc-subtitle">Dokumentasi operasional untuk owner, manager, cashier, kitchen staff, dan waiter. Ikuti alur dari setup awal, QR menu customer, POS cashier, order management, kitchen display, inventory, hingga laporan restoran.</p>
@@ -154,7 +154,7 @@ body{background:var(--bg);}
 </section>
 
 <section class="doc-section">
-    <div class="container">
+    <div class="max-w-7xl mx-auto px-4">
         <div class="doc-layout">
             <aside class="doc-sidebar">
                 <div class="doc-sidebar-title">Daftar Panduan</div>
@@ -279,8 +279,8 @@ body{background:var(--bg);}
                     <div class="section-kicker"><i class="bi bi-people"></i> Role & Staff</div>
                     <h2>8. Hak akses staff</h2>
                     <p class="lead-text">VenResto menggunakan role agar setiap staff hanya mengakses menu sesuai tanggung jawabnya.</p>
-                    <div class="table-doc table-responsive">
-                        <table class="table align-middle">
+                    <div class="table-doc overflow-x-auto rounded-2xl">
+                        <table class="w-full">
                             <thead><tr><th>Role</th><th>Akses Utama</th><th>Contoh Penggunaan</th></tr></thead>
                             <tbody>
                                 <tr><td><span class="badge-role">Owner</span></td><td>Semua fitur tenant</td><td>Mengelola outlet, staff, laporan, setting, billing, dan operasional utama.</td></tr>

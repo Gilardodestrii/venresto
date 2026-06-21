@@ -1,251 +1,307 @@
-<!doctype html>
-<html lang="id" data-theme="light">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <title>@yield('title','VenResto Dashboard')</title>
+@section('page-title', isset($pageTitle) ? $pageTitle : 'Admin Panel')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
 
-    @php
-        $lowStockMaterials = \App\Models\Material::query()
-            ->where('tenant_id', $currentTenant->id)
-            ->whereColumn('stock', '<=', 'min_stock')
-            ->orderBy('stock')
-            ->limit(5)
-            ->get();
-    @endphp
 
-    @stack('styles')
-</head>
-<body>
+@section('layout-body')
+<div class="flex min-h-screen bg-gray-50">
 
-<div id="sidebar" class="sidebar p-3">
+    {{-- =========================
+        SIDEBAR
+    ========================== --}}
+    <aside class="w-64 min-h-screen bg-gray-900 text-white flex flex-col fixed left-0 top-0 bottom-0 z-40" id="sidebar">
 
-    <div class="sidebar-header">
-        <strong class="text-primary-soft">VenResto</strong>
-    </div>
-        <button class="btn btn-sm btn-light" id="toggleSidebar">
-            <i class="bi bi-list"></i>
-        </button>
+        {{-- LOGO --}}
+        <div class="px-6 py-5 border-b border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                    V
+                </div>
+                <div>
+                    <div class="font-bold text-base leading-tight">VenResto</div>
+                    <div class="text-xs text-gray-400 leading-tight">Restaurant POS</div>
+                </div>
+            </div>
+        </div>
 
-        <a href="{{ url($currentTenant->slug.'/admin/dashboard') }}" class="sidebar-link {{ request()->routeIs('tenant.admin.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid"></i>
-            <span class="text">Dashboard</span>
-        </a>
+        {{-- MENU --}}
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
 
-        @hasanyrole('owner|manager')
-            <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.reports.*') ? 'active' : '' }}">
-                <i class="bi bi-bar-chart-line"></i>
-                <span class="text">Reports</span>
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Main</div>
+
+            <a href="{{ route('tenant.admin.dashboard', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.dashboard*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-grid-1x2 text-base"></i>
+                Dashboard
             </a>
 
-            <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.settings.*') ? 'active' : '' }}">
-                <i class="bi bi-gear"></i>
-                <span class="text">Settings</span>
+            <a href="{{ route('tenant.admin.pos.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.pos*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-upc-scan text-base"></i>
+                Point of Sale
             </a>
 
-            <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.roles.*') ? 'active' : '' }}">
-                <i class="bi bi-people"></i>
-                <span class="text">Staff Management</span>
+            <a href="{{ route('tenant.admin.orders.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.orders*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-receipt text-base"></i>
+                Orders
             </a>
 
-            <a href="{{ route('tenant.admin.outlets.index',$currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.outlets.*') ? 'active' : '' }}">
-                <i class="bi bi-shop"></i>
-                <span class="text">Outlet</span>
+            <a href="{{ route('tenant.admin.kitchen.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.kitchen*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-fire text-base"></i>
+                Kitchen Display
             </a>
 
-            @if(isset($currentOutlet) && $currentOutlet)
-                <a href="{{ url($currentTenant->slug.'/admin/outlets/'.$currentOutlet->id.'/qr') }}" class="sidebar-link">
-                    <i class="bi bi-qr-code"></i>
-                    <span class="text">QR Menu</span>
-                </a>
-            @endif
-        @endhasanyrole
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mt-5 mb-2">Inventory</div>
 
-        @hasanyrole('owner|manager')
-            <a href="{{ url($currentTenant->slug.'/admin/menu-categories') }}" class="sidebar-link">
-                <i class="bi bi-collection"></i>
-                <span class="text">Kategori Menu</span>
-            </a>
-
-            <a href="{{ url($currentTenant->slug.'/admin/menu-items') }}" class="sidebar-link">
-                <i class="bi bi-cup-straw"></i>
-                <span class="text">Menu Item</span>
-            </a>
-        @endhasanyrole
-
-        @hasanyrole('owner|manager|cashier')
-            <a href="{{ url($currentTenant->slug.'/admin/pos') }}" class="sidebar-link">
-                <i class="bi bi-cart-plus"></i>
-                <span class="text">POS Kasir</span>
-            </a>
-
-            <a href="{{ url($currentTenant->slug.'/admin/cashier-sessions') }}" class="sidebar-link">
-                <i class="bi bi-cash-stack"></i>
-                <span class="text">Cashier Session</span>
-            </a>
-        @endhasanyrole
-
-        @hasanyrole('owner|manager|cashier|waiter')
-            <a href="{{ url($currentTenant->slug.'/admin/orders') }}" class="sidebar-link">
-                <i class="bi bi-basket"></i>
-                <span class="text">Pesanan</span>
-            </a>
-        @endhasanyrole
-
-        @hasanyrole('owner|manager|kitchen')
-            <a href="{{ url($currentTenant->slug.'/admin/kitchen') }}" class="sidebar-link">
-                <i class="bi bi-display"></i>
-                <span class="text">Kitchen Display</span>
-            </a>
-        @endhasanyrole
-
-        @hasanyrole('owner|manager')
             <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.materials.*') ? 'active' : '' }}">
-                <i class="bi bi-box-seam"></i>
-                <span>Inventory</span>
-
-                @if($lowStockMaterials->count())
-                    <span class="badge bg-danger rounded-pill ms-auto">
-                        {{ $lowStockMaterials->count() }}
-                    </span>
-                @endif
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.materials*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-box-seam text-base"></i>
+                Materials
             </a>
 
             <a href="{{ route('tenant.admin.recipes.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.recipes.*') ? 'active' : '' }}">
-                <i class="bi bi-journal-check"></i>
-                <span>Recipe</span>
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.recipes*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-book text-base"></i>
+                Recipes
             </a>
 
             <a href="{{ route('tenant.admin.stock-movements.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.stock-movements.*') ? 'active' : '' }}">
-                <i class="bi bi-clock-history"></i>
-                <span>Stock Movement</span>
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.stock-movements*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-arrow-left-right text-base"></i>
+                Stock Movements
+            </a>
+
+            <a href="{{ route('tenant.admin.waste-records.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.waste-records*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-trash3 text-base"></i>
+                Waste Records
+            </a>
+
+            <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.stock-transfers*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-truck text-base"></i>
+                Stock Transfers
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mt-5 mb-2">Catalog</div>
+
+            <a href="{{ route('tenant.admin.menu-items.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.menu-items*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-cup-hot text-base"></i>
+                Menu Items
+            </a>
+
+            <a href="{{ route('tenant.admin.menu-categories.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.menu-categories*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-tag text-base"></i>
+                Categories
             </a>
 
             <a href="{{ route('tenant.admin.menu-costing.index', $currentTenant->slug) }}"
-            class="sidebar-link {{ request()->routeIs('tenant.admin.menu-costing.*') ? 'active' : '' }}">
-                <i class="bi bi-calculator"></i>
-                <span>HPP Costing</span>
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.menu-costing*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-calculator text-base"></i>
+                Menu Costing
             </a>
-        @endhasanyrole
 
-</div>
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mt-5 mb-2">Management</div>
 
-<div class="main">
+            <a href="{{ route('tenant.admin.outlets.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.outlets*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-shop text-base"></i>
+                Outlets
+            </a>
 
-    <div class="topbar d-flex justify-content-between align-items-center p-3 px-4">
+            <a href="{{ route('tenant.admin.cashier-sessions.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.cashier-sessions*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-cash-register text-base"></i>
+                Cashier Sessions
+            </a>
 
-        <div class="d-flex align-items-center gap-2">
-            <h6 class="mb-0 fw-bold">@yield('page-title','Dashboard')</h6>
-        </div>
+            @can('manage users')
+            <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.roles*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-people text-base"></i>
+                Roles & Users
+            </a>
+            @endcan
 
-        <div class="d-flex align-items-center gap-3">
-        <button class="btn btn-sm btn-light d-md-none" onclick="toggleSidebarMobile()">
-            <i class="bi bi-list"></i>
-        </button>
+            @can('view reports')
+            <a href="{{ route('tenant.admin.reports.sales', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.reports*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-bar-chart text-base"></i>
+                Reports
+            </a>
+            @endcan
 
-            @hasanyrole('owner|manager')
-                @if($lowStockMaterials->count())
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-danger dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            Low Stock
-                        </button>
+            @can('manage settings')
+            <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('tenant.admin.settings*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-gear text-base"></i>
+                Settings
+            </a>
+            @endcan
 
-                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:320px;">
-                            <div class="fw-bold mb-2">Low Stock Alert</div>
+            <a href="{{ route('admin.qr.index', [$currentTenant->slug, $currentOutlet?->id ?? 0]) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+               {{ Request::routeIs('admin.qr*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                <i class="bi bi-qr-code text-base"></i>
+                QR Menu
+            </a>
 
-                            @foreach($lowStockMaterials as $material)
-                                <div class="border rounded-3 p-2 mb-2">
-                                    <div class="fw-semibold">{{ $material->name }}</div>
-                                    <small class="text-danger">
-                                        Stock: {{ number_format($material->stock, 2) }} {{ $material->unit }}
-                                    </small>
-                                </div>
-                            @endforeach
+        </nav>
 
-                            <a href="{{ route('tenant.admin.materials.index', $currentTenant->slug) }}"
-                               class="btn btn-sm btn-dark w-100 rounded-3">
-                                Buka Inventory
-                            </a>
-                        </div>
-                    </div>
-                @endif
-            @endhasanyrole
-
-            <input class="form-control form-control-sm" placeholder="Search...">
-
-            <button class="btn btn-sm btn-outline-secondary" onclick="toggleTheme()">
-                <i class="bi bi-moon-stars"></i>
-            </button>
-
-            <div class="dropdown">
-                <button class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    {{ Auth::user()->name }}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <form method="POST" action="{{ url('logout') }}">
+        {{-- USER FOOTER --}}
+        <div class="px-4 py-4 border-t border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</div>
+                    <div class="text-xs text-gray-400 truncate">{{ Auth::user()->getRoleNames()->first() ?? 'Staff' }}</div>
+                </div>
+                <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                    <button @click="open = !open" class="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div x-show="open"
+                         x-transition
+                         class="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
+                        <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
+                           class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <i class="bi bi-gear"></i> Settings
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="dropdown-item">Logout</button>
+                            <button type="submit" class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
                         </form>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
-
         </div>
 
-    </div>
+    </aside>
 
-    <div class="p-4">
-        @yield('content')
+    {{-- =========================
+        MAIN CONTENT
+    ========================== --}}
+    <div class="flex-1 ml-64 flex flex-col">
+
+        {{-- TOPBAR --}}
+        <header class="bg-white shadow-sm sticky top-0 z-30 px-6 py-4">
+            <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-4">
+                    <button id="toggleSidebar" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors lg:hidden">
+                        <i class="bi bi-list text-xl"></i>
+                    </button>
+
+                    {{-- Breadcrumb --}}
+                    @hasSection('breadcrumbs')
+                        @yield('breadcrumbs')
+                    @else
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <i class="bi bi-house"></i>
+                            <span>/</span>
+                            <span class="text-gray-700 font-medium">@yield('page-title', 'Dashboard')</span>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="flex items-center gap-3">
+
+                    @if(isset($currentOutlet) && $currentOutlet)
+                        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg text-sm">
+                            <i class="bi bi-shop text-blue-600"></i>
+                            <span class="font-medium text-blue-800">{{ $currentOutlet->name }}</span>
+                        </div>
+                    @endif
+
+                    {{-- NOTIFICATION --}}
+                    @php
+                        $pendingOrdersCount = \App\Models\Order::where('status', 'pending')
+                            ->when(isset($currentOutlet), fn($q) => $q->where('outlet_id', $currentOutlet->id))
+                            ->when(Auth::user()->hasRole('cashier'), fn($q) => $q->where('cashier_id', Auth::id()))
+                            ->count();
+                    @endphp
+                    <a href="{{ route('tenant.admin.orders.index', $currentTenant->slug) }}"
+                       class="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+                        <i class="bi bi-bell text-xl"></i>
+                        @if($pendingOrdersCount > 0)
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                {{ $pendingOrdersCount > 9 ? '9+' : $pendingOrdersCount }}
+                            </span>
+                        @endif
+                    </a>
+
+                    {{-- Tenant Switcher --}}
+                    @if(Auth::user()->hasRole('superadmin') && isset($tenants) && $tenants->count() > 1)
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open"
+                                    class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
+                                <i class="bi bi-grid-3x3"></i>
+                                <span class="hidden sm:inline">{{ $currentTenant->name }}</span>
+                                <i class="bi bi-chevron-down text-xs"></i>
+                            </button>
+                            <div x-show="open"
+                                 x-transition
+                                 @click.away="open = false"
+                                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
+                                @foreach($tenants as $tenant)
+                                    <a href="{{ route('switch.tenant', $tenant->slug) }}"
+                                       class="flex items-center gap-2 px-4 py-2.5 text-sm {{ $tenant->id === $currentTenant->id ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
+                                        <i class="bi bi-building {{ $tenant->id === $currentTenant->id ? 'text-blue-600' : 'text-gray-400' }}"></i>
+                                        {{ $tenant->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+
+            </div>
+        </header>
+
+        {{-- PAGE CONTENT --}}
+        <main class="flex-1 p-6">
+            @yield('content')
+        </main>
+
     </div>
 
 </div>
+@endsection
 
-@if(request()->routeIs('tenant.admin.pos.index'))
-    @include('admin.pos.partials.qris-static-modal')
-
-    <script>
-        window.qrisStaticGenerateUrl = "{{ route('tenant.admin.qris-static.generate', $currentTenant->slug) }}";
-        window.csrfToken = "{{ csrf_token() }}";
-        window.receiptUrl = @json(session('receipt_url'));
-    </script>
-@endif
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ asset('assets/js/app.js') }}"></script>
-
-@if(request()->routeIs('tenant.admin.pos.index'))
-    <script src="{{ asset('assets/js/pos/pos-core.js') }}"></script>
-    <script src="{{ asset('assets/js/pos/pos-ui.js') }}"></script>
-    <script src="{{ asset('assets/js/pos/pos-cart.js') }}"></script>
-    <script src="{{ asset('assets/js/pos/pos-payment.js') }}"></script>
-    <script src="{{ asset('assets/js/pos/pos-receipt.js') }}"></script>
-    <script src="{{ asset('assets/js/pos/pos-init.js') }}"></script>
-
-    <script src="{{ asset('assets/js/pos-qris-static.js') }}"></script>
-    <script src="{{ asset('assets/js/pos-auto-receipt.js') }}"></script>
-
-    <script>
-        if (window.receiptUrl && window.POS?.receipt) {
-            window.POS.receipt.autoOpen(window.receiptUrl);
-        }
-    </script>
-@endif
-
-@stack('scripts')
-
-</body>
-</html>
+@push('scripts')
+<script>
+    // Sidebar toggle for mobile
+    document.getElementById('toggleSidebar')?.addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('-translate-x-full');
+        sidebar.classList.toggle('translate-x-0');
+    });
+</script>
+@endpush

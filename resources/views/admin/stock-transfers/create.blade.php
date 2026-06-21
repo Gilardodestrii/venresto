@@ -2,77 +2,75 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="container mx-auto px-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-6">
         <div>
-            <h3 class="fw-bold mb-1">Buat Transfer Stock</h3>
-            <div class="text-muted">Transfer bahan baku ke outlet lain</div>
+            <h3 class="font-bold mb-1 text-xl">Buat Transfer Stock</h3>
+            <div class="text-gray-500">Transfer bahan baku ke outlet lain</div>
         </div>
 
         <a href="{{ route('tenant.admin.stock-transfers.index', $currentTenant->slug) }}"
-           class="btn btn-light rounded-4 px-4">
-            <i class="bi bi-arrow-left me-1"></i>
+           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg font-medium transition-colors inline-flex items-center gap-1.5">
+            <i class="bi bi-arrow-left"></i>
             Kembali
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-5">
-        <div class="card-body p-4">
+    <div class="bg-white border-0 shadow-sm rounded-xl p-5">
 
-            <form method="POST"
-                  action="{{ route('tenant.admin.stock-transfers.store', $currentTenant->slug) }}">
-                @csrf
+        <form method="POST"
+              action="{{ route('tenant.admin.stock-transfers.store', $currentTenant->slug) }}">
+            @csrf
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Outlet Tujuan</label>
-                        <select name="to_outlet_id" class="form-select rounded-4" required>
-                            <option value="">Pilih Outlet</option>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">Outlet Tujuan</label>
+                    <select name="to_outlet_id" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow" required>
+                        <option value="">Pilih Outlet</option>
 
-                            @foreach($outlets as $outlet)
-                                <option value="{{ $outlet->id }}">
-                                    {{ $outlet->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Catatan</label>
-                        <input type="text"
-                               name="notes"
-                               class="form-control rounded-4"
-                               placeholder="Optional note transfer">
-                    </div>
+                        @foreach($outlets as $outlet)
+                            <option value="{{ $outlet->id }}">
+                                {{ $outlet->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold mb-1">Item Transfer</h5>
-                        <div class="text-muted small">Tambah bahan yang akan dikirim</div>
-                    </div>
+                <div>
+                    <label class="block font-semibold mb-2 text-sm">Catatan</label>
+                    <input type="text"
+                           name="notes"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                           placeholder="Optional note transfer">
+                </div>
+            </div>
 
-                    <button type="button"
-                            class="btn btn-dark rounded-4"
-                            onclick="addRow()">
-                        <i class="bi bi-plus-lg"></i>
-                        Tambah Item
-                    </button>
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h5 class="font-bold mb-1">Item Transfer</h5>
+                    <div class="text-gray-500 text-sm">Tambah bahan yang akan dikirim</div>
                 </div>
 
-                <div id="transferRows"></div>
+                <button type="button"
+                        class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2.5 rounded-lg font-medium transition-colors inline-flex items-center gap-1.5"
+                        onclick="addRow()">
+                    <i class="bi bi-plus-lg"></i>
+                    Tambah Item
+                </button>
+            </div>
 
-                <div class="text-end mt-4">
-                    <button class="btn btn-primary rounded-4 px-5">
-                        <i class="bi bi-send-check me-1"></i>
-                        Simpan Transfer
-                    </button>
-                </div>
+            <div id="transferRows"></div>
 
-            </form>
+            <div class="text-end mt-6">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors inline-flex items-center gap-1.5">
+                    <i class="bi bi-send-check"></i>
+                    Simpan Transfer
+                </button>
+            </div>
 
-        </div>
+        </form>
+
     </div>
 
 </div>
@@ -82,11 +80,11 @@ const materials = @json($materials);
 
 function rowTemplate(index){
     return `
-        <div class="border rounded-4 p-3 mb-3 transfer-row">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-7">
-                    <label class="form-label">Bahan</label>
-                    <select name="items[${index}][material_id]" class="form-select rounded-4" required>
+        <div class="border border-gray-200 rounded-xl p-4 mb-3 bg-gray-50 transfer-row">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-7">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bahan</label>
+                    <select name="items[${index}][material_id]" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow" required>
                         <option value="">Pilih bahan</option>
                         ${materials.map(material => `
                             <option value="${material.id}">
@@ -96,19 +94,19 @@ function rowTemplate(index){
                     </select>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Qty</label>
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Qty</label>
                     <input type="number"
                            step="0.001"
                            min="0.001"
                            name="items[${index}][qty]"
-                           class="form-control rounded-4"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
                            required>
                 </div>
 
-                <div class="col-md-2">
+                <div class="md:col-span-2">
                     <button type="button"
-                            class="btn btn-danger rounded-4 w-100"
+                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg w-full font-medium transition-colors"
                             onclick="removeRow(this)">
                         Hapus
                     </button>

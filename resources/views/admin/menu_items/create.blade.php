@@ -2,158 +2,66 @@
 
 @section('content')
 
-<div class="container-fluid px-0">
+<div class="container mx-auto px-4">
 
-
-        {{-- =========================
-        HEADER
-    ========================== --}}
-    <div class="outlet-header-card mb-4">
-
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-
-            <div>
-
-                <div class="d-flex align-items-center gap-3 mb-2">
-
-                    <div class="header-icon">
-                        <i class="bi bi-tags"></i>
-                    </div>
-
-                    <div>
-
-                        <h2 class="fw-bold mb-1">
-                            Tambah Menu Item
-                        </h2>
-
-                        <p class="text-muted mb-0">
-                            Tambahkan makanan & minuman ke menu
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-                <div class="d-flex flex-wrap gap-2">
-
-
-
-                <a href="{{ route('menu-items.index', $currentTenant->slug) }}" class="btn btn-outline-secondary">
-
-                    <i class="bi bi-backspace"></i>
-
-                    <span>Kembali</span>
-
-                </a>
-
-            </div>
-
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{{ route('tenant.admin.menu-items.index', $currentTenant->slug) }}" class="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"><i class="bi bi-arrow-left"></i></a>
+        <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">Tambah Menu</h3>
+            <div class="text-sm text-gray-500">Tambahkan menu baru ke catalog</div>
         </div>
-
     </div>
-    {{-- HEADER --}}
 
+    @if($errors->any())
+        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-800 rounded-xl shadow-sm">
+            <ul class="list-disc list-inside text-sm">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+        </div>
+    @endif
 
-    {{-- CARD --}}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-
-            <form action="{{ route('menu-items.store', $currentTenant->slug) }}" method="POST">
-                @csrf
-
-                <div class="row">
-
-                    {{-- LEFT --}}
-                    <div class="col-md-8">
-
-                        {{-- NAMA MENU --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Nama Menu</label>
-                            <input type="text"
-                                   name="name"
-                                   class="form-control form-control-lg"
-                                   placeholder="Contoh: Nasi Goreng Spesial"
-                                   required>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <form method="POST" action="{{ route('tenant.admin.menu-items.store', $currentTenant->slug) }}">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Menu <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" value="{{ old('name') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none @error('name') border-red-500 @enderror" placeholder="Contoh: Nasi Goreng Kampung" required>
                         </div>
-
-                        {{-- KATEGORI --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Kategori</label>
-
-                            <select name="category_id" class="form-select form-select-lg" required>
-                                <option value="">-- Pilih Kategori --</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">
-                                        {{ $cat->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori</label>
+                                <select name="category_id" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <option value="">Pilih</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">SKU</label>
+                                <input type="text" name="sku" value="{{ old('sku') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="SKU-001">
+                            </div>
                         </div>
-
-                        {{-- HARGA --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Harga</label>
-                            <input type="number"
-                                   name="price"
-                                   class="form-control form-control-lg"
-                                   placeholder="0"
-                                   required>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Harga Jual (Rp) <span class="text-red-500">*</span></label>
+                            <input type="number" step="1" name="price" value="{{ old('price') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none @error('price') border-red-500 @enderror" placeholder="0" required>
                         </div>
-
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+                            <textarea name="description" rows="3" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Deskripsi menu">{{ old('description') }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Image URL</label>
+                            <input type="url" name="image_url" value="{{ old('image_url') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="https://...">
+                        </div>
+                        <div class="flex items-center gap-3 pt-2">
+                            <a href="{{ route('tenant.admin.menu-items.index', $currentTenant->slug) }}" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">Batal</a>
+                            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-blue-200"><i class="bi bi-check-circle mr-1"></i>Simpan Menu</button>
+                        </div>
                     </div>
-
-                    {{-- RIGHT --}}
-                    <div class="col-md-4">
-
-                        {{-- SKU --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">SKU (Opsional)</label>
-                            <input type="text"
-                                   name="sku"
-                                   class="form-control"
-                                   placeholder="CTH: MKN-001">
-                        </div>
-
-                        {{-- IMAGE --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Image URL</label>
-                            <input type="text"
-                                   name="image_url"
-                                   class="form-control"
-                                   placeholder="https://...">
-                        </div>
-
-                        {{-- STATUS INFO --}}
-                        <div class="alert alert-light border">
-                            <small>
-                                ⚡ Menu akan otomatis aktif setelah disimpan
-                            </small>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <hr>
-
-                {{-- BUTTON --}}
-                <div class="d-flex justify-content-end gap-2">
-
-                    <a href="{{ route('menu-items.index', $currentTenant->slug) }}"
-                       class="btn btn-light border">
-                        Batal
-                    </a>
-
-                    <button class="btn btn-primary px-4">
-                        💾 Simpan Menu
-                    </button>
-
-                </div>
-
-            </form>
-
+                </form>
+            </div>
         </div>
     </div>
 
