@@ -129,26 +129,30 @@ Route::prefix('{tenant}/qr')->group(function () {
         ->name('qr.table.svg');
 });
 
+// QR Admin routes - separate group WITHOUT tenant.admin. prefix to keep admin.qr.* names
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('{tenant}/admin/outlets/{outlet}/qr', [QrAdminController::class, 'index'])
+        ->name('admin.qr.index');
+
+    Route::get('{tenant}/admin/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])
+        ->name('admin.qr.generate');
+
+    Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
+        ->name('admin.qr.download');
+
+    Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
+        ->name('admin.qr.store');
+
+    Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::class, 'destroy'])
+        ->name('admin.qr.destroy');
+
+});
+
 Route::middleware(['auth'])
     ->prefix('{tenant}/admin')
     ->name('tenant.admin.')
     ->group(function () {
-
-        // QR Menu routes (outside tenant.admin. prefix - use admin.qr.*)
-        Route::get('{tenant}/admin/outlets/{outlet}/qr', [QrAdminController::class, 'index'])
-            ->name('admin.qr.index');
-
-        Route::get('{tenant}/admin/outlets/{outlet}/qr/generate/{table}', [QrAdminController::class, 'generate'])
-            ->name('admin.qr.generate');
-
-        Route::get('{tenant}/admin/outlets/{outlet}/qr/download/{table}', [QrAdminController::class, 'download'])
-            ->name('admin.qr.download');
-
-        Route::post('{tenant}/admin/outlets/{outlet}/qr/store', [QrAdminController::class, 'store'])
-            ->name('admin.qr.store');
-
-        Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::class, 'destroy'])
-            ->name('admin.qr.destroy');
 
         // Resource routes (automatically get tenant.admin. prefix from parent group)
         Route::resource('outlets', OutletController::class);
