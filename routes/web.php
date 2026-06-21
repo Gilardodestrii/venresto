@@ -141,8 +141,10 @@ Route::delete('{tenant}/admin/outlets/{outlet}/qr/{table}', [QrAdminController::
         OutletController::class
     )->names('tenant.admin.outlets');
 
-    Route::resource('{tenant}/admin/menu-categories', MenuCategoryController::class);
-    Route::resource('{tenant}/admin/menu-items', MenuItemController::class);
+    Route::resource('{tenant}/admin/menu-categories', MenuCategoryController::class)
+        ->names('tenant.admin.menu-categories');
+    Route::resource('{tenant}/admin/menu-items', MenuItemController::class)
+        ->names('tenant.admin.menu-items');
 
     Route::prefix('{tenant}/admin')
         ->name('tenant.admin.')
@@ -299,6 +301,7 @@ Route::middleware(['auth'])
     ->group(function () {
 
         Route::resource('materials', MaterialController::class)
+            ->names('tenant.admin.materials')
             ->except(['show']);
 
         Route::get('/recipes', [RecipeController::class, 'index'])
