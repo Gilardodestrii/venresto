@@ -31,10 +31,10 @@
 
                 {{-- Desktop Nav --}}
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#features" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Features</a>
-                    <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
-                    <a href="#testimonials" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Testimonials</a>
-                    <a href="#faq" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">FAQ</a>
+                    <a href="{{ route('landing.home') }}#features" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+                    <a href="{{ route('landing.pricing') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+                    <a href="{{ route('landing.home') }}#testimonials" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Testimonials</a>
+                    <a href="{{ route('landing.home') }}#faq" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">FAQ</a>
                 </div>
 
                 {{-- CTA --}}
@@ -60,10 +60,10 @@
 
             {{-- Mobile Menu --}}
             <div x-show="mobileOpen" x-transition class="md:hidden border-t border-gray-100 py-4 space-y-2">
-                <a href="#features" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Features</a>
-                <a href="#pricing" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Pricing</a>
-                <a href="#testimonials" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Testimonials</a>
-                <a href="#faq" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">FAQ</a>
+                <a href="{{ route('landing.home') }}#features" @click="mobileOpen = false" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Features</a>
+                <a href="{{ route('landing.pricing') }}" @click="mobileOpen = false" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Pricing</a>
+                <a href="{{ route('landing.home') }}#testimonials" @click="mobileOpen = false" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Testimonials</a>
+                <a href="{{ route('landing.home') }}#faq" @click="mobileOpen = false" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">FAQ</a>
                 <hr class="my-2">
                 <a href="{{ route('central.login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">Sign In</a>
                 <a href="{{ route('central.signup') }}" class="block px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl text-center">Get Started Free</a>

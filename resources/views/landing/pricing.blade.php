@@ -4,247 +4,288 @@
 @section('meta_description','Pilih paket VenResto: Starter, Pro, atau Enterprise. Coba gratis 7 hari. Hemat 15% untuk pembayaran tahunan.')
 
 @section('content')
-<section class="hero border-b border-gray-200">
-  <div class="max-w-7xl mx-auto px-4 py-12 text-center">
-    <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-medium">Trial 7 hari • Tanpa kartu kredit</span>
-    <h1 class="text-4xl font-bold mt-4">Pilih paket sesuai skala restoran Anda</h1>
-    <p class="text-gray-500 mt-2">Bayar bulanan atau hemat <strong>15%</strong> dengan paket tahunan.</p>
+<div x-data="pricingToggle()">
+
+{{-- Hero + Toggle --}}
+<section class="border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 py-14 text-center">
+    <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide uppercase mb-4">Trial 7 hari • Tanpa kartu kredit</span>
+    <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mt-2">Harga yang transparan,<br class="hidden md:block"> tanpa biaya tersembunyi</h1>
+    <p class="text-gray-500 mt-4 text-lg">Bayar bulanan atau hemat <strong class="text-green-600">15%</strong> dengan paket tahunan.</p>
 
     {{-- Toggle Billing --}}
-    <div class="inline-flex items-center gap-3 border border-gray-200 rounded-full px-3 py-2 mt-6">
-      <span class="text-sm text-gray-500">Bulanan</span>
-      <div class="flex items-center m-0">
-        <input class="w-4 h-4 text-sky-500 bg-gray-100 border-gray-300 rounded focus:ring-sky-500" type="checkbox" id="toggle-annual" aria-label="Toggle Tahunan">
-      </div>
-      <span class="text-sm"><strong>Tahunan</strong> <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200 ml-1">Hemat 15%</span></span>
+    <div class="inline-flex items-center gap-4 bg-gray-100 rounded-2xl px-5 py-3 mt-8">
+      <span class="text-sm font-medium" :class="!annual ? 'text-gray-900' : 'text-gray-400'">Bulanan</span>
+
+      {{-- Alpine toggle switch --}}
+      <button
+        @click="annual = !annual"
+        :class="annual ? 'bg-blue-600' : 'bg-gray-300'"
+        class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        role="switch"
+        :aria-checked="annual.toString()"
+        aria-label="Toggle tahunan"
+      >
+        <span
+          :class="annual ? 'translate-x-6' : 'translate-x-1'"
+          class="inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform"
+        ></span>
+      </button>
+
+      <span class="text-sm font-medium" :class="annual ? 'text-gray-900' : 'text-gray-400'">
+        Tahunan
+        <span class="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Hemat 15%</span>
+      </span>
     </div>
   </div>
 </section>
 
+{{-- Pricing Cards --}}
 <section>
-  <div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+  <div class="max-w-7xl mx-auto px-4 py-14">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
 
       {{-- STARTER --}}
-      <div class="h-full p-6 border border-gray-200 rounded-2xl shadow-sm bg-white flex flex-col">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold m-0">Starter</h3>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">Untuk mulai</span>
+      <div class="relative flex flex-col p-8 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-bold text-gray-900">Starter</h3>
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Untuk mulai</span>
         </div>
-        <p class="text-gray-500 mt-2">Cocok untuk warung/kafe kecil yang baru go-digital.</p>
+        <p class="text-sm text-gray-500 mb-6">Cocok untuk warung & kafe kecil yang baru go-digital.</p>
 
-        <div class="my-4">
-          <div>
-            <span class="text-4xl font-bold" data-monthly="Rp 199.000" data-yearly="Rp 169.000">Rp 199.000</span>
-            <span class="text-gray-500">/bulan</span>
+        <div class="mb-6">
+          <div class="flex items-end gap-1">
+            <span class="text-4xl font-bold text-gray-900" x-text="annual ? 'Rp 169.000' : 'Rp 199.000'">Rp 199.000</span>
+            <span class="text-gray-400 mb-1">/bln</span>
           </div>
-          <div class="text-sm text-gray-500" id="starter-note">Tagihan tahunan: Rp 2.028.000</div>
+          <p class="text-xs text-gray-400 mt-1" x-text="annual ? 'Rp 2.028.000 ditagih per tahun' : 'Ditagih per bulan'">Ditagih per bulan</p>
         </div>
 
-        <ul class="list-none space-y-2 text-sm text-gray-500 flex-grow-1">
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>1 outlet, 10 meja</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>QR Menu & pesanan ke dapur</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>POS kasir dasar (hold, diskon)</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Laporan harian dasar</li>
-          <li class="flex items-center"><i class="bi bi-dash text-gray-400 mr-2"></i>Inventory & recipe sederhana</li>
-          <li class="flex items-center"><i class="bi bi-dash text-gray-400 mr-2"></i>Split bill, service charge</li>
-          <li class="flex items-center"><i class="bi bi-dash text-gray-400 mr-2"></i>Role manager & audit log</li>
+        <ul class="space-y-3 text-sm text-gray-600 flex-1 mb-8">
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>1 outlet, 10 meja</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>QR Menu & pesanan ke dapur</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>POS kasir dasar (hold, diskon)</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Laporan harian dasar</span></li>
+          <li class="flex items-start gap-2 opacity-40"><i class="bi bi-x-circle text-gray-400 mt-0.5 shrink-0"></i><span>Inventory & recipe</span></li>
+          <li class="flex items-start gap-2 opacity-40"><i class="bi bi-x-circle text-gray-400 mt-0.5 shrink-0"></i><span>Split bill, service charge</span></li>
+          <li class="flex items-start gap-2 opacity-40"><i class="bi bi-x-circle text-gray-400 mt-0.5 shrink-0"></i><span>Role manager & audit log</span></li>
         </ul>
 
-        <a href="{{ url('/signup') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-sky-500 text-sky-600 font-bold text-sm mt-4 hover:bg-sky-50 transition-colors">Coba Gratis 7 Hari</a>
+        <a href="{{ route('central.signup') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl border-2 border-blue-600 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition-colors">Coba Gratis 7 Hari</a>
       </div>
 
       {{-- PRO (RECOMMENDED) --}}
-      <div class="h-full p-6 border border-gray-200 rounded-2xl shadow-sm bg-white relative flex flex-col">
-        <span class="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center px-3 py-1 rounded-full bg-sky-500 text-white text-xs font-semibold">Paling Populer</span>
-        <div class="flex justify-between items-center mt-2">
-          <h3 class="text-lg font-semibold m-0">Pro</h3>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-600 border border-sky-200">Untuk berkembang</span>
+      <div class="relative flex flex-col p-8 bg-blue-600 border-2 border-blue-600 rounded-2xl shadow-xl">
+        <span class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-amber-400 text-amber-900 text-xs font-bold shadow-md whitespace-nowrap">⭐ Paling Populer</span>
+        <div class="flex items-center justify-between mb-2 mt-2">
+          <h3 class="text-lg font-bold text-white">Pro</h3>
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500 text-blue-100">Untuk berkembang</span>
         </div>
-        <p class="text-gray-500 mt-2">Fitur lengkap untuk restoran yang butuh kontrol & laporan.</p>
+        <p class="text-sm text-blue-200 mb-6">Fitur lengkap untuk restoran yang butuh kontrol & laporan.</p>
 
-        <div class="my-4">
-          <div>
-            <span class="text-4xl font-bold" data-monthly="Rp 399.000" data-yearly="Rp 339.000">Rp 399.000</span>
-            <span class="text-gray-500">/bulan</span>
+        <div class="mb-6">
+          <div class="flex items-end gap-1">
+            <span class="text-4xl font-bold text-white" x-text="annual ? 'Rp 339.000' : 'Rp 399.000'">Rp 399.000</span>
+            <span class="text-blue-300 mb-1">/bln</span>
           </div>
-          <div class="text-sm text-gray-500" id="pro-note">Tagihan tahunan: Rp 4.068.000</div>
+          <p class="text-xs text-blue-300 mt-1" x-text="annual ? 'Rp 4.068.000 ditagih per tahun' : 'Ditagih per bulan'">Ditagih per bulan</p>
         </div>
 
-        <ul class="list-none space-y-2 text-sm text-gray-500 flex-grow-1">
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>3 outlet, meja tak terbatas</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>QR Menu → dapur, printer ESC/POS</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>POS lengkap (split bill, service charge, tip)</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Inventory & recipe, low-stock alert</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Laporan per outlet/kategori/kasir</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>RBAC: owner, manager, cashier, kitchen, waiter</li>
+        <ul class="space-y-3 text-sm text-blue-100 flex-1 mb-8">
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>3 outlet, meja tak terbatas</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>QR Menu → dapur, printer ESC/POS</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>POS lengkap (split bill, service charge, tip)</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>Inventory & recipe, low-stock alert</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>Laporan per outlet/kategori/kasir</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>RBAC: owner, manager, cashier, kitchen, waiter</span></li>
         </ul>
 
-        <a href="{{ url('/signup') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-sky-500 text-white font-bold text-sm mt-4 hover:bg-sky-600 transition-colors">Mulai Trial</a>
+        <a href="{{ route('central.signup') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg">Mulai Trial Pro</a>
       </div>
 
       {{-- ENTERPRISE --}}
-      <div class="h-full p-6 border border-gray-200 rounded-2xl shadow-sm bg-white flex flex-col">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold m-0">Enterprise</h3>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-100 border border-gray-600">Skala besar</span>
+      <div class="relative flex flex-col p-8 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-bold text-gray-900">Enterprise</h3>
+          <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-900 text-gray-100">Skala besar</span>
         </div>
-        <p class="text-gray-500 mt-2">Untuk brand multi-cabang yang butuh kustom & SLA.</p>
+        <p class="text-sm text-gray-500 mb-6">Untuk brand multi-cabang yang butuh kustom & SLA.</p>
 
-        <div class="my-4">
-          <div>
-            <span class="text-4xl font-bold">Hubungi Kami</span>
+        <div class="mb-6">
+          <div class="flex items-end gap-1">
+            <span class="text-4xl font-bold text-gray-900">Custom</span>
           </div>
-          <div class="text-sm text-gray-500">Harga khusus sesuai kebutuhan</div>
+          <p class="text-xs text-gray-400 mt-1">Harga sesuai kebutuhan</p>
         </div>
 
-        <ul class="list-none space-y-2 text-sm text-gray-500 flex-grow-1">
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Outlet tak terbatas</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Integrasi ERP/akuntansi & SSO/2FA</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>Custom workflow dapur & routing printer</li>
-          <li class="flex items-center"><i class="bi bi-check2 text-green-500 mr-2"></i>SLA, dukungan onboarding, training tim</li>
+        <ul class="space-y-3 text-sm text-gray-600 flex-1 mb-8">
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Outlet tak terbatas</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Integrasi ERP/akuntansi & SSO/2FA</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Custom workflow dapur & routing printer</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Dedicated support & SLA</span></li>
+          <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Onboarding & training tim</span></li>
         </ul>
 
-        <a href="{{ url('/contact') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gray-800 text-white font-bold text-sm mt-4 hover:bg-gray-900 transition-colors">Diskusi Kebutuhan</a>
+        <a href="{{ url('/contact') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-gray-900 text-white font-semibold text-sm hover:bg-gray-800 transition-colors">Diskusi Kebutuhan</a>
       </div>
 
     </div>
 
-    {{-- Catatan harga --}}
-    <div class="text-sm text-gray-500 text-center mt-8">
-      Harga belum termasuk pajak yang berlaku. Pembayaran tahunan ditagihkan di muka. Trial 7 hari berlaku untuk Starter & Pro.
+    <p class="text-xs text-gray-400 text-center mt-8">Harga belum termasuk pajak yang berlaku. Pembayaran tahunan ditagihkan di muka. Trial 7 hari berlaku untuk Starter &amp; Pro.</p>
+  </div>
+</section>
+
+{{-- Perbandingan Fitur (card-based, no HTML table) --}}
+<section class="bg-gray-50 border-t border-gray-100">
+  <div class="max-w-5xl mx-auto px-4 py-14">
+    <h2 class="text-2xl font-bold text-center text-gray-900 mb-2">Perbandingan Fitur</h2>
+    <p class="text-sm text-center text-gray-500 mb-10">Semua paket termasuk onboarding & support via chat.</p>
+
+    {{-- Header row --}}
+    <div class="hidden md:grid md:grid-cols-4 gap-4 mb-3 px-4">
+      <div></div>
+      <div class="text-center">
+        <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Starter</span>
+      </div>
+      <div class="text-center">
+        <span class="text-xs font-bold uppercase tracking-widest text-blue-600">Pro</span>
+      </div>
+      <div class="text-center">
+        <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Enterprise</span>
+      </div>
+    </div>
+
+    {{-- Feature rows --}}
+    @php
+    $features = [
+      ['label' => 'Outlet', 'starter' => '1', 'pro' => '3', 'enterprise' => 'Tak terbatas'],
+      ['label' => 'Jumlah meja', 'starter' => '10', 'pro' => 'Tak terbatas', 'enterprise' => 'Tak terbatas'],
+      ['label' => 'QR Menu per meja', 'starter' => true, 'pro' => true, 'enterprise' => true],
+      ['label' => 'POS Kasir (hold, diskon)', 'starter' => true, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Printer dapur ESC/POS', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Split bill & service charge', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Inventory & recipe', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Laporan lanjutan (COGS, kasir, kategori)', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'RBAC (owner, manager, cashier, kitchen)', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Audit log', 'starter' => false, 'pro' => true, 'enterprise' => true],
+      ['label' => 'Integrasi ERP & SSO/2FA', 'starter' => false, 'pro' => false, 'enterprise' => true],
+      ['label' => 'Custom workflow & routing printer', 'starter' => false, 'pro' => false, 'enterprise' => true],
+      ['label' => 'SLA & dedicated support', 'starter' => false, 'pro' => false, 'enterprise' => true],
+    ];
+    @endphp
+
+    <div class="space-y-2">
+      @foreach($features as $f)
+      <div class="bg-white rounded-xl border border-gray-100 px-4 py-3 grid grid-cols-2 md:grid-cols-4 gap-2 items-center shadow-sm">
+
+        {{-- Label --}}
+        <div class="col-span-2 md:col-span-1 text-sm font-medium text-gray-700">{{ $f['label'] }}</div>
+
+        {{-- Starter --}}
+        <div class="flex items-center gap-1.5 md:justify-center">
+          <span class="text-xs text-gray-400 md:hidden">Starter: </span>
+          @if($f['starter'] === true)
+            <i class="bi bi-check-circle-fill text-green-500 text-base"></i>
+          @elseif($f['starter'] === false)
+            <i class="bi bi-x-circle text-gray-300 text-base"></i>
+          @else
+            <span class="text-sm text-gray-700 font-medium">{{ $f['starter'] }}</span>
+          @endif
+        </div>
+
+        {{-- Pro --}}
+        <div class="flex items-center gap-1.5 md:justify-center">
+          <span class="text-xs text-gray-400 md:hidden">Pro: </span>
+          @if($f['pro'] === true)
+            <i class="bi bi-check-circle-fill text-blue-500 text-base"></i>
+          @elseif($f['pro'] === false)
+            <i class="bi bi-x-circle text-gray-300 text-base"></i>
+          @else
+            <span class="text-sm text-gray-700 font-medium">{{ $f['pro'] }}</span>
+          @endif
+        </div>
+
+        {{-- Enterprise --}}
+        <div class="flex items-center gap-1.5 md:justify-center">
+          <span class="text-xs text-gray-400 md:hidden">Enterprise: </span>
+          @if($f['enterprise'] === true)
+            <i class="bi bi-check-circle-fill text-green-500 text-base"></i>
+          @elseif($f['enterprise'] === false)
+            <i class="bi bi-x-circle text-gray-300 text-base"></i>
+          @else
+            <span class="text-sm text-gray-700 font-medium">{{ $f['enterprise'] }}</span>
+          @endif
+        </div>
+
+      </div>
+      @endforeach
     </div>
   </div>
 </section>
 
-{{-- Tabel Perbandingan Fitur --}}
-<section class="bg-slate-50 border-t border-gray-200">
-  <div class="max-w-7xl mx-auto px-4 py-12">
-    <h2 class="text-xl font-bold text-center mb-6">Perbandingan Fitur</h2>
-    <div class="overflow-x-auto shadow-sm rounded-2xl bg-white">
-      <table class="w-full align-middle">
-        <thead class="bg-slate-50">
-          <tr>
-            <th>Fitur</th>
-            <th class="text-center">Starter</th>
-            <th class="text-center">Pro</th>
-            <th class="text-center">Enterprise</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Outlet</td>
-            <td class="text-center">1</td>
-            <td class="text-center">3</td>
-            <td class="text-center">Tak terbatas</td>
-          </tr>
-          <tr>
-            <td>QR Menu per meja</td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>Printer dapur (ESC/POS)</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>POS: split bill, service charge</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>Inventory & recipe</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>Laporan lanjutan (COGS, kasir, kategori)</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>RBAC & audit log</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-          <tr>
-            <td>Integrasi & SLA</td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-dash text-gray-400"></i></td>
-            <td class="text-center"><i class="bi bi-check2 text-green-500"></i></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-{{-- FAQ singkat --}}
+{{-- FAQ --}}
 <section>
-  <div class="max-w-7xl mx-auto px-4 py-12">
-    <h2 class="text-xl font-bold text-center mb-6">Pertanyaan Umum</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="p-6 border border-gray-200 rounded-2xl h-full">
-        <h3 class="text-base font-semibold">Apakah bisa ganti paket kapan saja?</h3>
-        <p class="text-sm text-gray-500 mb-0">Bisa. Upgrade/downgrade pro-rata akan dihitung otomatis pada siklus berikutnya.</p>
+  <div class="max-w-3xl mx-auto px-4 py-14">
+    <h2 class="text-2xl font-bold text-center text-gray-900 mb-10">Pertanyaan Umum</h2>
+    <div class="space-y-4">
+
+      <div class="border border-gray-200 rounded-xl overflow-hidden" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
+          <span>Apakah bisa ganti paket kapan saja?</span>
+          <i class="bi text-gray-400 transition-transform" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        </button>
+        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+          Bisa. Upgrade/downgrade pro-rata akan dihitung otomatis pada siklus berikutnya.
+        </div>
       </div>
-      <div class="p-6 border border-gray-200 rounded-2xl h-full">
-        <h3 class="text-base font-semibold">Metode pembayaran?</h3>
-        <p class="text-sm text-gray-500 mb-0">Kartu kredit, transfer virtual account, e-wallet (via Stripe/Midtrans). Invoice otomatis.</p>
+
+      <div class="border border-gray-200 rounded-xl overflow-hidden" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
+          <span>Metode pembayaran?</span>
+          <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        </button>
+        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+          Kartu kredit, transfer virtual account, e-wallet (via Stripe/Midtrans). Invoice otomatis.
+        </div>
       </div>
-      <div class="p-6 border border-gray-200 rounded-2xl h-full">
-        <h3 class="text-base font-semibold">Bagaimana setelah trial?</h3>
-        <p class="text-sm text-gray-500 mb-0">Anda bisa lanjut berbayar atau membatalkan. Data tetap aman dan bisa diekspor.</p>
+
+      <div class="border border-gray-200 rounded-xl overflow-hidden" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
+          <span>Bagaimana setelah trial habis?</span>
+          <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        </button>
+        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+          Anda bisa lanjut berbayar atau membatalkan. Data tetap aman dan bisa diekspor.
+        </div>
       </div>
-      <div class="p-6 border border-gray-200 rounded-2xl h-full">
-        <h3 class="text-base font-semibold">Bisa minta demo?</h3>
-        <p class="text-sm text-gray-500 mb-0">Tentu. <a href="{{ url('/contact') }}" class="text-sky-600 hover:text-sky-700">Hubungi kami</a> untuk sesi demo & konsultasi singkat.</p>
+
+      <div class="border border-gray-200 rounded-xl overflow-hidden" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
+          <span>Bisa minta demo langsung?</span>
+          <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        </button>
+        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+          Tentu. <a href="{{ url('/contact') }}" class="text-blue-600 hover:underline">Hubungi kami</a> untuk sesi demo & konsultasi singkat.
+        </div>
       </div>
+
     </div>
 
-    <div class="text-center mt-8">
-      <a class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-sky-500 text-white font-bold text-base hover:bg-sky-600 transition-colors" href="{{ url('/signup') }}">Mulai Trial Gratis</a>
+    <div class="text-center mt-10">
+      <a href="{{ route('central.signup') }}" class="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-blue-600 text-white font-bold text-base hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">Mulai Trial Gratis 7 Hari</a>
     </div>
   </div>
 </section>
+
+</div>{{-- end x-data pricingToggle --}}
+@endsection
 
 @push('scripts')
 <script>
-  // Toggle Bulanan/Tahunan: update semua angka sesuai data attribute
-  (function(){
-    const sw = document.getElementById('toggle-annual');
-    const priceEls = document.querySelectorAll('[data-monthly][data-yearly]');
-    const fmtIDR = (n) => n.toLocaleString('id-ID');
-
-    function applyPrices() {
-      const annual = sw.checked;
-      priceEls.forEach(el => {
-        el.textContent = annual ? el.getAttribute('data-yearly') : el.getAttribute('data-monthly');
-      });
-      // Update catatan tagihan tahunan (Starter & Pro)
-      const starterNote = document.getElementById('starter-note');
-      const proNote = document.getElementById('pro-note');
-      if (starterNote && proNote) {
-        if (annual) {
-          starterNote.textContent = 'Tagihan tahunan: Rp ' + fmtIDR(169000 * 12);
-          proNote.textContent     = 'Tagihan tahunan: Rp ' + fmtIDR(339000 * 12);
-        } else {
-          starterNote.textContent = 'Tagihan bulanan';
-          proNote.textContent     = 'Tagihan bulanan';
-        }
-      }
-    }
-    sw.addEventListener('change', applyPrices);
-    // default tampil: bulanan. Hitung tagihan tahunan sebagai info awal:
-    applyPrices();
-  })();
+  function pricingToggle() {
+    return {
+      annual: false,
+    };
+  }
 </script>
 @endpush
-@endsection

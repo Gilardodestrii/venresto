@@ -46,7 +46,7 @@
   </section>
 
   {{-- Fitur utama --}}
-  <section class="bg-white">
+  <section id="features" class="bg-white">
     <div class="max-w-7xl mx-auto px-4 py-5">
       <div class="text-center mb-4">
         <h2 class="text-3xl font-bold">Fitur yang bikin kerja makin efisien</h2>
@@ -145,7 +145,7 @@
   </section>
 
   {{-- Testimoni singkat --}}
-  <section>
+  <section id="testimonials">
     <div class="max-w-7xl mx-auto px-4 py-5">
       <div class="text-center mb-4">
         <h2 class="text-3xl font-bold">Apa kata mereka</h2>
@@ -168,7 +168,7 @@
   </section>
 
   {{-- FAQ --}}
-  <section class="bg-slate-100">
+  <section id="faq" class="bg-slate-100">
     <div class="max-w-7xl mx-auto px-4 py-5">
       <div class="text-center mb-4">
         <h2 class="text-3xl font-bold">Pertanyaan Umum</h2>
