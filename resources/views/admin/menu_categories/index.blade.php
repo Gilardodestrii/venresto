@@ -40,7 +40,7 @@
 
 
 
-                <a href="{{ route('menu-categories.create', $currentTenant->slug) }}" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-semibold hover:bg-sky-600 shadow-sm transition">
+                <a href="{{ route('tenant.admin.menu-categories.create', $currentTenant->slug) }}" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-semibold hover:bg-sky-600 shadow-sm transition">
 
                     <i class="bi bi-plus-circle me-1.5"></i>
                     Tambah Kategori
@@ -119,12 +119,12 @@
 
                             <div class="flex items-center justify-center gap-2">
 
-                                <a href="{{ route('menu-categories.edit', [$currentTenant->slug, $cat->id]) }}"
+                                <a href="{{ route('tenant.admin.menu-categories.edit', [$currentTenant->slug, $cat->id]) }}"
                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border border-amber-400 text-amber-600 hover:bg-amber-50 transition">
                                     <i class="bi bi-pencil me-1"></i> Edit
                                 </a>
 
-                                <form action="{{ route('menu-categories.destroy', [$currentTenant->slug, $cat->id]) }}"
+                                <form action="{{ route('tenant.admin.menu-categories.destroy', [$currentTenant->slug, $cat->id]) }}"
                                       method="POST"
                                       onsubmit="return confirm('Hapus kategori ini?')">
 
