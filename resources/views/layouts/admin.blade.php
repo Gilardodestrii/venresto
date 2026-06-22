@@ -211,18 +211,17 @@
     <div x-show="sidebarOpen"
          @click="sidebarOpen = false"
          x-transition.opacity
-         class="fixed inset-0 bg-black/50 z-30 lg:hidden"
-         style="display: none;">
+         class="fixed inset-0 bg-black/50 z-30 lg:hidden">
     </div>
 
     {{-- =========================
         MAIN CONTENT
     ========================== --}}
-    <div class="flex-1 ml-64 flex flex-col">
+    <div class="flex-1 lg:ml-64 flex flex-col min-w-0">
 
         {{-- TOPBAR --}}
-        <header class="bg-white shadow-sm sticky top-0 z-30 px-6 py-4">
-            <div class="flex items-center justify-between">
+        <header class="bg-white shadow-sm sticky top-0 z-30 px-3 sm:px-4 md:px-6 py-3 md:py-4">
+            <div class="flex items-center justify-between gap-2 sm:gap-3">
 
                 <div class="flex items-center gap-4">
                     <button @click="sidebarOpen = !sidebarOpen" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors lg:hidden">
@@ -298,7 +297,7 @@
         </header>
 
         {{-- PAGE CONTENT --}}
-        <main class="flex-1 p-6">
+        <main class="flex-1 p-3 sm:p-4 md:p-6">
             @yield('content')
         </main>
 

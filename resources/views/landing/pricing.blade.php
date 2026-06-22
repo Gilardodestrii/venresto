@@ -234,7 +234,7 @@
           <span>Apakah bisa ganti paket kapan saja?</span>
           <i class="bi text-gray-400 transition-transform" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
         </button>
-        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-5 pb-4 text-sm text-gray-500">
           Bisa. Upgrade/downgrade pro-rata akan dihitung otomatis pada siklus berikutnya.
         </div>
       </div>
@@ -244,7 +244,7 @@
           <span>Metode pembayaran?</span>
           <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
         </button>
-        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-5 pb-4 text-sm text-gray-500">
           Kartu kredit, transfer virtual account, e-wallet (via Stripe/Midtrans). Invoice otomatis.
         </div>
       </div>
@@ -254,7 +254,7 @@
           <span>Bagaimana setelah trial habis?</span>
           <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
         </button>
-        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-5 pb-4 text-sm text-gray-500">
           Anda bisa lanjut berbayar atau membatalkan. Data tetap aman dan bisa diekspor.
         </div>
       </div>
@@ -264,7 +264,7 @@
           <span>Bisa minta demo langsung?</span>
           <i class="bi text-gray-400" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
         </button>
-        <div x-show="open" x-collapse class="px-5 pb-4 text-sm text-gray-500">
+        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-5 pb-4 text-sm text-gray-500">
           Tentu. <a href="{{ url('/contact') }}" class="text-blue-600 hover:underline">Hubungi kami</a> untuk sesi demo & konsultasi singkat.
         </div>
       </div>

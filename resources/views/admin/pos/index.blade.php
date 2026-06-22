@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="min-h-screen bg-slate-100 pb-8 px-3 lg:px-4">
+<div class="min-h-screen bg-slate-100 pb-24 lg:pb-8 px-3 lg:px-4" x-data="{ mobileCartOpen: false }">
 
     <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2 mb-6 pos-header">
         <div>
@@ -114,41 +114,62 @@
             </div>
         </div>
 
-        {{-- MOBILE CART DRAWER --}}
-        <div class="offcanvas offcanvas-bottom mobile-cart-drawer d-lg-none lg:hidden"
-             style="height:100vh;"
-             tabindex="-1"
+        {{-- MOBILE CART DRAWER (Alpine.js based) --}}
+        <div x-show="mobileCartOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click.self="mobileCartOpen = false"
+             @keydown.escape.window="mobileCartOpen = false"
+             class="fixed inset-0 z-50 lg:hidden"
+             style="display: none;"
              id="mobileCartDrawer"
              aria-labelledby="mobileCartDrawerLabel">
 
-            <div class="offcanvas-header border-bottom">
-                <div>
-                    <h5 class="offcanvas-title fw-bold mb-0" id="mobileCartDrawerLabel">
-                        Keranjang Order
-                    </h5>
-                    <small class="text-muted">Lengkapi data customer dan pembayaran</small>
+            {{-- Backdrop --}}
+            <div class="absolute inset-0 bg-black/50"></div>
+
+            {{-- Drawer --}}
+            <div x-show="mobileCartOpen"
+                 x-transition:enter="transition ease-out duration-200 transform"
+                 x-transition:enter-start="translate-y-full"
+                 x-transition:enter-end="translate-y-0"
+                 x-transition:leave="transition ease-in duration-150 transform"
+                 x-transition:leave-start="translate-y-0"
+                 x-transition:leave-end="translate-y-full"
+                 class="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl shadow-2xl max-h-[90vh] flex flex-col"
+                 @click.stop>
+
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                    <div>
+                        <h5 class="font-bold text-base mb-0 text-gray-900" id="mobileCartDrawerLabel">
+                            Keranjang Order
+                        </h5>
+                        <small class="text-gray-500 text-xs">Lengkapi data customer dan pembayaran</small>
+                    </div>
+
+                    <button type="button"
+                            @click="mobileCartOpen = false"
+                            class="w-9 h-9 rounded-full hover:bg-gray-100 text-gray-500 flex items-center justify-center transition-colors"
+                            aria-label="Close">
+                        <i class="bi bi-x-lg text-lg"></i>
+                    </button>
                 </div>
 
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="offcanvas"
-                        aria-label="Close">
-                </button>
-            </div>
-
-            <div class="offcanvas-body">
-                <div class="bg-white rounded-3xl shadow-none border p-3">
+                <div class="flex-1 overflow-y-auto p-3">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
         </div>
 
         {{-- MOBILE CART BAR --}}
-        <div class="fixed left-0 right-0 bottom-0 z-[1040] p-3 bg-gradient-to-t from-slate-100 via-slate-100/75 to-transparent lg:hidden mobile-cart-bar" id="mobileCartBar">
+        <div class="fixed left-0 right-0 bottom-0 z-40 p-3 bg-gradient-to-t from-slate-100 via-slate-100/75 to-transparent lg:hidden mobile-cart-bar" id="mobileCartBar">
             <button type="button"
+                    @click="mobileCartOpen = true"
                     class="w-full rounded-3xl p-4 bg-sky-500 text-white flex justify-between items-center shadow-[0_18px_45px_rgba(14,165,233,.35)] mobile-cart-btn"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#mobileCartDrawer"
                     aria-controls="mobileCartDrawer">
 
                 <div>

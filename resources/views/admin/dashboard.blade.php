@@ -31,7 +31,7 @@
     </form>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3">
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 h-full">
         <div class="flex justify-between">

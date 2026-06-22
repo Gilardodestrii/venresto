@@ -34,9 +34,9 @@
 
 </div>
 
-<div class="px-4 py-6">
+<div class="px-3 sm:px-4 py-4 sm:py-6">
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 mt-5">
 
         {{-- PENDING --}}
         <div class="bg-white rounded-3xl p-4 min-h-[70vh] shadow-lg shadow-gray-200/60">
