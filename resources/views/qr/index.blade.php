@@ -1,4 +1,6 @@
-@extends('layouts.customer-app')
+@extends('layouts.qr-clean')
+
+@section('page-title', 'Pesan Menu — ' . ($tenant->name ?? 'VenResto'))
 
 @section('content')
 
