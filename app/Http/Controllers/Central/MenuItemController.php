@@ -58,7 +58,7 @@ class MenuItemController extends Controller
        $tenant = request()->route('tenant');
 
         return redirect()
-            ->route('menu-items.index', $tenant)
+            ->route('tenant.admin.menu-items.index', $tenant)
             ->with('success', 'Menu ditambahkan');
     }
 
@@ -89,7 +89,7 @@ class MenuItemController extends Controller
         ]);
 
         return redirect()
-            ->route('menu-items.index', $tenant)
+            ->route('tenant.admin.menu-items.index', $tenant)
             ->with('success', 'Menu diupdate');
     }
 

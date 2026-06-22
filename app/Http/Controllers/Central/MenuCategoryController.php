@@ -41,7 +41,7 @@ class MenuCategoryController extends Controller
         $tenant = request()->tenant; // dari route parameter
 
         return redirect()
-            ->route('menu-categories.index', $tenant)
+            ->route('tenant.admin.menu-categories.index', $tenant)
             ->with('success', 'Kategori dibuat');
     }
 
@@ -70,7 +70,7 @@ class MenuCategoryController extends Controller
         ]);
 
         return redirect()
-            ->route('menu-categories.index', $tenant)
+            ->route('tenant.admin.menu-categories.index', $tenant)
             ->with('success', 'Kategori berhasil diupdate');
 }
 
