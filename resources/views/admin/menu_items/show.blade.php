@@ -9,7 +9,7 @@
             <h4 class="text-xl font-bold text-gray-900 mb-1">Detail Menu</h4>
             <small class="text-gray-500">Informasi lengkap menu item</small>
         </div>
-        <a href="{{ route('menu-items.index', $currentTenant->slug) }}"
+        <a href="{{ route('tenant.admin.menu-items.index', $currentTenant->slug) }}"
            class="inline-flex items-center gap-2 px-4 py-2 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-medium transition-colors">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
@@ -61,7 +61,7 @@
 
                 <hr class="my-4 border-gray-100">
 
-                <a href="{{ route('menu-items.edit', [$currentTenant->slug, $menu_item->id]) }}"
+                <a href="{{ route('tenant.admin.menu-items.edit', [$currentTenant->slug, $menu_item->id]) }}"
                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-medium text-sm transition-colors">
                     <i class="bi bi-pencil"></i> Edit Menu
                 </a>

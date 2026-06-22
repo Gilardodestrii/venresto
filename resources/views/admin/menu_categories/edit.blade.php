@@ -11,7 +11,7 @@
             <small class="text-slate-500">Perbarui data kategori menu</small>
         </div>
 
-        <a href="{{ route('menu-categories.index', $currentTenant->slug) }}"
+        <a href="{{ route('tenant.admin.menu-categories.index', $currentTenant->slug) }}"
            class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
             ← Kembali
         </a>
@@ -21,7 +21,7 @@
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6">
 
-            <form action="{{ route('menu-categories.update', [$currentTenant->slug, $menu_category->id]) }}"
+            <form action="{{ route('tenant.admin.menu-categories.update', [$currentTenant->slug, $menu_category->id]) }}"
                   method="POST">
 
                 @csrf
@@ -87,7 +87,7 @@
                 {{-- ACTION --}}
                 <div class="flex justify-end gap-3">
 
-                    <a href="{{ route('menu-categories.index', $currentTenant->slug) }}"
+                    <a href="{{ route('tenant.admin.menu-categories.index', $currentTenant->slug) }}"
                        class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
                         Batal
                     </a>

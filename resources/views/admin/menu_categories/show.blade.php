@@ -37,13 +37,13 @@
 
             <div class="flex flex-wrap gap-2">
 
-                <a href="{{ route('menu-categories.index', $currentTenant->slug) }}"
+                <a href="{{ route('tenant.admin.menu-categories.index', $currentTenant->slug) }}"
                    class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
                     <i class="bi bi-arrow-left me-1.5"></i>
                     Kembali
                 </a>
 
-                <a href="{{ route('menu-categories.edit', [$currentTenant->slug, $menu_category->id]) }}"
+                <a href="{{ route('tenant.admin.menu-categories.edit', [$currentTenant->slug, $menu_category->id]) }}"
                    class="inline-flex items-center px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-semibold hover:bg-sky-600 shadow-sm transition">
                     <i class="bi bi-pencil me-1.5"></i>
                     Edit Kategori
@@ -122,7 +122,7 @@
                 {{-- ACTION BUTTONS --}}
                 <div class="flex flex-wrap gap-2 justify-end">
 
-                    <form action="{{ route('menu-categories.destroy', [$currentTenant->slug, $menu_category->id]) }}"
+                    <form action="{{ route('tenant.admin.menu-categories.destroy', [$currentTenant->slug, $menu_category->id]) }}"
                           method="POST"
                           onsubmit="return confirm('Hapus kategori ini?')">
 
@@ -137,7 +137,7 @@
 
                     </form>
 
-                    <a href="{{ route('menu-categories.edit', [$currentTenant->slug, $menu_category->id]) }}"
+                    <a href="{{ route('tenant.admin.menu-categories.edit', [$currentTenant->slug, $menu_category->id]) }}"
                        class="inline-flex items-center px-4 py-2.5 rounded-xl bg-sky-500 text-white text-sm font-semibold hover:bg-sky-600 shadow-sm transition">
                         <i class="bi bi-pencil me-1.5"></i>
                         Edit Kategori
