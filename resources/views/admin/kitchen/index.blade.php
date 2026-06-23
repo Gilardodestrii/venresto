@@ -12,7 +12,8 @@
 @section('content')
 <div class="kds-main-override">{{-- compensate layout padding so KDS fills edge-to-edge --}}
 
-<meta name="kitchen-base-url" content="{{ url($tenant->slug.'/admin/kitchen') }}">
+<meta name="kitchen-base-url" content="/{{ $tenant->slug }}/admin/kitchen">
+<meta name="app-base-url"      content="{{ url('/') }}">
 
 {{-- ===== KDS HEADER ===== --}}
 <div class="kds-header">{{-- no sticky: layout topbar is already sticky z-30 --}}
@@ -401,6 +402,11 @@
         .querySelector('meta[name="kitchen-base-url"]')
         .getAttribute('content');
 
+    const appUrl = (document.querySelector('meta[name="app-base-url"]') || {})
+        .getAttribute?.('content') || '';
+
+    console.log('[KDS] baseUrl =', baseUrl, '| appUrl =', appUrl, '| location =', location.href);
+
     // ---- Fullscreen toggle ----
     const fsBtn       = document.getElementById('fullscreen-btn');
     const fsIconEnter = document.getElementById('fs-icon-enter');
@@ -437,20 +443,24 @@
 
         let res;
         try {
+            // Use application/x-www-form-urlencoded to avoid CORS preflight
+            // (text/plain would also work but Laravel auto-parses form data
+            //  into the Request object just as easily).
+            const formBody = 'status=' + encodeURIComponent(status);
             res = await fetch(`${baseUrl}/item/${id}/status`, {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                     'Accept':       'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': getCsrfToken()
                 },
-                body: JSON.stringify({ status })
+                body: formBody
             });
         } catch (err) {
             // Network-level failure: server down, CORS, SSL, mixed content, etc.
-            console.error('Fetch failed:', err);
+            console.error('[KDS] Fetch failed:', err, '| url =', `${baseUrl}/item/${id}/status`);
             const detail = (err && err.message) ? err.message : 'Load failed';
             showCardError(btn, 'Network error: ' + detail + ' (check server / try reload)');
             btn.disabled = false;
@@ -529,7 +539,10 @@
     let lastHash = '';
     async function pollKitchen() {
         try {
-            const res = await fetch(`${baseUrl}/live`, { headers: { 'Accept': 'application/json' } });
+            const res = await fetch(`${baseUrl}/live`, {
+                credentials: 'same-origin',
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            });
             if (!res.ok) { setOffline(); return; }
             setOnline();
             const data = await res.json();
