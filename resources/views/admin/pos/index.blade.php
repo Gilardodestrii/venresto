@@ -108,7 +108,7 @@
 
             {{-- RIGHT: Desktop Cart --}}
             <div class="pos-cart-desktop hidden lg:block">
-                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 sticky top-[90px] overflow-visible pos-card pos-cart-card">
+                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 sticky top-[72px] overflow-visible pos-card pos-cart-card">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
@@ -185,6 +185,10 @@
     </form>
 </div>
 
+@endsection
+
+@push('scripts')
+{{-- POS settings (must be first, before modules read it) --}}
 <script>
 window.posSettings = {
     tax_enabled: @json((bool) $settings->tax_enabled),
@@ -194,63 +198,51 @@ window.posSettings = {
     service_rate: Number(@json((float) $settings->service_rate)),
     service_inclusive: @json((bool) $settings->service_inclusive),
 };
-
 window.receiptUrl = @json(session('receipt_url'));
+</script>
 
+{{-- POS JS modules (order matters) --}}
+<script src="{{ asset('assets/js/pos/pos-core.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-cart.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-ui.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-payment.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-receipt.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-shortcut.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-offline.js') }}"></script>
+<script src="{{ asset('assets/js/pos/pos-init.js') }}"></script>
+<script src="{{ asset('assets/js/pos-auto-receipt.js') }}"></script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
-    const desktopCart = document.querySelector('.pos-cart-desktop');
+    const desktopCart  = document.querySelector('.pos-cart-desktop');
     const mobileDrawer = document.getElementById('mobileCartDrawer');
 
+    // Disable controls in the inactive cart panel so duplicate
+    // hidden inputs don't get submitted with the form.
     function setControlsState(container, disabled) {
         if (!container) return;
-
         container.querySelectorAll('input, select, textarea, button').forEach(el => {
             el.disabled = disabled;
         });
     }
 
     function syncCartControls() {
-        const isMobile = window.innerWidth < 992;
-
-        if (isMobile) {
-            setControlsState(desktopCart, true);
-            setControlsState(mobileDrawer, false);
-        } else {
-            setControlsState(desktopCart, false);
-            setControlsState(mobileDrawer, true);
-        }
-
-        if (window.POS?.cart) {
-            window.POS.cart.render();
-        }
+        const isMobile = window.innerWidth < 1024; // matches Tailwind lg breakpoint
+        setControlsState(desktopCart,  isMobile);
+        setControlsState(mobileDrawer, !isMobile);
+        window.POS?.cart?.render?.();
     }
 
     syncCartControls();
-    document.querySelectorAll('.order-type-box').forEach(box => {
-        box.addEventListener('click', function () {
-            const wrapper = this.closest('.pos-card, .offcanvas-body, form') || document;
-
-            wrapper.querySelectorAll('.order-type-box').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            this.classList.add('active');
-
-            const input = this.querySelector('input[type="radio"]');
-
-            if (input) {
-                input.checked = true;
-            }
-        });
-    });
-
     window.addEventListener('resize', syncCartControls);
 
-    if (mobileDrawer) {
-        mobileDrawer.addEventListener('shown.bs.offcanvas', syncCartControls);
-        mobileDrawer.addEventListener('hidden.bs.offcanvas', syncCartControls);
-    }
+    // Re-sync when Alpine opens/closes mobile drawer
+    document.addEventListener('alpine:init', () => {
+        Alpine.effect(() => {
+            // triggers whenever mobileCartOpen changes (Alpine reactivity)
+            setTimeout(syncCartControls, 50);
+        });
+    });
 });
 </script>
-
-@endsection
+@endpush

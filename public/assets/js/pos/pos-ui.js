@@ -4,7 +4,7 @@ window.posUi = {
             return;
         }
 
-        el.classList.toggle('d-none', !show);
+        el.classList.toggle('hidden', !show);
     },
 
     qs(selector) {
