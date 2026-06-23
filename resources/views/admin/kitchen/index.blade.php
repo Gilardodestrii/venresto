@@ -1,11 +1,21 @@
 @extends('layouts.admin')
 
+@push('styles')
+<style>
+/* Strip the main wrapper padding for full-bleed KDS */
+.kds-main-override { margin: -12px; }
+@media (min-width: 640px)  { .kds-main-override { margin: -16px; } }
+@media (min-width: 768px)  { .kds-main-override { margin: -24px; } }
+</style>
+@endpush
+
 @section('content')
+<div class="kds-main-override">{{-- compensate layout padding so KDS fills edge-to-edge --}}
 
 <meta name="kitchen-base-url" content="{{ url($tenant->slug.'/admin/kitchen') }}">
 
 {{-- ===== KDS HEADER ===== --}}
-<div class="kds-header sticky top-0 z-50">
+<div class="kds-header">{{-- no sticky: layout topbar is already sticky z-30 --}}
     <div class="kds-header__inner">
 
         {{-- Title + subtitle --}}
@@ -145,6 +155,7 @@
     </div>
 
 </div>
+</div>{{-- /.kds-main-override --}}
 
 {{-- ===== KDS STYLES ===== --}}
 <style>
