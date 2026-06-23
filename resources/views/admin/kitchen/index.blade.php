@@ -485,6 +485,11 @@
                 card.style.transform  = 'scale(0.95)';
                 setTimeout(() => { card.remove(); refreshCounts(); }, 220);
             }
+        } else if (res.status === 401 || res.status === 419) {
+            // Session expired or CSRF mismatch — bounce to login.
+            const loginUrl = (appUrl ? appUrl : '') + '/login';
+            showCardError(btn, 'Sesi habis — mengarahkan ke login...');
+            setTimeout(() => { window.location.href = loginUrl; }, 800);
         } else {
             // Show server-side message if any
             const msg = (data && data.message) ? data.message : ('HTTP ' + res.status);
