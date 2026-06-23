@@ -445,8 +445,14 @@
                 },
                 body: JSON.stringify({ status })
             });
-            const data = await res.json();
-            if (data.success) {
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (_) {
+                data = {};
+            }
+
+            if (res.ok && data.success) {
                 // Remove card with animation instead of full reload
                 const card = btn.closest('.kds-card');
                 if (card) {
@@ -456,17 +462,40 @@
                     setTimeout(() => { card.remove(); refreshCounts(); }, 220);
                 }
             } else {
-                alert('Failed to update status');
+                // Show server-side message if any
+                const msg = (data && data.message) ? data.message : 'Failed to update status';
+                showCardError(btn, msg);
                 btn.disabled = false;
                 btn.style.opacity = '';
             }
         } catch (err) {
             console.error(err);
-            alert('Server error');
+            showCardError(btn, 'Network error: ' + (err && err.message ? err.message : 'unknown'));
             btn.disabled = false;
             btn.style.opacity = '';
         }
     });
+
+    function showCardError(btn, message) {
+        const card = btn.closest('.kds-card');
+        if (!card) {
+            alert(message);
+            return;
+        }
+        // Remove any existing error banner
+        card.querySelectorAll('.kds-card__error').forEach(el => el.remove());
+
+        const banner = document.createElement('div');
+        banner.className = 'kds-card__error';
+        banner.textContent = message;
+        card.appendChild(banner);
+
+        setTimeout(() => {
+            banner.style.transition = 'opacity .3s';
+            banner.style.opacity = '0';
+            setTimeout(() => banner.remove(), 300);
+        }, 4000);
+    }
 
     // ---- Count badges ----
     function refreshCounts() {

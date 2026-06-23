@@ -308,5 +308,17 @@
 :-webkit-full-screen .kds-card__meta-pill--table { background: #334155; color: #cbd5e1; }
 :fullscreen .kds-card__timer,
 :-webkit-full-screen .kds-card__timer { color: #64748b; }
+
+/* ---- Card error banner (inline) --------------------------- */
+.kds-card__error {
+    background: #fef2f2;
+    border-top: 1px solid #fecaca;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 12px;
+    text-align: center;
+    line-height: 1.3;
+}
 </style>
 @endonce
