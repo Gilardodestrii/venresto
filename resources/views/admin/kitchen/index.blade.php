@@ -435,46 +435,62 @@
         btn.disabled = true;
         btn.style.opacity = '0.6';
 
+        let res;
         try {
-            const res = await fetch(`${baseUrl}/item/${id}/status`, {
+            res = await fetch(`${baseUrl}/item/${id}/status`, {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept':       'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': getCsrfToken()
                 },
                 body: JSON.stringify({ status })
             });
-            let data = null;
-            try {
-                data = await res.json();
-            } catch (_) {
-                data = {};
-            }
-
-            if (res.ok && data.success) {
-                // Remove card with animation instead of full reload
-                const card = btn.closest('.kds-card');
-                if (card) {
-                    card.style.transition = 'opacity .2s, transform .2s';
-                    card.style.opacity    = '0';
-                    card.style.transform  = 'scale(0.95)';
-                    setTimeout(() => { card.remove(); refreshCounts(); }, 220);
-                }
-            } else {
-                // Show server-side message if any
-                const msg = (data && data.message) ? data.message : 'Failed to update status';
-                showCardError(btn, msg);
-                btn.disabled = false;
-                btn.style.opacity = '';
-            }
         } catch (err) {
-            console.error(err);
-            showCardError(btn, 'Network error: ' + (err && err.message ? err.message : 'unknown'));
+            // Network-level failure: server down, CORS, SSL, mixed content, etc.
+            console.error('Fetch failed:', err);
+            const detail = (err && err.message) ? err.message : 'Load failed';
+            showCardError(btn, 'Network error: ' + detail + ' (check server / try reload)');
+            btn.disabled = false;
+            btn.style.opacity = '';
+            return;
+        }
+
+        let data = null;
+        try {
+            data = await res.json();
+        } catch (_) {
+            // Server returned non-JSON (e.g. 500 HTML page)
+            data = { message: 'Server returned status ' + res.status };
+        }
+
+        if (res.ok && data.success) {
+            // Remove card with animation instead of full reload
+            const card = btn.closest('.kds-card');
+            if (card) {
+                card.style.transition = 'opacity .2s, transform .2s';
+                card.style.opacity    = '0';
+                card.style.transform  = 'scale(0.95)';
+                setTimeout(() => { card.remove(); refreshCounts(); }, 220);
+            }
+        } else {
+            // Show server-side message if any
+            const msg = (data && data.message) ? data.message : ('HTTP ' + res.status);
+            showCardError(btn, msg);
             btn.disabled = false;
             btn.style.opacity = '';
         }
     });
+
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) return meta.getAttribute('content');
+        // Fallback: hidden input
+        const input = document.querySelector('input[name="_token"]');
+        return input ? input.value : '{{ csrf_token() }}';
+    }
 
     function showCardError(btn, message) {
         const card = btn.closest('.kds-card');
