@@ -14,9 +14,9 @@
         <input type="month"
                name="month"
                value="{{ $month }}"
-               class="w-full max-w-[180px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+               class="w-full max-w-[180px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
-        <select name="outlet_id" class="w-full max-w-[220px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        <select name="outlet_id" class="w-full max-w-[220px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <option value="">Semua Outlet</option>
             @foreach($outlets as $outlet)
                 <option value="{{ $outlet->id }}" @selected((string) $outletId === (string) $outlet->id)>
@@ -33,7 +33,7 @@
 
 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 h-full">
+    <div class="bg-white rounded-lg shadow-sm p-3 h-full">
         <div class="flex justify-between">
             <div>
                 <small class="text-gray-500">Users</small>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 h-full">
+    <div class="bg-white rounded-lg shadow-sm p-3 h-full">
         <div class="flex justify-between">
             <div>
                 <small class="text-gray-500">Orders</small>
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 h-full">
+    <div class="bg-white rounded-lg shadow-sm p-3 h-full">
         <div class="flex justify-between">
             <div>
                 <small class="text-gray-500">Revenue</small>
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 h-full">
+    <div class="bg-white rounded-lg shadow-sm p-3 h-full">
         <div class="flex justify-between">
             <div>
                 <small class="text-gray-500">Avg Order</small>
@@ -81,7 +81,7 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-1">
 
-    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 h-full">
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-4 h-full">
         <div class="flex justify-between items-center mb-3">
             <div>
                 <h6 class="font-bold mb-1">Sales Overview</h6>
@@ -94,11 +94,11 @@
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 h-full">
+    <div class="bg-white rounded-lg shadow-sm p-4 h-full">
         <h6 class="font-bold mb-3">Best Seller</h6>
 
         @forelse($bestSellers as $item)
-            <div class="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center py-3 border-b border-gray-200">
                 <div>
                     <div class="font-semibold">{{ $item->name }}</div>
                     <small class="text-gray-500">{{ $item->total_qty }} terjual</small>
