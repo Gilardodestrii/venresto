@@ -137,12 +137,12 @@
                 Cashier Sessions
             </a>
 
-            @can('manage users')
+            @can('users.manage')
             <a href="{{ route('tenant.admin.roles.index', $currentTenant->slug) }}"
                class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
                {{ Request::routeIs('tenant.admin.roles*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
                 <i class="bi bi-people text-base"></i>
-                Roles & Users
+                Staff Management
             </a>
             @endcan
 
