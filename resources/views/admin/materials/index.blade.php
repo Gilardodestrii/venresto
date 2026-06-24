@@ -44,14 +44,7 @@
                         </option>
                     @endforeach
                 </select>
-                <select name="category_filter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" onchange="this.form.submit()">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category_filter') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
+
             </form>
         </div>
 
@@ -78,7 +71,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                    {{ $material->category->name ?? '-' }}
+                                    -
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-gray-700">{{ $material->unit }}</td>
@@ -91,7 +84,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-gray-700">{{ number_format($material->min_stock, 2) }}</td>
-                            <td class="px-6 py-4 text-gray-700">Rp {{ number_format($material->price_per_unit, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-gray-700">Rp {{ number_format($material->cost_per_unit, 0, ',', '.') }}</td>
                             <td class="px-6 py-4 text-gray-700">{{ $material->outlet->name ?? '-' }}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">

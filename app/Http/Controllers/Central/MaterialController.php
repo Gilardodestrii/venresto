@@ -4,19 +4,27 @@ namespace App\Http\Controllers\Central;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
+use App\Models\Outlet;
 use App\Services\TenantContext;
 use Illuminate\Http\Request;
 
 class MaterialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $materials = Material::tenant()
-            ->currentOutlet()
-            ->latest()
-            ->paginate(15);
+        $tenant = TenantContext::get();
 
-        return view('admin.materials.index', compact('materials'));
+        $outlets = Outlet::where('tenant_id', $tenant->id)->orderBy('name')->get();
+
+        $query = Material::where('tenant_id', $tenant->id)->latest();
+
+        if ($request->filled('outlet_filter')) {
+            $query->where('outlet_id', $request->outlet_filter);
+        }
+
+        $materials = $query->paginate(15)->withQueryString();
+
+        return view('admin.materials.index', compact('materials', 'outlets'));
     }
 
     public function create()
