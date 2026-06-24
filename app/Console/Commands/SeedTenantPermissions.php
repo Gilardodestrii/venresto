@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Tenant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -107,14 +108,11 @@ class SeedTenantPermissions extends Command
                     ->where('tenant_id', $tenant->id)
                     ->delete();
 
-                $now = now();
                 foreach ($permIds as $permId) {
                     \DB::table('role_has_permissions')->insert([
                         'role_id' => $role->id,
                         'permission_id' => $permId,
                         'tenant_id' => $tenant->id,
-                        'created_at' => $now,
-                        'updated_at' => $now,
                     ]);
                 }
 
