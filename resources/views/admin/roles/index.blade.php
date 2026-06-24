@@ -162,7 +162,8 @@
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
              onclick="document.getElementById('create-staff-modal').classList.add('hidden')"></div>
 
-        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+             onclick="event.stopPropagation()">
             <form method="POST"
                   action="{{ route('tenant.admin.roles.create', $currentTenant->slug) }}">
                 @csrf
