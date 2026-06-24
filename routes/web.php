@@ -206,6 +206,28 @@ Route::middleware(['auth'])
             ]);
         })->name('roles.index');
 
+        Route::get('/roles/{user}/edit', function ($tenant, $user) {
+            $tenantModel = \App\Services\TenantContext::get();
+            abort_if(!$tenantModel, 404);
+
+            $user = \App\Models\User::query()
+                ->where('tenant_id', $tenantModel->id)
+                ->where('id', $user)
+                ->firstOrFail();
+
+            setPermissionsTeamId($tenantModel->id);
+
+            return view('admin.roles.edit', [
+                'user'  => $user,
+                'roles' => \Spatie\Permission\Models\Role::query()
+                    ->where('guard_name', 'web')
+                    ->where('tenant_id', $tenantModel->id)
+                    ->where('name', '!=', 'owner')
+                    ->orderBy('name')
+                    ->get(),
+            ]);
+        })->name('roles.edit');
+
         Route::put('/roles/{user}', function (\Illuminate\Http\Request $request, $tenant, $user) {
             $tenantModel = \App\Services\TenantContext::get();
             abort_if(!$tenantModel, 404);
@@ -215,22 +237,44 @@ Route::middleware(['auth'])
                 ->where('id', $user)
                 ->firstOrFail();
 
-            $request->validate([
-                'role' => ['required', 'string', 'max:100'],
+            $validated = $request->validate([
+                'name'     => ['required', 'string', 'max:255'],
+                'email'    => ['required', 'email', 'max:255'],
+                'password' => ['nullable', 'string', 'min:6'],
+                'role'     => ['required', 'string', 'exists:roles,name'],
             ]);
 
             setPermissionsTeamId($tenantModel->id);
 
-            $role = \Spatie\Permission\Models\Role::query()
-                ->where('tenant_id', $tenantModel->id)
-                ->where('guard_name', 'web')
-                ->where('name', $request->role)
-                ->firstOrFail();
+            $updateData = [
+                'name'  => $validated['name'],
+                'email' => $validated['email'],
+            ];
 
-            $staff->syncRoles([$role]);
+            if (!empty($validated['password'])) {
+                $updateData['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+            }
 
-            return back()->with('success', 'Role staff berhasil diperbarui.');
+            $staff->update($updateData);
+
+            $staff->syncRoles([$validated['role']]);
+
+            return back()->with('success', 'Staff berhasil diperbarui.');
         })->name('roles.update');
+
+        Route::get('/roles/create', function () {
+            $tenant = \App\Services\TenantContext::get();
+            setPermissionsTeamId($tenant?->id);
+
+            return view('admin.roles.create', [
+                'roles' => \Spatie\Permission\Models\Role::query()
+                    ->where('guard_name', 'web')
+                    ->where('tenant_id', $tenant->id)
+                    ->where('name', '!=', 'owner')
+                    ->orderBy('name')
+                    ->get(),
+            ]);
+        })->name('roles.create');
 
         Route::post('/roles/create', function (\Illuminate\Http\Request $request, $tenant) {
             $tenantModel = \App\Services\TenantContext::get();
