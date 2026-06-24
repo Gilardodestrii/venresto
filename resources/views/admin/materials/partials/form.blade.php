@@ -20,34 +20,18 @@
             @enderror
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori</label>
-                <select name="category_id"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none @error('category_id') border-red-500 @enderror">
-                    <option value="">Pilih Kategori</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}"
-                                {{ old('category_id', $material->category_id ?? '') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Outlet</label>
-                <select name="outlet_id"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none @error('outlet_id') border-red-500 @enderror">
-                    <option value="">Pilih Outlet</option>
-                    @foreach($outlets as $outlet)
-                        <option value="{{ $outlet->id }}"
-                                {{ old('outlet_id', $material->outlet_id ?? '') == $outlet->id ? 'selected' : '' }}>
-                            {{ $outlet->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Outlet</label>
+            <select name="outlet_id"
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none @error('outlet_id') border-red-500 @enderror">
+                <option value="">Pilih Outlet</option>
+                @foreach($outlets as $outlet)
+                    <option value="{{ $outlet->id }}"
+                            {{ old('outlet_id', $material->outlet_id ?? '') == $outlet->id ? 'selected' : '' }}>
+                        {{ $outlet->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="grid grid-cols-3 gap-4">
@@ -87,8 +71,8 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Harga per Unit (Rp) <span class="text-red-500">*</span></label>
                 <input type="number"
                        step="1"
-                       name="price_per_unit"
-                       value="{{ old('price_per_unit', $material->price_per_unit ?? '') }}"
+                       name="cost_per_unit"
+                       value="{{ old('cost_per_unit', $material->cost_per_unit ?? '') }}"
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                        placeholder="0"
                        required>

@@ -29,7 +29,8 @@ class MaterialController extends Controller
 
     public function create()
     {
-        return view('admin.materials.create');
+        $outlets = Outlet::where('tenant_id', TenantContext::get()->id)->orderBy('name')->get();
+        return view('admin.materials.create', compact('outlets'));
     }
 
     public function store(Request $request)
@@ -40,11 +41,12 @@ class MaterialController extends Controller
             'stock' => ['nullable', 'numeric', 'min:0'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
             'cost_per_unit' => ['nullable', 'numeric', 'min:0'],
+            'outlet_id' => ['nullable', 'integer'],
         ]);
 
         Material::create([
             'tenant_id' => TenantContext::get()->id,
-            'outlet_id' => session('current_outlet_id'),
+            'outlet_id' => $request->outlet_id ?? session('current_outlet_id'),
             'name' => $request->name,
             'unit' => $request->unit,
             'stock' => $request->stock ?? 0,
@@ -61,7 +63,8 @@ class MaterialController extends Controller
     {
         $this->authorizeTenant($material);
 
-        return view('admin.materials.edit', compact('material'));
+        $outlets = Outlet::where('tenant_id', TenantContext::get()->id)->orderBy('name')->get();
+        return view('admin.materials.edit', compact('material', 'outlets'));
     }
 
     public function update(Request $request, string $tenant, Material $material)
