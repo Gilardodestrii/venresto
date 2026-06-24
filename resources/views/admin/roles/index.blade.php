@@ -10,9 +10,8 @@
             <div class="text-gray-500 text-sm">Kelola role dan akses staff berdasarkan tenant aktif</div>
         </div>
         <button type="button"
-                data-modal-target="create-staff-modal"
                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-200"
-                onclick="document.getElementById('create-staff-modal').classList.remove('hidden')">
+                @click="$dispatch('open-staff-modal')">
             <i class="bi bi-plus-circle"></i>
             Tambah Staff
         </button>
@@ -135,7 +134,7 @@
                                 <div class="font-medium">Belum ada staff di tenant ini.</div>
                                 <button type="button"
                                         class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors"
-                                        onclick="document.getElementById('create-staff-modal').classList.remove('hidden')">
+                                        @click="$dispatch('open-staff-modal')">
                                     <i class="bi bi-plus-circle mr-1"></i>
                                     Tambah Staff Pertama
                                 </button>
@@ -156,14 +155,25 @@
 
 {{-- Create Staff Modal --}}
 <div id="create-staff-modal"
-     class="hidden fixed inset-0 z-50 overflow-y-auto"
+     x-data="{ open: false }"
+     @open-staff-modal.window="open = true"
+     x-show="open"
+     x-transition.opacity
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;"
      aria-hidden="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-             onclick="document.getElementById('create-staff-modal').classList.add('hidden')"></div>
+             @click="open = false"></div>
 
         <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-             onclick="event.stopPropagation()">
+             @click.stop
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <form method="POST"
                   action="{{ route('tenant.admin.roles.create', $currentTenant->slug) }}">
                 @csrf
