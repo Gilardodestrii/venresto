@@ -232,6 +232,46 @@ Route::middleware(['auth'])
             return back()->with('success', 'Role staff berhasil diperbarui.');
         })->name('roles.update');
 
+        Route::post('/roles/create', function (\Illuminate\Http\Request $request, $tenant) {
+            $tenantModel = \App\Services\TenantContext::get();
+            abort_if(!$tenantModel, 404);
+
+            $validated = $request->validate([
+                'name'     => ['required', 'string', 'max:255'],
+                'email'    => ['required', 'email', 'max:255', 'unique:users,email,NULL,id,tenant_id,' . $tenantModel->id],
+                'password' => ['required', 'string', 'min:6'],
+                'role'     => ['required', 'string', 'exists:roles,name'],
+            ]);
+
+            \Spatie\Permission\PermissionRegistrar::setPermissionsTeamId($tenantModel->id);
+
+            $user = \App\Models\User::create([
+                'tenant_id' => $tenantModel->id,
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'password'  => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            ]);
+
+            $user->assignRole($validated['role']);
+
+            return back()->with('success', 'Staff berhasil ditambahkan.');
+        })->name('roles.create');
+
+        Route::post('/roles/{user}/delete', function (\Illuminate\Http\Request $request, $tenant, $user) {
+            $tenantModel = \App\Services\TenantContext::get();
+            abort_if(!$tenantModel, 404);
+
+            $staff = \App\Models\User::query()
+                ->where('tenant_id', $tenantModel->id)
+                ->where('id', $user)
+                ->where('id', '!=', auth()->id())
+                ->firstOrFail();
+
+            $staff->delete();
+
+            return back()->with('success', 'Staff berhasil dihapus.');
+        })->name('roles.delete');
+
         Route::post('/qris-static/generate', function (\Illuminate\Http\Request $request) {
             $tenant = \App\Services\TenantContext::get();
             abort_if(!$tenant, 404);
