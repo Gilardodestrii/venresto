@@ -124,19 +124,35 @@ class SignupController extends Controller
                     'phone'     => $data['phone'] ?? null,
                 ]);
 
-                // d) (BARU) Pastikan role "owner" ada untuk tenant ini, lalu assign
+                // d) Pastikan role & permission ada untuk tenant ini, lalu assign
                 if (class_exists(Role::class) && method_exists($owner, 'assignRole')) {
-                    // per tenant (teams)
-                    Role::firstOrCreate(
-                        ['name' => 'owner', 'guard_name' => 'web', 'tenant_id' => $tenant->id]
-                    );
-                    // opsional: siapkan role lain
-                    Role::firstOrCreate(['name' => 'manager','guard_name' => 'web','tenant_id' => $tenant->id]);
-                    Role::firstOrCreate(['name' => 'cashier','guard_name' => 'web','tenant_id' => $tenant->id]);
-                    Role::firstOrCreate(['name' => 'kitchen','guard_name' => 'web','tenant_id' => $tenant->id]);
-                    Role::firstOrCreate(['name' => 'waiter','guard_name' => 'web','tenant_id' => $tenant->id]);
+                    $allPermissions = [
+                        'dashboard.view','pos.access','orders.view','orders.pay','orders.void',
+                        'kitchen.access','inventory.view','inventory.manage','recipe.manage',
+                        'costing.view','stock.transfer','waste.manage','stock.movement.view',
+                        'outlet.manage','menu.manage','users.manage','reports.view',
+                    ];
 
-                    $owner->assignRole('owner'); // akan ter-scope ke tenant saat ini
+                    // Buat semua permission untuk tenant ini
+                    foreach ($allPermissions as $perm) {
+                        \Spatie\Permission\Models\Permission::firstOrCreate([
+                            'name'       => $perm,
+                            'guard_name' => 'web',
+                            'tenant_id'  => $tenant->id,
+                        ]);
+                    }
+
+                    // Buat roles
+                    $ownerRole = Role::firstOrCreate(['name' => 'owner',   'guard_name' => 'web', 'tenant_id' => $tenant->id]);
+                    Role::firstOrCreate(['name' => 'manager',  'guard_name' => 'web', 'tenant_id' => $tenant->id]);
+                    Role::firstOrCreate(['name' => 'cashier',  'guard_name' => 'web', 'tenant_id' => $tenant->id]);
+                    Role::firstOrCreate(['name' => 'kitchen',  'guard_name' => 'web', 'tenant_id' => $tenant->id]);
+                    Role::firstOrCreate(['name' => 'waiter',   'guard_name' => 'web', 'tenant_id' => $tenant->id]);
+
+                    // Sync semua permission ke role owner
+                    $ownerRole->syncPermissions($allPermissions);
+
+                    $owner->assignRole('owner');
                 }
 
                 // e) Settings default (tetap)
