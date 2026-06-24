@@ -94,9 +94,31 @@ class SeedTenantPermissions extends Command
                 ]);
 
                 $permsToSync = $rolePerms ?? self::ALL_PERMISSIONS;
-                $role->syncPermissions($permsToSync);
 
-                $this->line("  - Role '{$roleName}': synced " . count($permsToSync) . ' permissions');
+                // Get permission IDs for this tenant
+                $permIds = Permission::whereIn('name', $permsToSync)
+                    ->where('tenant_id', $tenant->id)
+                    ->pluck('id')
+                    ->toArray();
+
+                // Manual sync to role_has_permissions with tenant_id
+                \DB::table('role_has_permissions')
+                    ->where('role_id', $role->id)
+                    ->where('tenant_id', $tenant->id)
+                    ->delete();
+
+                $now = now();
+                foreach ($permIds as $permId) {
+                    \DB::table('role_has_permissions')->insert([
+                        'role_id' => $role->id,
+                        'permission_id' => $permId,
+                        'tenant_id' => $tenant->id,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+                }
+
+                $this->line("  - Role '{$roleName}': synced " . count($permIds) . ' permissions');
             }
 
             $this->info("  Done.");
