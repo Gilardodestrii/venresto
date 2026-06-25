@@ -37,10 +37,10 @@
   <section>
     <div class="max-w-7xl mx-auto px-4 py-4">
       <div class="text-center text-slate-600 mb-3">Dipercaya tim F&B dan UMKM</div>
-      <div class="flex justify-center flex-wrap gap-4 opacity-75">
-        <img src="{{ asset('assets/img/sapore.png') }}" alt="Brand 1" height="200">
-        <img src="{{ asset('assets/img/warung-kita.png') }}" alt="Brand 2" height="250">
-        <img src="{{ asset('assets/img/nuvora.png') }}" alt="Brand 3" height="200">
+      <div class="flex flex-row justify-center items-center gap-8 flex-wrap opacity-70">
+        <img src="{{ asset('assets/img/sapore.png') }}" alt="Brand 1" class="h-12 w-auto object-contain">
+        <img src="{{ asset('assets/img/warung-kita.png') }}" alt="Brand 2" class="h-12 w-auto object-contain">
+        <img src="{{ asset('assets/img/nuvora.png') }}" alt="Brand 3" class="h-12 w-auto object-contain">
       </div>
     </div>
   </section>
