@@ -158,12 +158,12 @@
           <div id="slug-suggestions" class="hidden mt-2 flex flex-wrap gap-2"></div>
         </div>
 
-        {{-- Nama Owner --}}
+        {{-- Nama Owner --}}{{-- note: pre-filled from Google OAuth --}}
         <div class="mb-4">
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Anda</label>
           <input type="text" name="owner_name"
                  class="w-full h-12 px-4 rounded-2xl border @error('owner_name') border-red-400 ring-2 ring-red-100 @else border-slate-200 @enderror bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
-                 value="{{ old('owner_name') }}"
+                 value="{{ old('owner_name', $googlePrefill['name'] ?? '') }}"
                  placeholder="Nama lengkap Anda"
                  autocomplete="name" required>
           @error('owner_name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
@@ -174,10 +174,13 @@
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
           <input type="email" name="email"
                  class="w-full h-12 px-4 rounded-2xl border @error('email') border-red-400 ring-2 ring-red-100 @else border-slate-200 @enderror bg-white text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
-                 value="{{ old('email') }}"
+                 value="{{ old('email', $googlePrefill['email'] ?? '') }}"
                  placeholder="nama@email.com"
-                 autocomplete="email" required>
+                 autocomplete="email" {{ isset($googlePrefill) ? 'readonly' : '' }} required>
           @error('email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+          @if(isset($googlePrefill))
+            <p class="text-xs text-slate-400 mt-1">Dari akun Google Anda</p>
+          @endif
         </div>
 
         {{-- Nomor HP --}}
@@ -268,7 +271,8 @@ document.addEventListener('DOMContentLoaded', function () {
   btnBack2.addEventListener('click', () => showStep(2));
 
   btnGoogle.addEventListener('click', () => {
-    alert('Google login belum tersedia. Gunakan email untuk sementara.');
+    // Redirect ke Google OAuth dengan plan terpilih
+    window.location.href = '{{ route('central.signup.google') }}?plan=' + encodeURIComponent(activePlan || 'starter');
   });
 
   // Plan card selection

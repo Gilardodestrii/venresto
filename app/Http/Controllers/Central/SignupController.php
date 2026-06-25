@@ -51,20 +51,26 @@ class SignupController extends Controller
     }
 
     public function show(Request $r)
-{
-    // Ambil hanya plan aktif + kolom yang dibutuhkan
-    $plans = Plan::active()
-        ->orderByRaw("FIELD(code, 'pro','starter')") // urutan opsional
-        ->get(['code','name','price_monthly','price_yearly','features_json']);
+        {
+            // Ambil hanya plan aktif + kolom yang dibutuhkan
+            $plans = Plan::active()
+                ->orderByRaw("FIELD(code, 'pro','starter')") // urutan opsional
+                ->get(['code','name','price_monthly','price_yearly','features_json']);
 
-    // Preselect dari query ?plan=pro (opsional)
-    $selected = $r->query('plan');
-    if (!$plans->pluck('code')->contains($selected)) {
-        $selected = optional($plans->first())->code; // fallback plan pertama
-    }
+            // Preselect dari query ?plan=pro (opsional)
+            $selected = $r->query('plan');
+            if (!$plans->pluck('code')->contains($selected)) {
+                $selected = optional($plans->first())->code; // fallback plan pertama
+            }
 
-    return view('landing.signup', compact('plans','selected'));
-}
+            // Handle Google OAuth pre-fill data
+            $googlePrefill = session('google_signup_data');
+            if ($googlePrefill) {
+                session()->forget('google_signup_data'); // hapus setelah dibaca
+            }
+
+            return view('landing.signup', compact('plans','selected','googlePrefill'));
+        }
 
 
         public function store(Request $r)
@@ -242,5 +248,53 @@ class SignupController extends Controller
             return redirect()->away($tenantUrl)
                 ->with('ok', "Tenant {$tenant->slug} dibuat. Trial s/d {$trialEnds->format('Y-m-d')}");
         }
+    }
+
+    /**
+     * Redirect ke Google OAuth
+     */
+    public function googleRedirect()
+    {
+        $plan = request('plan', 'starter'); // default starter
+        session(['google_signup_plan' => $plan]); // simpan plan di session
+
+        return \Laravel\Socialite\Facades\Socialite::driver('google')
+            ->redirect();
+    }
+
+    /**
+     * Handle callback dari Google OAuth
+     */
+    public function googleCallback()
+    {
+        $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+
+        // Ambil data dari session
+        $plan = session('google_signup_plan', 'starter');
+        session()->forget('google_signup_plan');
+
+        // Cek email sudah ada di tabel users?
+        $existingUser = User::where('email', $googleUser->getEmail())->first();
+
+        if ($existingUser) {
+            // Jika sudah ada, langsung login
+            auth()->login($existingUser);
+            return redirect()->away(url("/{$existingUser->tenant->slug}/login"));
+        }
+
+        // Jika user baru, redirect ke halaman lengkapkan data
+        // simpan data google di session untuk diisi ke form
+        session([
+            'google_signup_data' => [
+                'name'  => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'avatar'=> $googleUser->getAvatar(),
+                'plan'  => $plan,
+            ]
+        ]);
+
+        // Redirect ke signup form dengan pre-fill
+        return redirect()->route('central.signup', ['plan' => $plan])
+            ->with('google_prefill', session('google_signup_data'));
     }
     
