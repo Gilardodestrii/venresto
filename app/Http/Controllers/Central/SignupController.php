@@ -188,7 +188,21 @@ class SignupController extends Controller
                         ->where('tenant_id', $tenant->id)
                         ->whereIn('name', $allPermissions)
                         ->get();
-                    $ownerRole->syncPermissions($permissionObjects);
+
+                    // Reset cache dan paksa set team id tepat sebelum sync
+                    app(PermissionRegistrar::class)->forgetCachedPermissions();
+                    app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
+
+                    // syncPermissions via Eloquent langsung ke pivot dengan tenant_id
+                    $ownerRole->permissions()->detach();
+                    $permissionObjects->each(function ($perm) use ($ownerRole, $tenant) {
+                        \Illuminate\Support\Facades\DB::table('role_has_permissions')->insert([
+                            'permission_id' => $perm->id,
+                            'role_id'       => $ownerRole->id,
+                            'tenant_id'     => $tenant->id,
+                        ]);
+                    });
+                    app(PermissionRegistrar::class)->forgetCachedPermissions();
 
                     $owner->assignRole('owner');
                 }
