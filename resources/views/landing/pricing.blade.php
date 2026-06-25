@@ -71,7 +71,7 @@
           <li class="flex items-start gap-2 opacity-40"><i class="bi bi-x-circle text-gray-400 mt-0.5 shrink-0"></i><span>Role manager & audit log</span></li>
         </ul>
 
-        <a href="{{ route('central.signup') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl border-2 border-blue-600 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition-colors">Coba Gratis 7 Hari</a>
+        <a href="{{ route('central.signup', ['plan' => 'starter']) }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl border-2 border-blue-600 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition-colors">Coba Gratis 7 Hari</a>
       </div>
 
       {{-- PRO (RECOMMENDED) --}}
@@ -100,7 +100,7 @@
           <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-300 mt-0.5 shrink-0"></i><span>RBAC: owner, manager, cashier, kitchen, waiter</span></li>
         </ul>
 
-        <a href="{{ route('central.signup') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg">Mulai Trial Pro</a>
+        <a href="{{ route('central.signup', ['plan' => 'pro']) }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-blue-600 font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg">Mulai Trial Pro</a>
       </div>
 
       {{-- ENTERPRISE --}}
@@ -126,7 +126,7 @@
           <li class="flex items-start gap-2"><i class="bi bi-check-circle-fill text-green-500 mt-0.5 shrink-0"></i><span>Onboarding & training tim</span></li>
         </ul>
 
-        <a href="{{ url('/contact') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-gray-900 text-white font-semibold text-sm hover:bg-gray-800 transition-colors">Diskusi Kebutuhan</a>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20tertarik%20dengan%20paket%20Enterprise%20VenResto" target="_blank" rel="noopener" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl bg-gray-900 text-white font-semibold text-sm hover:bg-gray-800 transition-colors"><i class="bi bi-whatsapp mr-2"></i>Diskusi via WhatsApp</a>
       </div>
 
     </div>
