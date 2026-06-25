@@ -182,8 +182,13 @@ class SignupController extends Controller
                     Role::firstOrCreate(['name' => 'kitchen',  'guard_name' => 'web', 'tenant_id' => $tenant->id]);
                     Role::firstOrCreate(['name' => 'waiter',   'guard_name' => 'web', 'tenant_id' => $tenant->id]);
 
-                    // Sync semua permission ke role owner
-                    $ownerRole->syncPermissions($allPermissions);
+                    // Sync semua permission ke role owner (pass objects, bukan string names)
+                    // agar Spatie tidak kehilangan tenant_id saat insert role_has_permissions
+                    $permissionObjects = \Spatie\Permission\Models\Permission::where('guard_name', 'web')
+                        ->where('tenant_id', $tenant->id)
+                        ->whereIn('name', $allPermissions)
+                        ->get();
+                    $ownerRole->syncPermissions($permissionObjects);
 
                     $owner->assignRole('owner');
                 }
