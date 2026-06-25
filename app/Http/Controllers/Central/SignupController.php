@@ -51,29 +51,28 @@ class SignupController extends Controller
     }
 
     public function show(Request $r)
-        {
-            // Ambil hanya plan aktif + kolom yang dibutuhkan
-            $plans = Plan::active()
-                ->orderByRaw("FIELD(code, 'pro','starter')") // urutan opsional
-                ->get(['code','name','price_monthly','price_yearly','features_json']);
+    {
+        // Ambil hanya plan aktif + kolom yang dibutuhkan
+        $plans = Plan::active()
+            ->orderByRaw("FIELD(code, 'pro','starter')") // urutan opsional
+            ->get(['code','name','price_monthly','price_yearly','features_json']);
 
-            // Preselect dari query ?plan=pro (opsional)
-            $selected = $r->query('plan');
-            if (!$plans->pluck('code')->contains($selected)) {
-                $selected = optional($plans->first())->code; // fallback plan pertama
-            }
-
-            // Handle Google OAuth pre-fill data
-            $googlePrefill = session('google_signup_data');
-            if ($googlePrefill) {
-                session()->forget('google_signup_data'); // hapus setelah dibaca
-            }
-
-            return view('landing.signup', compact('plans','selected','googlePrefill'));
+        // Preselect dari query ?plan=pro (opsional)
+        $selected = $r->query('plan');
+        if (!$plans->pluck('code')->contains($selected)) {
+            $selected = optional($plans->first())->code; // fallback plan pertama
         }
 
+        // Handle Google OAuth pre-fill data
+        $googlePrefill = session('google_signup_data');
+        if ($googlePrefill) {
+            session()->forget('google_signup_data'); // hapus setelah dibaca
+        }
 
-        public function store(Request $r)
+        return view('landing.signup', compact('plans','selected','googlePrefill'));
+    }
+
+    public function store(Request $r)
         {
             // 1) Validasi awal
             $data = $r->validate([
@@ -297,4 +296,4 @@ class SignupController extends Controller
         return redirect()->route('central.signup', ['plan' => $plan])
             ->with('google_prefill', session('google_signup_data'));
     }
-    
+}
