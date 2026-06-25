@@ -330,4 +330,32 @@ body{background:var(--bg);}
         </div>
     </div>
 </section>
+
+{{-- Floating scroll-to-top button --}}
+<button id="scroll-top-btn"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center shadow-lg shadow-sky-200 z-40 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-opacity duration-200"
+        style="display: none;"
+        aria-label="Kembali ke atas">
+    <i class="bi bi-arrow-up text-lg"></i>
+</button>
 @endsection
+
+@push('scripts')
+<script>
+(function() {
+    const btn = document.getElementById('scroll-top-btn');
+    if (!btn) return;
+
+    // Tampilkan saat sudah scroll melewati hero (lebih dari 300px)
+    window.addEventListener('scroll', () => {
+        const show = window.scrollY > 300;
+        btn.style.display = show ? 'flex' : 'none';
+    });
+
+    // Klik smooth scroll ke atas
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+})();
+</script>
+@endpush
