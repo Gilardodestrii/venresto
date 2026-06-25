@@ -71,6 +71,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/signup', [SignupController::class,'show'])->name('central.signup');
 Route::post('/signup', [SignupController::class,'store'])->name('central.signup.store');
+Route::get('/signup/check-slug', [SignupController::class,'checkSlug'])->name('central.signup.check-slug');
 
 Route::middleware(['auth'])
     ->prefix('{tenant}/admin')

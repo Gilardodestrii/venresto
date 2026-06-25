@@ -17,6 +17,39 @@ use Illuminate\Validation\Rule;
 
 class SignupController extends Controller
 {
+    public function checkSlug(Request $r)
+    {
+        $slug = $r->query('slug', '');
+        $slug = strtolower(trim($slug));
+
+        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) || strlen($slug) < 3) {
+            return response()->json(['available' => false, 'suggestions' => []]);
+        }
+
+        $reserved = ['www','admin','api','app','support','pricing','signup','login'];
+        if (in_array($slug, $reserved, true)) {
+            return response()->json(['available' => false, 'suggestions' => [$slug.'-resto', $slug.'-kafe', $slug.'-outlet']]);
+        }
+
+        $exists = Tenant::where('slug', $slug)->exists();
+        if (!$exists) {
+            return response()->json(['available' => true, 'suggestions' => []]);
+        }
+
+        // Generate suggestions yang belum dipakai
+        $base = $slug;
+        $suggestions = [];
+        $suffixes = ['-resto', '-kafe', '-id', '-official', '-app', '2', '3'];
+        foreach ($suffixes as $suffix) {
+            $candidate = $base . $suffix;
+            if (!Tenant::where('slug', $candidate)->exists() && count($suggestions) < 3) {
+                $suggestions[] = $candidate;
+            }
+        }
+
+        return response()->json(['available' => false, 'suggestions' => $suggestions]);
+    }
+
     public function show(Request $r)
 {
     // Ambil hanya plan aktif + kolom yang dibutuhkan
