@@ -260,6 +260,17 @@ document.addEventListener('DOMContentLoaded', function () {
     step3.classList.remove('hidden');
   @endif
 
+  // Jika dari Google OAuth callback, langsung ke step 3 (skip pilih metode & plan)
+  @if(isset($googlePrefill) && $googlePrefill)
+    step1.classList.add('hidden');
+    step2.classList.add('hidden');
+    step3.classList.remove('hidden');
+    planInput.value = '{{ $googlePrefill["plan"] ?? $preselected }}';
+    activePlan = planInput.value;
+    const nameMapG = { starter: 'Starter', pro: 'Pro' };
+    planLabel.textContent = 'Paket ' + (nameMapG[activePlan] || activePlan);
+  @endif
+
   function showStep(n) {
     step1.classList.toggle('hidden', n !== 1);
     step2.classList.toggle('hidden', n !== 2);
