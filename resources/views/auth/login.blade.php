@@ -38,6 +38,24 @@
           </div>
         @endif
 
+        {{-- Login dengan Google --}}
+        <a href="{{ route('central.login.google') }}"
+           class="w-full h-12 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 flex items-center justify-center gap-3 text-sm font-semibold text-slate-700 transition shadow-sm mb-4 no-underline">
+          <svg class="w-5 h-5" viewBox="0 0 48 48">
+            <path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 29.9 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.9 0 20.2-7.9 20.2-21 0-1.4-.1-2.7-.3-4z"/>
+            <path fill="#34A853" d="M6.3 14.7l7 5.1C15 16.1 19.1 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6-6C34.5 5.1 29.5 3 24 3c-7.5 0-14 4.2-17.7 10.7z"/>
+            <path fill="#FBBC05" d="M24 45c5.8 0 10.7-1.9 14.3-5.2l-6.6-5.4C29.9 36 27.1 37 24 37c-5.8 0-10.7-3.9-12.5-9.3l-7 5.4C8.1 40.7 15.5 45 24 45z"/>
+            <path fill="#EA4335" d="M44.5 20H24v8.5h11.8c-.8 2.3-2.3 4.3-4.3 5.7l6.6 5.4C42.4 36.1 45 30.5 45 24c0-1.4-.1-2.7-.3-4z"/>
+          </svg>
+          Masuk dengan Google
+        </a>
+
+        <div class="flex items-center gap-3 mb-4">
+          <div class="flex-1 h-px bg-slate-200"></div>
+          <span class="text-xs text-slate-400 font-medium">atau</span>
+          <div class="flex-1 h-px bg-slate-200"></div>
+        </div>
+
         <form method="POST" action="{{ $loginAction }}" novalidate>
           @csrf
 

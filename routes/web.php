@@ -74,6 +74,8 @@ Route::post('/signup', [SignupController::class,'store'])->name('central.signup.
 Route::get('/signup/check-slug', [SignupController::class,'checkSlug'])->name('central.signup.check-slug');
 Route::get('/signup/google', [SignupController::class,'googleRedirect'])->name('central.signup.google');
 Route::get('/signup/google/callback', [SignupController::class,'googleCallback'])->name('central.signup.google.callback');
+Route::get('/login/google', [LoginController::class,'googleRedirect'])->name('central.login.google');
+Route::get('/login/google/callback', [LoginController::class,'googleCallback'])->name('central.login.google.callback');
 
 Route::middleware(['auth'])
     ->prefix('{tenant}/admin')

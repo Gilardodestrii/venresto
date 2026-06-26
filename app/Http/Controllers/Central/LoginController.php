@@ -13,6 +13,60 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    /**
+     * Redirect ke Google OAuth untuk login
+     */
+    public function googleRedirect()
+    {
+        return \Laravel\Socialite\Facades\Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Handle callback dari Google OAuth untuk login
+     */
+    public function googleCallback(Request $request)
+    {
+        $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+
+        $tenant = TenantContext::get();
+
+        $user = User::query()
+            ->with('tenant')
+            ->when($tenant, fn ($q) => $q->where('tenant_id', $tenant->id))
+            ->where('email', $googleUser->getEmail())
+            ->first();
+
+        if (!$user) {
+            return redirect()->route('central.login')
+                ->withErrors(['email' => 'Akun dengan email ' . $googleUser->getEmail() . ' tidak ditemukan. Silakan daftar terlebih dahulu.']);
+        }
+
+        $resolvedTenant = $tenant ?: $user->tenant;
+
+        if (!$resolvedTenant) {
+            return redirect()->route('central.login')
+                ->withErrors(['email' => 'Akun ini belum terhubung dengan tenant.']);
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        TenantContext::set($resolvedTenant);
+
+        $outlet = Outlet::firstOrCreate(
+            ['tenant_id' => $resolvedTenant->id],
+            ['name' => 'Outlet Utama']
+        );
+
+        session(['current_outlet_id' => $outlet->id]);
+
+        if (method_exists($user, 'hasRole') && ($user->hasRole('owner') || $user->hasRole('manager'))) {
+            return redirect()->intended(url($resolvedTenant->slug . '/admin/dashboard'));
+        }
+
+        return redirect()->intended(url($resolvedTenant->slug . '/admin/pos'));
+    }
+
     public function show()
     {
         $tenant = TenantContext::get();
