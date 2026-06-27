@@ -110,7 +110,7 @@ Route::middleware(['auth', 'role:superadmin'])
         Route::get('/tenants', [\App\Http\Controllers\Superadmin\TenantController::class, 'index'])
             ->name('tenants.index');
             
-        Route::get('/tenants/{tenant}', [\App\Http\Controllers\Superadmin\TenantController::class, 'show'])
+        Route::get('/tenants/{id}', [\App\Http\Controllers\Superadmin\TenantController::class, 'show'])
             ->name('tenants.show');
     });
 

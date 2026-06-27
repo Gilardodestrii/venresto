@@ -48,7 +48,7 @@
                             {{ $tenant->created_at->format('d M Y') }}
                         </td>
                         <td class="px-6 py-4 text-right space-x-2">
-                            <a href="{{ route('superadmin.tenants.show', $tenant) }}" class="inline-block px-3 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 font-medium text-xs">Detail</a>
+                            <a href="{{ route('superadmin.tenants.show', $tenant->id) }}" class="inline-block px-3 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 font-medium text-xs">Detail</a>
                             
                             <form method="POST" action="{{ route('switch.tenant', $tenant->slug) }}" class="inline-block">
                                 @csrf
