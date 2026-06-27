@@ -100,7 +100,7 @@ Route::post('/switch-tenant/{tenant}', function ($tenant) {
 })->middleware('auth')->name('switch.tenant');
 
 // Superadmin Routes
-Route::middleware(['auth', 'role:superadmin'])
+Route::middleware(['auth'])
     ->prefix('superadmin')
     ->name('superadmin.')
     ->group(function () {
