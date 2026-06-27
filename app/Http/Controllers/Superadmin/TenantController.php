@@ -4,22 +4,27 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use App\Models\Outlet;
+use App\Models\User;
+use App\Models\MenuItem;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class TenantController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->get('search');
-        
-        $tenants = Tenant::with(['owner'])
+        $search = $request->input('search', '');
+
+        $tenants = Tenant::query()
+            ->with('owner')
             ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('slug', 'like', "%{$search}%")
-                    ->orWhereHas('owner', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
-                    });
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('slug', 'like', "%{$search}%")
+                      ->orWhereHas('owner', function ($q) use ($search) {
+                          $q->where('email', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%");
+                      });
             })
             ->latest()
             ->paginate(15)
@@ -30,13 +35,13 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        $tenant->load(['owner']);
-        
+        $tenant->load('owner');
+
         $stats = [
-            'total_outlets' => $tenant->outlets()->count(),
-            'total_users' => \App\Models\User::where('tenant_id', $tenant->id)->count(),
-            'total_orders' => $tenant->orders()->count(),
-            'total_items' => $tenant->menuItems()->count(),
+            'total_outlets' => Outlet::where('tenant_id', $tenant->id)->count(),
+            'total_items'   => MenuItem::where('tenant_id', $tenant->id)->count(),
+            'total_users'   => User::where('tenant_id', $tenant->id)->count(),
+            'total_orders'  => Order::where('tenant_id', $tenant->id)->count(),
         ];
 
         return view('superadmin.tenants.show', compact('tenant', 'stats'));

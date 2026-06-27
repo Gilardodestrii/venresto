@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use App\Models\Outlet;
 use App\Models\User;
 use App\Models\Order;
-use App\Models\Outlet;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -15,9 +14,9 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_tenants' => Tenant::count(),
-            'total_outlets' => Outlet::count(),
-            'total_users' => User::count(),
-            'total_orders' => Order::count(),
+            'total_outlets'  => Outlet::count(),
+            'total_users'    => User::count(),
+            'total_orders'   => Order::count(),
             'recent_tenants' => Tenant::latest()->take(5)->get(),
         ];
 
