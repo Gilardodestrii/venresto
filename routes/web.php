@@ -99,6 +99,21 @@ Route::post('/switch-tenant/{tenant}', function ($tenant) {
     return back()->with('error', 'Unauthorized');
 })->middleware('auth')->name('switch.tenant');
 
+// Superadmin Routes
+Route::middleware(['auth', 'role:superadmin'])
+    ->prefix('superadmin')
+    ->name('superadmin.')
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Superadmin\DashboardController::class, 'index'])
+            ->name('dashboard');
+            
+        Route::get('/tenants', [\App\Http\Controllers\Superadmin\TenantController::class, 'index'])
+            ->name('tenants.index');
+            
+        Route::get('/tenants/{tenant}', [\App\Http\Controllers\Superadmin\TenantController::class, 'show'])
+            ->name('tenants.show');
+    });
+
 Route::get('/', LandingController::class)->name('landing.home');
 Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
 Route::view('/features', 'landing.features')->name('landing.features');
