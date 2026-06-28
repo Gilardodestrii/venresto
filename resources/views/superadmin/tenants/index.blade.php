@@ -66,7 +66,7 @@
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">{{ strtoupper($tenant->status) }}</span>
                             @endif
-                            <div class="text-xs text-slate-400 mt-1 font-medium">Sejak {{ $tenant->created_at->format('M Y') }}</div>
+                            <div class="text-xs text-slate-400 mt-1 font-medium">Sejak {{ $tenant->created_at ? $tenant->created_at->format('M Y') : '-' }}</div>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2">
