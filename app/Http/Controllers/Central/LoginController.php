@@ -26,7 +26,11 @@ class LoginController extends Controller
      */
     public function googleCallback(Request $request)
     {
-        $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+        try {
+            $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+        } catch (\Exception $e) {
+            return redirect()->route('central.login')->with('error', 'Sesi login Google tidak valid atau dibatalkan. Silakan coba lagi.');
+        }
 
         $tenant = TenantContext::get();
 

@@ -236,9 +236,13 @@ class SignupController extends Controller
     /**
      * Handle callback dari Google OAuth
      */
-    public function googleCallback()
+    public function googleCallback(Request $request)
     {
-        $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+        try {
+            $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+        } catch (\Exception $e) {
+            return redirect()->route('central.signup')->with('error', 'Sesi registrasi Google tidak valid atau dibatalkan. Silakan coba lagi.');
+        }
 
         $plan = session('google_signup_plan', 'starter');
         session()->forget('google_signup_plan');
