@@ -56,6 +56,7 @@ class ResolveTenantFromPath
             'horizon',
             'telescope',
             'build',
+            'superadmin',
             'favicon.ico',
         ];
 
