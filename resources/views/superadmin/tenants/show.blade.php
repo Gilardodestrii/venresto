@@ -60,7 +60,7 @@
         </div>
         <div>
             <p class="text-sm text-gray-500 mb-1">Tanggal Bergabung</p>
-            <p class="font-medium text-gray-900">{{ $tenant->created_at->format('d M Y, H:i') }}</p>
+            <p class="font-medium text-gray-900">{{ $tenant->created_at ? $tenant->created_at->format('d M Y, H:i') : '-' }}</p>
         </div>
         <div>
             <p class="text-sm text-gray-500 mb-1">Tenant ID</p>

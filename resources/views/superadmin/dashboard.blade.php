@@ -41,7 +41,7 @@
                     <p class="text-sm text-gray-500">{{ url('/' . $tenant->slug . '/admin/dashboard') }}</p>
                 </div>
                 <div class="text-sm text-gray-400">
-                    {{ $tenant->created_at->diffForHumans() }}
+                    {{ $tenant->created_at ? $tenant->created_at->diffForHumans() : '-' }}
                 </div>
             </div>
         @empty
