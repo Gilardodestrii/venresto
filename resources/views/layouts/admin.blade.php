@@ -281,11 +281,14 @@
                                  @click.away="open = false"
                                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
                                 @foreach($tenants as $tenant)
-                                    <a href="{{ route('switch.tenant', $tenant->slug) }}"
-                                       class="flex items-center gap-2 px-4 py-2.5 text-sm {{ $tenant->id === $currentTenant->id ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
-                                        <i class="bi bi-building {{ $tenant->id === $currentTenant->id ? 'text-blue-600' : 'text-gray-400' }}"></i>
-                                        {{ $tenant->name }}
-                                    </a>
+                                    <form method="POST" action="{{ route('switch.tenant', $tenant->slug) }}" class="block">
+                                        @csrf
+                                        <button type="submit"
+                                           class="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left {{ $tenant->id === $currentTenant->id ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
+                                            <i class="bi bi-building {{ $tenant->id === $currentTenant->id ? 'text-blue-600' : 'text-gray-400' }}"></i>
+                                            {{ $tenant->name }}
+                                        </button>
+                                    </form>
                                 @endforeach
                             </div>
                         </div>
