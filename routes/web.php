@@ -90,16 +90,7 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->name('logout');
 
 // Tenant switcher - for superadmin switching between tenants
-Route::get('/switch-tenant/{tenant}', function ($tenant) {
-    $user = auth()->user();
-    if ($user->hasRole('superadmin')) {
-        session(['tenant_slug' => $tenant]);
-        return redirect()->route('tenant.admin.dashboard', $tenant);
-    }
-    return back()->with('error', 'Unauthorized');
-})->middleware('auth')->name('switch.tenant');
-
-Route::post('/switch-tenant/{tenant}', function ($tenant) {
+Route::match(['GET', 'POST'], '/switch-tenant/{tenant}', function ($tenant) {
     $user = auth()->user();
     if ($user->hasRole('superadmin')) {
         session(['tenant_slug' => $tenant]);
