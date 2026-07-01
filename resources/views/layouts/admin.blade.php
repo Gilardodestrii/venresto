@@ -146,7 +146,7 @@
             </a>
             @endcan
 
-            @can('view reports')
+            @can('reports.view.basic')
             <div x-data="{ reportsOpen: {{ Request::routeIs('tenant.admin.reports*') ? 'true' : 'false' }} }">
                 <button @click="reportsOpen = !reportsOpen"
                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
@@ -180,7 +180,7 @@
             </div>
             @endcan
 
-            @can('manage settings')
+            @can('settings.manage')
             <a href="{{ route('tenant.admin.settings.index', $currentTenant->slug) }}"
                class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
                {{ Request::routeIs('tenant.admin.settings*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
