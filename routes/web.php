@@ -24,6 +24,9 @@ use App\Http\Controllers\Central\StockMovementController;
 use App\Http\Controllers\Central\StockTransferController;
 use App\Http\Controllers\Central\TenantSettingController;
 use App\Http\Controllers\Central\WasteRecordController;
+use App\Http\Controllers\Central\SalesReportController;
+use App\Http\Controllers\Central\ProfitReportController;
+use App\Http\Controllers\Central\InventoryReportController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\QrMenuController;
@@ -198,9 +201,19 @@ Route::middleware(['auth'])
         Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])
             ->name('recipes.destroy');
 
-        Route::get('/reports/inventory', function () {
-            return view('admin.reports.inventory');
-        })->name('reports.inventory');
+        // Reports
+        Route::get('/reports/sales', [SalesReportController::class, 'index'])
+            ->name('reports.sales');
+        Route::get('/reports/sales/export', [SalesReportController::class, 'export'])
+            ->name('reports.sales.export');
+
+        Route::get('/reports/profit', [ProfitReportController::class, 'index'])
+            ->name('reports.profit');
+
+        Route::get('/reports/inventory', [InventoryReportController::class, 'index'])
+            ->name('reports.inventory');
+        Route::get('/reports/inventory/export', [InventoryReportController::class, 'export'])
+            ->name('reports.inventory.export');
 
         Route::get('/settings', [TenantSettingController::class, 'index'])
             ->name('settings.index');

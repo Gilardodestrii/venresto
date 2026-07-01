@@ -147,12 +147,37 @@
             @endcan
 
             @can('view reports')
-            <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
-               class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
-               {{ Request::routeIs('tenant.admin.reports*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
-                <i class="bi bi-bar-chart text-base"></i>
-                Reports
-            </a>
+            <div x-data="{ reportsOpen: {{ Request::routeIs('tenant.admin.reports*') ? 'true' : 'false' }} }">
+                <button @click="reportsOpen = !reportsOpen"
+                   class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
+                   {{ Request::routeIs('tenant.admin.reports*') ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/10 hover:text-white' }}">
+                    <span class="flex items-center gap-3">
+                        <i class="bi bi-bar-chart text-base"></i>
+                        Reports
+                    </span>
+                    <i class="bi text-xs transition-transform duration-200" :class="reportsOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                </button>
+                <div x-show="reportsOpen" x-transition class="ml-7 mt-1 space-y-0.5">
+                    <a href="{{ route('tenant.admin.reports.sales', $currentTenant->slug) }}"
+                       class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors duration-200
+                       {{ Request::routeIs('tenant.admin.reports.sales*') ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                        <i class="bi bi-graph-up text-xs"></i>
+                        Sales Report
+                    </a>
+                    <a href="{{ route('tenant.admin.reports.profit', $currentTenant->slug) }}"
+                       class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors duration-200
+                       {{ Request::routeIs('tenant.admin.reports.profit*') ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                        <i class="bi bi-cash-coin text-xs"></i>
+                        Profit Report
+                    </a>
+                    <a href="{{ route('tenant.admin.reports.inventory', $currentTenant->slug) }}"
+                       class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors duration-200
+                       {{ Request::routeIs('tenant.admin.reports.inventory*') ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                        <i class="bi bi-boxes text-xs"></i>
+                        Inventory Report
+                    </a>
+                </div>
+            </div>
             @endcan
 
             @can('manage settings')
