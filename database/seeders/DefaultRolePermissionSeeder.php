@@ -31,6 +31,7 @@ class DefaultRolePermissionSeeder extends Seeder
             'outlet.manage',
             'menu.manage',
             'users.manage',
+            'settings.manage',
             'reports.view',
         ];
 
@@ -52,6 +53,8 @@ class DefaultRolePermissionSeeder extends Seeder
                 'stock.movement.view',
                 'outlet.manage',
                 'menu.manage',
+                'users.manage',
+                'settings.manage',
                 'reports.view',
             ],
             'cashier' => [

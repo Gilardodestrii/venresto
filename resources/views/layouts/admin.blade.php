@@ -146,7 +146,7 @@
             </a>
             @endcan
 
-            @can('reports.view.basic')
+            @can('reports.view')
             <div x-data="{ reportsOpen: {{ Request::routeIs('tenant.admin.reports*') ? 'true' : 'false' }} }">
                 <button @click="reportsOpen = !reportsOpen"
                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
