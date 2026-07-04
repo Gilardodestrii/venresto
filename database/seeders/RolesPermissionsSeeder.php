@@ -28,8 +28,9 @@ class RolesPermissionsSeeder extends Seeder
         ];
 
         $rolePerms = [
-            'owner'   => $allPerms,
-            'manager' => [
+            'owner'      => $allPerms,
+            'superadmin' => $allPerms,
+            'manager'    => [
                 'orders.view','orders.create','orders.update','orders.refund',
                 'pos.open_shift','pos.close_shift','pos.hold','pos.split_bill','pos.discount','pos.service_charge','pos.tip',
                 'kitchen.ticket.view','kitchen.ticket.print','kitchen.ticket.reprint','printer.manage',
