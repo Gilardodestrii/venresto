@@ -83,17 +83,14 @@
                                  class="w-full h-32 sm:h-40 object-cover menu-image" loading="lazy">
 
                             <div class="p-3 sm:p-4 menu-content">
-                                <div class="flex justify-between items-start gap-2">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="font-bold text-sm sm:text-base menu-title truncate">{{ $item->name }}</div>
-                                        <div class="text-xs sm:small text-slate-500 mb-2 truncate">{{ $item->category?->name }}</div>
-                                        <div class="font-bold text-sky-500 text-sm sm:text-base menu-price">
-                                            Rp {{ number_format($item->price, 0, ',', '.') }}
-                                        </div>
+                                <div class="font-bold text-sm sm:text-base menu-title truncate">{{ $item->name }}</div>
+                                <div class="text-xs text-slate-500 mb-2 truncate">{{ $item->category?->name }}</div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="font-bold text-sky-500 text-sm sm:text-base menu-price truncate">
+                                        Rp {{ number_format($item->price, 0, ',', '.') }}
                                     </div>
-
                                     <button type="button"
-                                            class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sky-500 text-white text-xl flex items-center justify-center shrink-0 btn-add addToCart"
+                                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500 text-white text-lg flex items-center justify-center shrink-0 btn-add addToCart"
                                             data-id="{{ $item->id }}"
                                             data-name="{{ $item->name }}"
                                             data-price="{{ $item->price }}">
@@ -159,7 +156,7 @@
                     </button>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-3 overscroll-contain">
+                <div class="flex-1 min-h-0 overflow-y-auto p-3 overscroll-contain">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
