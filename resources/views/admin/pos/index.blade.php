@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="min-h-screen bg-slate-100 pb-24 lg:pb-8 px-3 lg:px-4" x-data="{ mobileCartOpen: false }">
+<div class="min-h-screen bg-slate-100 pb-28 lg:pb-8 px-3 lg:px-4" x-data="{ mobileCartOpen: false }">
 
     <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2 mb-6 pos-header">
         <div>
@@ -52,17 +52,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 items-start pos-wrapper">
 
             {{-- LEFT: Menu --}}
-            <div>
+            <div class="min-w-0">
                 {{-- Search & Categories Card --}}
                 <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 mb-4 pos-card pos-filter-card">
                     {{-- Search Box --}}
                     <div class="relative mb-4 search-box">
                         <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" class="search-input w-full h-14 rounded-2xl pl-12 bg-white border-none focus:outline-none" id="searchMenu" placeholder="Cari menu...">
+                        <input type="text" class="search-input w-full h-12 sm:h-14 rounded-2xl pl-12 bg-white border-none focus:outline-none" id="searchMenu" placeholder="Cari menu...">
                     </div>
 
                     {{-- Category Scroll --}}
-                    <div class="flex gap-3 overflow-x-auto pb-1.5 category-scroll scrollbar-none">
+                    <div class="flex gap-3 overflow-x-auto pb-1.5 category-scroll" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
                         <button type="button" class="shrink-0 px-4 py-2.5 rounded-2xl font-semibold bg-sky-500 text-white border border-slate-200 transition hover:bg-sky-500 hover:text-white category-btn active" data-category="all">Semua</button>
                         @foreach($categories as $category)
                             <button type="button" class="shrink-0 px-4 py-2.5 rounded-2xl font-semibold bg-white text-slate-700 border border-slate-200 transition hover:bg-sky-500 hover:text-white category-btn" data-category="{{ $category->id }}">
@@ -73,27 +73,27 @@
                 </div>
 
                 {{-- Menu Grid --}}
-                <div class="grid grid-cols-1 max-[390px]:grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 menu-grid">
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 sm:gap-4 menu-grid">
                     @foreach($menuItems as $item)
                         <div class="overflow-hidden transition hover:-translate-y-1 bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] pos-card menu-item menu-filter"
                              data-name="{{ strtolower($item->name) }}"
                              data-category="{{ $item->category_id }}">
 
                             <img src="{{ $item->image_url ?: 'https://placehold.co/600x400/png' }}"
-                                 class="w-full h-[170px] max-[390px]:h-[150px] object-cover menu-image">
+                                 class="w-full h-32 sm:h-40 object-cover menu-image" loading="lazy">
 
-                            <div class="p-4 menu-content">
+                            <div class="p-3 sm:p-4 menu-content">
                                 <div class="flex justify-between items-start gap-2">
-                                    <div>
-                                        <div class="font-bold text-base menu-title">{{ $item->name }}</div>
-                                        <div class="small text-slate-500 mb-2">{{ $item->category?->name }}</div>
-                                        <div class="font-bold text-sky-500 menu-price">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-bold text-sm sm:text-base menu-title truncate">{{ $item->name }}</div>
+                                        <div class="text-xs sm:small text-slate-500 mb-2 truncate">{{ $item->category?->name }}</div>
+                                        <div class="font-bold text-sky-500 text-sm sm:text-base menu-price">
                                             Rp {{ number_format($item->price, 0, ',', '.') }}
                                         </div>
                                     </div>
 
                                     <button type="button"
-                                            class="w-11 h-11 rounded-xl bg-sky-500 text-white text-xl flex items-center justify-center shrink-0 btn-add addToCart"
+                                            class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sky-500 text-white text-xl flex items-center justify-center shrink-0 btn-add addToCart"
                                             data-id="{{ $item->id }}"
                                             data-name="{{ $item->name }}"
                                             data-price="{{ $item->price }}">
@@ -108,7 +108,7 @@
 
             {{-- RIGHT: Desktop Cart --}}
             <div class="pos-cart-desktop hidden lg:block">
-                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 sticky top-[72px] overflow-visible pos-card pos-cart-card">
+                <div class="bg-white/88 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_10px_30px_rgba(15,23,42,.05)] p-4 sticky top-[64px] max-h-[calc(100vh-80px)] overflow-y-auto overflow-visible pos-card pos-cart-card">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
@@ -140,10 +140,10 @@
                  x-transition:leave="transition ease-in duration-150 transform"
                  x-transition:leave-start="translate-y-0"
                  x-transition:leave-end="translate-y-full"
-                 class="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl shadow-2xl max-h-[90vh] flex flex-col"
+                 class="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
                  @click.stop>
 
-                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
                     <div>
                         <h5 class="font-bold text-base mb-0 text-gray-900" id="mobileCartDrawerLabel">
                             Keranjang Order
@@ -159,14 +159,16 @@
                     </button>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-3">
+                <div class="flex-1 overflow-y-auto p-3 overscroll-contain">
                     @include('admin.pos.partials.cart-form')
                 </div>
             </div>
         </div>
 
         {{-- MOBILE CART BAR --}}
-        <div class="fixed left-0 right-0 bottom-0 z-40 p-3 bg-gradient-to-t from-slate-100 via-slate-100/75 to-transparent lg:hidden mobile-cart-bar" id="mobileCartBar">
+        <div class="fixed left-0 right-0 bottom-0 z-[45] pt-3 px-3 lg:hidden mobile-cart-bar"
+             id="mobileCartBar"
+             style="display:none;padding-bottom:max(12px, env(safe-area-inset-bottom));">
             <button type="button"
                     @click="mobileCartOpen = true"
                     class="w-full rounded-3xl p-4 bg-sky-500 text-white flex justify-between items-center shadow-[0_18px_45px_rgba(14,165,233,.35)] mobile-cart-btn"
@@ -217,8 +219,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const desktopCart  = document.querySelector('.pos-cart-desktop');
     const mobileDrawer = document.getElementById('mobileCartDrawer');
 
-    // Disable controls in the inactive cart panel so duplicate
-    // hidden inputs don't get submitted with the form.
+    /**
+     * Disable form controls in the inactive cart panel to prevent
+     * duplicate hidden inputs from being submitted.
+     */
     function setControlsState(container, disabled) {
         if (!container) return;
         container.querySelectorAll('input, select, textarea, button').forEach(el => {
@@ -230,16 +234,30 @@ document.addEventListener('DOMContentLoaded', function () {
         const isMobile = window.innerWidth < 1024; // matches Tailwind lg breakpoint
         setControlsState(desktopCart,  isMobile);
         setControlsState(mobileDrawer, !isMobile);
-        window.POS?.cart?.render?.();
+    }
+
+    /**
+     * Wrap POS.cart.render to re-sync controls after every cart update.
+     * Without this, new hidden inputs created by render() in the inactive
+     * panel remain enabled → duplicate form submissions.
+     */
+    function wrapCartRender() {
+        if (!window.POS?.cart?.render) return;
+        const origRender = POS.cart.render.bind(POS.cart);
+        POS.cart.render = function () {
+            origRender();
+            syncCartControls();
+        };
     }
 
     syncCartControls();
+    wrapCartRender();
+
     window.addEventListener('resize', syncCartControls);
 
     // Re-sync when Alpine opens/closes mobile drawer
     document.addEventListener('alpine:init', () => {
         Alpine.effect(() => {
-            // triggers whenever mobileCartOpen changes (Alpine reactivity)
             setTimeout(syncCartControls, 50);
         });
     });
