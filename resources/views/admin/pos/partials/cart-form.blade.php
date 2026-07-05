@@ -1,38 +1,25 @@
 {{-- Order Type Selection --}}
 <div class="mb-4">
     <label class="block font-semibold text-sm text-slate-700 mb-2">Tipe Pesanan</label>
-
-    <div class="grid grid-cols-2 gap-2.5 order-type-grid">
-        <label class="order-type-box relative cursor-pointer min-h-16 rounded-2xl border-2 border-slate-200 bg-white/92 flex items-center gap-2.5 p-3 transition hover:-translate-y-0.5 hover:border-sky-500 has-[:checked]:!border-sky-500 has-[:checked]:bg-sky-500/10 has-[:checked]:shadow-xl has-[:checked]:shadow-sky-500/20 user-select-none">
-            <input type="radio"
-                   name="order_type"
-                   value="dine_in"
-                   checked
-                   class="order-type-input hidden peer">
-
-            <span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 order-type-icon peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
+    <div class="grid grid-cols-2 gap-2.5">
+        <label class="order-type-box relative flex cursor-pointer items-center gap-2.5 p-3 rounded-2xl border border-slate-200 bg-white/92 hover:border-sky-500 hover:-translate-y-0.5 active:border-sky-500 active:bg-sky-500/10 active:shadow-xl active:shadow-sky-500/20 transition">
+            <input type="radio" name="order_type" value="dine_in" checked class="hidden peer">
+            <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-900 peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
                 <i class="bi bi-cup-hot"></i>
             </span>
-
-            <span>
-                <strong class="block text-sm leading-tight">Dine In</strong>
-                <small class="block text-xs text-slate-500 mt-0.5">Makan di tempat</small>
+            <span class="flex flex-col">
+                <strong class="text-sm font-medium">Dine In</strong>
+                <small class="text-xs text-slate-500">Makan di tempat</small>
             </span>
         </label>
-
-        <label class="order-type-box relative cursor-pointer min-h-16 rounded-2xl border-2 border-slate-200 bg-white/92 flex items-center gap-2.5 p-3 transition hover:-translate-y-0.5 hover:border-sky-500 has-[:checked]:!border-sky-500 has-[:checked]:bg-sky-500/10 has-[:checked]:shadow-xl has-[:checked]:shadow-sky-500/20 user-select-none">
-            <input type="radio"
-                   name="order_type"
-                   value="takeaway"
-                   class="order-type-input hidden peer">
-
-            <span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0 order-type-icon peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
+        <label class="order-type-box relative flex cursor-pointer items-center gap-2.5 p-3 rounded-2xl border border-slate-200 bg-white/92 hover:border-sky-500 hover:-translate-y-0.5 active:border-sky-500 active:bg-sky-500/10 active:shadow-xl active:shadow-sky-500/20 transition">
+            <input type="radio" name="order_type" value="takeaway" class="hidden peer">
+            <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-900 peer-checked:bg-sky-500 peer-checked:text-white transition-colors">
                 <i class="bi bi-bag-check"></i>
             </span>
-
-            <span>
-                <strong class="block text-sm leading-tight">Takeaway</strong>
-                <small class="block text-xs text-slate-500 mt-0.5">Bungkus</small>
+            <span class="flex flex-col">
+                <strong class="text-sm font-medium">Takeaway</strong>
+                <small class="text-xs text-slate-500">Bungkus</small>
             </span>
         </label>
     </div>
