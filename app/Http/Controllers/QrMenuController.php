@@ -49,7 +49,13 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
     $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
 
     $rawPayments = $settings->payments_json ?? '{}';
-    $payments = is_array($rawPayments) ? $rawPayments : (json_decode($rawPayments, true) ?: []);
+
+    if (is_array($rawPayments)) {
+        $payments = $rawPayments;
+    } else {
+        $decoded = json_decode($rawPayments, true);
+        $payments = $decoded ?: [];
+    }
     $paymentOptions = [];
 
     if (!empty($payments['cash_enabled'])) {
