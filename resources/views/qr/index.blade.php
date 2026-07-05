@@ -164,7 +164,7 @@
         tableId: @json($table->id),
         tableNumber: @json($table->table_code),
         csrfToken: @json(csrf_token()),
-        checkoutUrl: @json(preg_replace('/^http:/i', 'https:', route('qr.order.store', [$tenant->slug, $outlet->id]))),
+        checkoutUrl: @json(str_replace('http://', 'https://', route('qr.order.store', [$tenant->slug, $outlet->id]))),
         cartStorageKey: 'qr_cart_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         orderStorageKey: 'qr_orders_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         paymentOptions: @json($paymentOptions),
