@@ -121,6 +121,7 @@
              x-transition:leave-end="opacity-0"
              @click.self="mobileCartOpen = false"
              @keydown.escape.window="mobileCartOpen = false"
+             x-effect="if (mobileCartOpen) { $nextTick(() => { const el = document.querySelector('#mobileCartDrawer .overflow-y-auto'); if (el) el.scrollTop = 0; }) }"
              class="fixed inset-0 z-50 lg:hidden"
              style="display: none;"
              id="mobileCartDrawer"
