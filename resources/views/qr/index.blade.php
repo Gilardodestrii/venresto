@@ -12,7 +12,7 @@
             <div class="hero-top">
                 <div class="table-pill">🍽️ Meja {{ $table->table_code }}</div>
 
-                <button type="button" class="cart-icon" onclick="showPage('cart')" aria-label="Buka keranjang">
+                <button type="button" class="cart-icon" onclick="QrCustomerOrder.showPage('cart')" aria-label="Buka keranjang">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path d="M3 4h2l2.5 13h10L21 8H7"></path>
                         <circle cx="10" cy="20" r="1.4"></circle>
@@ -168,6 +168,13 @@
         cartStorageKey: 'qr_cart_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         orderStorageKey: 'qr_orders_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         paymentOptions: @json($paymentOptions),
+        tax_enabled: @json((bool) $settings->tax_enabled),
+        tax_rate: Number(@json((float) $settings->tax_rate)),
+        tax_inclusive: @json((bool) $settings->tax_inclusive),
+        service_enabled: @json((bool) $settings->service_enabled),
+        service_rate: Number(@json((float) $settings->service_rate)),
+        service_inclusive: @json((bool) $settings->service_inclusive),
+        receiptUrl: @json(session('receipt_url')),
     };
 </script>
 

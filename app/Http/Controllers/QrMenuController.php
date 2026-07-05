@@ -48,7 +48,7 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
 
     $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
 
-    $payments = $settings->payments_json ?? [];
+    $payments = json_decode($settings->payments_json ?? '{}', true) ?: [];
     $paymentOptions = [];
 
     if (!empty($payments['cash_enabled'])) {
@@ -128,7 +128,7 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
 
                 $subtotal += $lineTotal;
 
-                $Items[] = [
+                $items[] = [
                     'tenant_id' => $tenant->id,
                     'menu_item_id' => $menu->id,
                     'qty' => $qty,
