@@ -145,12 +145,12 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
             $afterDiscount = $subtotal;
 
             $tax = ($settings && $settings->tax_enabled && !$settings->tax_inclusive)
-                ? round($afterDiscount * ((float) $settings->tax_rate / 100))
-                : 0;
+                        ? round($afterDiscount * (float) $settings->tax_rate)
+                        : 0;
 
-            $service = ($settings && $settings->service_enabled && !$settings->service_inclusive)
-                ? round($afterDiscount * ((float) $settings->service_rate / 100))
-                : 0;
+                    $service = ($settings && $settings->service_enabled && !$settings->service_inclusive)
+                        ? round($afterDiscount * (float) $settings->service_rate)
+                        : 0;
 
             $grandTotal = $afterDiscount + $tax + $service;
 

@@ -35,11 +35,12 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+
+            // Resolve tenant BEFORE CSRF validation so session path matches
+            \App\Http\Middleware\ResolveTenantFromPath::class,
+
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-
-            // Setelah session aktif, baru resolve tenant
-            \App\Http\Middleware\ResolveTenantFromPath::class,
 
             // Setelah tenant aktif, baru set Spatie team id
             \App\Http\Middleware\SetPermissionTenant::class,

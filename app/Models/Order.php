@@ -27,6 +27,7 @@ class Order extends Model
         'service',
         'grand_total',
         'payment_method',
+        'payment_status',
         'cashier_id',
     ];
 

@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        '*/qr/outlets/*/order',   // QR checkout (full URL with tenant slug)
+        'qr/outlets/*/order',     // QR checkout (after tenant slug stripped by middleware)
+        'webhooks/*',             // Payment webhooks (Midtrans etc.)
     ];
 }

@@ -37,7 +37,15 @@
         filterMenu();
     }
 
-    function bindAddCartButtons() {
+// Debug: check route & CSRF
+console.log('[QR Order] Setup complete', {
+    url: checkoutUrl,
+    csrf: csrfToken?.slice(0,10) + '...',
+    hasCartKey: !!cartStorageKey,
+    payOpts: Object.keys(paymentOptions)
+});
+
+function bindAddCartButtons() {
         document.querySelectorAll('.js-add-cart').forEach(button => {
             button.addEventListener('click', function () {
                 addToCart(
@@ -179,8 +187,8 @@
         const taxRate = config.tax_enabled ? Math.max(Number(config.tax_rate) || 0, 0) : 0;
         const serviceRate = config.service_enabled ? Math.max(Number(config.service_rate) || 0, 0) : 0;
 
-        const tax = config.tax_inclusive ? 0 : afterDiscount * taxRate / 100;
-        const service = config.service_inclusive ? 0 : afterDiscount * serviceRate / 100;
+        const tax = config.tax_inclusive ? 0 : afterDiscount * taxRate;
+        const service = config.service_inclusive ? 0 : afterDiscount * serviceRate;
 
         const grand_total = Math.max(afterDiscount + tax + service, 0);
 
@@ -508,7 +516,20 @@
         renderCartSummaryOnly();
 
         const calc = calculate();
-        console.log(checkoutUrl);
+        const payload = {
+            table_id: config.tableId,
+            customer_name: order.customer_name,
+            customer_phone: order.customer_phone,
+            items: cart.map(item => ({
+                id: item.id,
+                qty: item.qty,
+                note: item.note || ''
+            })),
+            payment_method: order.payment_method,
+            customer_note: order.customer_note
+        };
+        console.log('[QR Order] Sending checkout:', { url: checkoutUrl, payload });
+
         fetch(checkoutUrl, {
             method: 'POST',
             headers: {
@@ -516,38 +537,31 @@
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
-            body: JSON.stringify({
-                table_id: config.tableId,
-
-                customer_name: order.customer_name,
-                customer_phone: order.customer_phone,
-
-                items: cart.map(item => ({
-                    id: item.id,
-                    qty: item.qty,
-                    note: item.note || ''
-                })),
-
-                payment_method: order.payment_method,
-                customer_note: order.customer_note
-            })
+            body: JSON.stringify(payload)
         })
             .then(async response => {
+                console.log('[QR Order] Response status:', response.status, response.statusText);
                 let data = {};
+                let text = '';
                 try {
-                    data = await response.json();
+                    text = await response.text();
+                    data = JSON.parse(text);
                 } catch (e) {
-                    data = {};
+                    // HTML error page (419, 500, etc.)
+                    console.error('[QR Order] Non-JSON response:', text.substring(0, 500));
+                    if (response.status === 419) {
+                        throw new Error('CSRF token expired — reload halaman & coba lagi');
+                    }
+                    throw new Error('Server error ' + response.status + ' — coba lagi nanti');
                 }
                 if (!response.ok) {
-                    // Log detailed error for debugging
-                    console.error('Checkout failed', {
+                    console.error('[QR Order] Checkout failed', {
                         status: response.status,
-                        statusText: response.statusText,
                         payload: data
                     });
-                    throw new Error(data.message || 'Checkout gagal');
+                    throw new Error(data.message || 'Checkout gagal (status ' + response.status + ')');
                 }
+                console.log('[QR Order] Checkout success:', data);
                 return data;
             })
             .then(res => {
