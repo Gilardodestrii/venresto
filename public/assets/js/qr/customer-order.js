@@ -176,11 +176,11 @@
         const discount = Math.max(Number(order.discount) || 0, 0);
         const afterDiscount = Math.max(subtotal - discount, 0);
 
-        const taxRate = config.taxEnabled ? Math.max(Number(config.taxRate) || 0, 0) : 0;
-        const serviceRate = config.serviceEnabled ? Math.max(Number(config.serviceRate) || 0, 0) : 0;
+        const taxRate = config.tax_enabled ? Math.max(Number(config.tax_rate) || 0, 0) : 0;
+        const serviceRate = config.service_enabled ? Math.max(Number(config.service_rate) || 0, 0) : 0;
 
-        const tax = config.taxInclusive ? 0 : afterDiscount * taxRate / 100;
-        const service = config.serviceInclusive ? 0 : afterDiscount * serviceRate / 100;
+        const tax = config.tax_inclusive ? 0 : afterDiscount * taxRate / 100;
+        const service = config.service_inclusive ? 0 : afterDiscount * serviceRate / 100;
 
         const grand_total = Math.max(afterDiscount + tax + service, 0);
 
@@ -351,16 +351,16 @@
                 <b>${formatRupiah(calc.discount)}</b>
             </div>
 
-            ${config.taxEnabled ? `
+            ${config.tax_enabled ? `
                 <div class="summary-row">
-                    <span>Tax ${config.taxInclusive ? '(Included)' : `(${calc.taxRate}%)`}</span>
+                    <span>Tax ${config.tax_inclusive ? '(Included)' : `(${calc.taxRate}%)`}</span>
                     <b>${formatRupiah(calc.tax)}</b>
                 </div>
             ` : ''}
 
-            ${config.serviceEnabled ? `
+            ${config.service_enabled ? `
                 <div class="summary-row">
-                    <span>Service ${config.serviceInclusive ? '(Included)' : `(${calc.serviceRate}%)`}</span>
+                    <span>Service ${config.service_inclusive ? '(Included)' : `(${calc.serviceRate}%)`}</span>
                     <b>${formatRupiah(calc.service)}</b>
                 </div>
             ` : ''}
@@ -531,21 +531,23 @@
                 payment_method: order.payment_method,
                 customer_note: order.customer_note
             })
-            
         })
             .then(async response => {
                 let data = {};
-
                 try {
                     data = await response.json();
                 } catch (e) {
                     data = {};
                 }
-
                 if (!response.ok) {
+                    // Log detailed error for debugging
+                    console.error('Checkout failed', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        payload: data
+                    });
                     throw new Error(data.message || 'Checkout gagal');
                 }
-
                 return data;
             })
             .then(res => {
@@ -561,7 +563,6 @@
                     payment_method: order.payment_method,
                     customer_note: order.customer_note
                 };
-
                 orders.push(newOrder);
                 saveOrders();
 
@@ -577,13 +578,13 @@
                 };
 
                 alert(res.message || 'Pesanan berhasil dibuat');
-
                 render();
                 renderCartPage();
                 renderOrdersPage();
                 showPage('orders');
             })
             .catch(error => {
+                console.error('Checkout error:', error);
                 alert(error.message || 'Checkout gagal. Silakan coba lagi.');
             })
             .finally(() => {
