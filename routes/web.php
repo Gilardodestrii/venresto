@@ -407,8 +407,10 @@ Route::middleware(['auth'])
         Route::post('/orders/{order}/void', [OrderController::class, 'void'])
             ->name('orders.void');
 
+    Route::middleware(['throttle:60,1'])->group(function () {
         Route::post('/orders/{order}/payment', [OrderController::class, 'updatePayment'])
             ->name('orders.updatePayment');
+    });
 
         Route::get('/cashier-sessions', [CashierSessionController::class, 'index'])
             ->name('cashier-sessions.index');
