@@ -114,7 +114,8 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
             'customer_note' => ['nullable', 'string', 'max:500'],
         ]);
 
-        return DB::transaction(function () use ($validated, $tenant, $outlet) {
+        try {
+            $result = DB::transaction(function () use ($validated, $tenant, $outlet) {
             $table = OutletTable::where('tenant_id', $tenant->id)
                 ->where('outlet_id', $outlet->id)
                 ->where('id', $validated['table_id'])
