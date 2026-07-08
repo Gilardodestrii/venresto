@@ -528,7 +528,17 @@ function bindAddCartButtons() {
             payment_method: order.payment_method,
             customer_note: order.customer_note
         };
-        console.log('[QR Order] Sending checkout:', { url: checkoutUrl, payload });
+
+        // ===== DEBUG LOG =====
+        console.log('[QR Order] DEBUG - Config:', {
+            checkoutUrl: checkoutUrl,
+            csrfToken: csrfToken,
+            tableId: config.tableId,
+            hasCsrf: !!csrfToken,
+            hasUrl: !!checkoutUrl
+        });
+        console.log('[QR Order] DEBUG - Payload:', payload);
+        // =====================
 
         fetch(checkoutUrl, {
             method: 'POST',
@@ -539,72 +549,81 @@ function bindAddCartButtons() {
             },
             body: JSON.stringify(payload)
         })
-            .then(async response => {
-                console.log('[QR Order] Response status:', response.status, response.statusText);
-                let data = {};
-                let text = '';
-                try {
-                    text = await response.text();
-                    data = JSON.parse(text);
-                } catch (e) {
-                    // HTML error page (419, 500, etc.)
-                    console.error('[QR Order] Non-JSON response:', text.substring(0, 500));
-                    if (response.status === 419) {
-                        throw new Error('CSRF token expired — reload halaman & coba lagi');
-                    }
-                    throw new Error('Server error ' + response.status + ' — coba lagi nanti');
-                }
-                if (!response.ok) {
-                    console.error('[QR Order] Checkout failed', {
-                        status: response.status,
-                        payload: data
-                    });
-                    throw new Error(data.message || 'Checkout gagal (status ' + response.status + ')');
-                }
-                console.log('[QR Order] Checkout success:', data);
-                return data;
-            })
-            .then(res => {
-                const newOrder = {
-                    order_code: res.order_code || (res.data && (res.data.order_code || res.data.id)) || Date.now(),
-                    date: new Date().toLocaleString('id-ID'),
-                    items: JSON.parse(JSON.stringify(cart)),
-                    subtotal: calc.subtotal,
-                    discount: calc.discount,
-                    tax: calc.tax,
-                    service: calc.service,
-                    grand_total: calc.grand_total,
-                    payment_method: order.payment_method,
-                    customer_note: order.customer_note
-                };
-                orders.push(newOrder);
-                saveOrders();
+        .then(async response => {
+            // ===== DEBUG LOG =====
+            console.log('[QR Order] DEBUG - Response Status:', response.status);
+            console.log('[QR Order] DEBUG - Response Headers:', [...response.headers]);
+            const responseText = await response.text();
+            console.log('[QR Order] DEBUG - Response Text:', responseText);
+            // =====================
 
-                cart = [];
-                saveCart();
+            let data = {};
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('[QR Order] DEBUG - Failed to parse JSON:', e);
+                throw new Error('Server mengembalikan respons yang tidak valid: ' + responseText.substring(0, 200));
+            }
 
-                order = {
-                    discount: 0,
-                    tax: 0,
-                    service: 0,
-                    payment_method: 'cash',
-                    customer_note: ''
-                };
+            if (!response.ok) {
+                console.error('[QR Order] DEBUG - Checkout failed:', {
+                    status: response.status,
+                    data: data
+                });
+                throw new Error(data.message || 'Checkout gagal (status ' + response.status + ')');
+            }
 
-                alert(res.message || 'Pesanan berhasil dibuat');
-                render();
-                renderCartPage();
-                renderOrdersPage();
-                showPage('orders');
-            })
-            .catch(error => {
-                console.error('Checkout error:', error);
-                alert(error.message || 'Checkout gagal. Silakan coba lagi.');
-            })
-            .finally(() => {
-                isCheckoutLoading = false;
-                renderCartSummaryOnly();
+            console.log('[QR Order] DEBUG - Checkout success:', data);
+            return data;
+        })
+        .then(res => {
+            const newOrder = {
+                order_code: res.order_code || (res.data && (res.data.order_code || res.data.id)) || Date.now(),
+                date: new Date().toLocaleString('id-ID'),
+                items: JSON.parse(JSON.stringify(cart)),
+                subtotal: calc.subtotal,
+                discount: calc.discount,
+                tax: calc.tax,
+                service: calc.service,
+                grand_total: calc.grand_total,
+                payment_method: order.payment_method,
+                customer_note: order.customer_note
+            };
+            orders.push(newOrder);
+            saveOrders();
+
+            cart = [];
+            saveCart();
+
+            order = {
+                customer_name: '',
+                customer_phone: '',
+                discount: 0,
+                payment_method: defaultPaymentMethod,
+                customer_note: ''
+            };
+
+            alert(res.message || 'Pesanan berhasil dibuat');
+            render();
+            renderCartPage();
+            renderOrdersPage();
+            showPage('orders');
+        })
+        .catch(error => {
+            // ===== DEBUG LOG =====
+            console.error('[QR Order] DEBUG - Full error:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
             });
+            // =====================
+
+            alert('Error detail: ' + error.message);
+        })
+        .finally(() => {
+            isCheckoutLoading = false;
+            renderCartSummaryOnly();
+        });
     }
 
     function escapeHtml(value) {
