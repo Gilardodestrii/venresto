@@ -164,8 +164,8 @@
         tableId: @json($table->id),
         tableNumber: @json($table->table_code),
         csrfToken: @json(csrf_token()),
-        <!-- DEBUG: Route URL = {{ route('qr.order.store', ['tenant' => $tenant->slug, 'outlet' => $outlet->id]) }} -->
-        checkoutUrl: "{{ route('qr.order.store', ['tenant' => $tenant->slug, 'outlet' => $outlet->id]) }}",
+        <!-- DEBUG: Hardcoded HTTPS URL -->
+        checkoutUrl: "https://app.venresto.biz.id/venom-resto/qr/outlets/{{ $outlet->id }}/order",
         cartStorageKey: 'qr_cart_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         orderStorageKey: 'qr_orders_' + @json($tenant->id) + '_' + @json($outlet->id) + '_' + @json($table->id),
         paymentOptions: @json($paymentOptions),
