@@ -166,9 +166,22 @@ function submitPayment(){
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
         body:JSON.stringify({payment_method:document.getElementById('payment_method').value,paid_amount:document.getElementById('paid_amount').value})
-    }).then(async res=>{const data=await res.json();if(!res.ok){throw data;}return data;})
-      .then(()=>location.reload())
-      .catch(err=>{let msg='Pembayaran gagal.';if(err.errors){msg=Object.values(err.errors)[0][0];}errorBox.innerHTML=msg;errorBox.classList.remove('hidden');errorBox.classList.add('flex');});
+    }).then(async res=>{const data=await res.json();if(!res.ok){console.error('[Payment] Error:', data);throw data;}return data;})
+    .then(()=>location.reload())
+    .catch(err=>{
+        console.error('[Payment] Full error:', err);
+        let msg='Pembayaran gagal.';
+        if(err.message){
+            msg=err.message;
+        }else if(err.errors){
+            msg=Object.values(err.errors)[0][0];
+        }else if(err.exception){
+            msg=err.exception;
+        }
+        errorBox.innerHTML=msg;
+        errorBox.classList.remove('hidden');
+        errorBox.classList.add('flex');
+    });
 }
 </script>
 
