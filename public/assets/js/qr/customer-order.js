@@ -16,6 +16,7 @@
     let orders = loadJson(orderStorageKey, []);
     let activeCategory = 'semua';
     let isCheckoutLoading = false;
+    let pollingInterval;
 
     let order = {
         customer_name: '',
@@ -34,6 +35,7 @@
 
         render();
         renderOrdersPage();
+        startOrderPolling();
         filterMenu();
     }
 
@@ -101,38 +103,188 @@ function bindAddCartButtons() {
         const navCart = document.getElementById('navCart');
         const navOrders = document.getElementById('navOrders');
 
-        if (page === 'menu') {
-            pageMenu?.classList.add('active');
-            navMenu?.classList.add('active');
-        }
+        if (pageMenu) pageMenu.classList.add('active');
+        if (pageCart) pageCart.classList.add('active');
+        if (pageOrders) pageOrders.classList.add('active');
 
-        if (page === 'cart') {
-            pageCart?.classList.add('active');
-            navCart?.classList.add('active');
-            renderCartPage();
-        }
+        if (navMenu) navMenu.classList.add('active');
+        if (navCart) navCart.classList.add('active');
+        if (navOrders) navOrders.classList.add('active');
+    }
 
-        if (page === 'orders') {
-            pageOrders?.classList.add('active');
-            navOrders?.classList.add('active');
+    function showSuccessPopup(order) {
+        // Buat elemen popup
+        const popup = document.createElement('div');
+        popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+
+        popup.innerHTML = `
+            <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 text-center shadow-xl">
+                <div class="mx-auto mb-4 flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">Pesanan Berhasil Dibuat!</h3>
+                <p class="mt-2 text-sm text-gray-500">
+                    Kode Pesanan: <strong>${order.order_code}</strong><br>
+                    Total: <strong>Rp ${order.grand_total.toLocaleString('id-ID')}</strong>
+                </p>
+                <div class="mt-4">
+                    <button id="closePopup" class="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">
+                        Lihat Pesanan
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(popup);
+
+        // Event untuk menutup popup dan pindah ke halaman pesanan
+        document.getElementById('closePopup').addEventListener('click', () => {
+            popup.remove();
+            showPage('orders');
+        });
+
+        // Auto-close setelah 5 detik
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.remove();
+                showPage('orders');
+            }
+        }, 5000);
+    }
+
+    function startOrderPolling() {
+        if (pollingInterval) clearInterval(pollingInterval);
+
+        pollingInterval = setInterval(() => {
+            fetchOrderStatus();
+        }, 5000); // Poll setiap 5 detik
+    }
+
+    function fetchOrderStatus() {
+        if (!config.tenantSlug || !config.outletId) return;
+
+        fetch(`/api/orders/${config.tenantSlug}/${config.outletId}/status`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateOrdersFromApi(data.data);
+            }
+        })
+        .catch(error => {
+            console.error('[QR Order] Error fetching order status:', error);
+        });
+    }
+
+    function updateOrdersFromApi(apiOrders) {
+        // Update status order lokal dengan data dari API
+        orders.forEach(order => {
+            const apiOrder = apiOrders.find(o => o.code === order.order_code);
+            if (apiOrder) {
+                order.status = apiOrder.status;
+            }
+        });
+
+        // Render ulang halaman pesanan
+        if (document.getElementById('pageOrders')?.classList.contains('active')) {
             renderOrdersPage();
         }
+    }
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    function getStatusBadge(status) {
+        const statusMap = {
+            'new': { text: 'Baru', class: 'bg-blue-100 text-blue-800' },
+            'open': { text: 'Diproses', class: 'bg-yellow-100 text-yellow-800' },
+            'processing': { text: 'Dimasak', class: 'bg-orange-100 text-orange-800' },
+            'cooking': { text: 'Sedang Dimasak', class: 'bg-red-100 text-red-800' },
+            'ready': { text: 'Siap Diantar', class: 'bg-green-100 text-green-800' },
+            'completed': { text: 'Selesai', class: 'bg-gray-100 text-gray-800' },
+        };
+
+        return statusMap[status] || { text: status, class: 'bg-gray-100 text-gray-800' };
+    }
+
+    function renderOrdersPage() {
+        const ordersPage = document.getElementById('pageOrders');
+        if (!ordersPage) return;
+
+        let html = `
+            <div class="p-4">
+                <h2 class="text-xl font-bold mb-4">Daftar Pesanan</h2>
+                <div class="space-y-4">
+        `;
+
+        if (orders.length === 0) {
+            html += `
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Belum ada pesanan</p>
+                </div>
+            `;
+        } else {
+            orders.forEach(order => {
+                const statusBadge = getStatusBadge(order.status);
+                html += `
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold">Pesanan #${order.order_code}</h3>
+                                <p class="text-sm text-gray-500">${order.date}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${statusBadge.class}">
+                                ${statusBadge.text}
+                            </span>
+                        </div>
+                        <div class="mt-2 border-t pt-2">
+                            <div class="space-y-1">
+                `;
+
+                if (order.items && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        html += `
+                            <div class="flex justify-between">
+                                <span>${item.qty}x ${item.name}</span>
+                                <span>Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `
+                            </div>
+                            <div class="mt-2 pt-2 border-t flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>Rp ${order.grand_total.toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        ordersPage.innerHTML = html;
     }
 
     function addToCart(id, name, price) {
-        if (!id || !name || price < 0) return;
+        const existingItem = cart.find(item => item.id === id);
 
-        const item = cart.find(x => Number(x.id) === Number(id));
-
-        if (item) {
-            item.qty += 1;
+        if (existingItem) {
+            existingItem.qty += 1;
         } else {
             cart.push({
-                id: Number(id),
-                name: String(name),
-                price: Number(price),
+                id: id,
+                name: name,
+                price: price,
                 qty: 1,
                 note: ''
             });
@@ -140,330 +292,50 @@ function bindAddCartButtons() {
 
         saveCart();
         render();
+        renderCartPage();
+        showPage('cart');
     }
 
-    function changeQty(id, type) {
-        const item = cart.find(x => Number(x.id) === Number(id));
-        if (!item) return;
-
-        if (type === 'plus') item.qty += 1;
-        if (type === 'minus') item.qty -= 1;
-
-        if (item.qty <= 0) {
-            cart = cart.filter(x => Number(x.id) !== Number(id));
-        }
-
+    function removeFromCart(id) {
+        cart = cart.filter(item => item.id !== id);
         saveCart();
         render();
         renderCartPage();
     }
 
-    function updateItemNote(id, value) {
-        const item = cart.find(x => Number(x.id) === Number(id));
-        if (!item) return;
-
-        item.note = value || '';
-        saveCart();
-    }
-
-    function updateOrderField(field, value) {
-        if (['discount', 'tax', 'service'].includes(field)) {
-            order[field] = Number(value) || 0;
-        } else {
-            order[field] = value || '';
-        }
-
-        renderCartSummaryOnly();
-    }
-
-    function calculate() {
-        const subtotal = cart.reduce((total, item) => {
-            return total + (Number(item.price) * Number(item.qty));
-        }, 0);
-
-        const discount = Math.max(Number(order.discount) || 0, 0);
-        const afterDiscount = Math.max(subtotal - discount, 0);
-
-        const taxRate = config.tax_enabled ? Math.max(Number(config.tax_rate) || 0, 0) : 0;
-        const serviceRate = config.service_enabled ? Math.max(Number(config.service_rate) || 0, 0) : 0;
-
-        const tax = config.tax_inclusive ? 0 : afterDiscount * taxRate;
-        const service = config.service_inclusive ? 0 : afterDiscount * serviceRate;
-
-        const grand_total = Math.max(afterDiscount + tax + service, 0);
-
-        return {
-            subtotal,
-            discount,
-            tax,
-            service,
-            grand_total,
-            taxRate,
-            serviceRate
-        };
-    }
-
-    function formatRupiah(value) {
-        return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
-    }
-
-    function getTotalQty() {
-        return cart.reduce((total, item) => {
-            return total + Number(item.qty || 0);
-        }, 0);
-    }
-
-    function render() {
-        const totalQty = getTotalQty();
-
-        const cartCount = document.getElementById('cartCount');
-        const navCartBadge = document.getElementById('navCartBadge');
-
-        if (cartCount) {
-            cartCount.innerText = totalQty;
-            cartCount.classList.toggle('show', totalQty > 0);
-        }
-
-        if (navCartBadge) {
-            navCartBadge.innerText = totalQty;
-            navCartBadge.classList.toggle('show', totalQty > 0);
+    function updateCartQty(id, change) {
+        const item = cart.find(item => item.id === id);
+        if (item) {
+            item.qty += change;
+            if (item.qty <= 0) {
+                removeFromCart(id);
+            } else {
+                saveCart();
+                render();
+                renderCartPage();
+            }
         }
     }
 
-    function renderCartPage() {
-        const el = document.getElementById('cartPageContent');
-        if (!el) return;
-
-        if (cart.length === 0) {
-            el.innerHTML = `
-                <div class="empty-state">
-                    <div>
-                        <div class="empty-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 4h2l2.5 13h10L21 8H7" stroke-width="1.8"></path>
-                                <circle cx="10" cy="20" r="1.2"></circle>
-                                <circle cx="18" cy="20" r="1.2"></circle>
-                            </svg>
-                        </div>
-                        <h5>Keranjang Kosong</h5>
-                        <p>Tambahkan menu favorit kamu</p>
-                        <button type="button" class="btn-blue" onclick="QrCustomerOrder.showPage('menu')">
-                            Lihat Menu
-                        </button>
-                    </div>
-                </div>
-            `;
-            return;
+    function setCartNote(id, note) {
+        const item = cart.find(item => item.id === id);
+        if (item) {
+            item.note = note;
+            saveCart();
         }
-
-        let html = `<div class="cart-page-list">`;
-
-        cart.forEach(item => {
-            html += `
-                <div class="cart-item-card">
-                    <div class="cart-item-row">
-                        <div style="flex:1; min-width:0;">
-                            <div class="cart-item-name">${escapeHtml(item.name)}</div>
-                            <div class="cart-item-price">
-                                ${item.qty} x ${formatRupiah(item.price)}
-                            </div>
-
-                            <div class="qty-control">
-                                <button type="button" onclick="QrCustomerOrder.changeQty(${item.id}, 'minus')">-</button>
-                                <b>${item.qty}</b>
-                                <button type="button" onclick="QrCustomerOrder.changeQty(${item.id}, 'plus')">+</button>
-                            </div>
-
-                            <input type="text"
-                                class="form-control form-control-sm note-input mt-2"
-                                placeholder="Catatan item..."
-                                value="${escapeHtml(item.note || '')}"
-                                oninput="QrCustomerOrder.updateItemNote(${item.id}, this.value)">
-                        </div>
-
-                        <div class="cart-line-total">
-                            ${formatRupiah(item.qty * item.price)}
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-
-        html += `
-            <div class="checkout-form">
-            <label>Nama Pemesan</label>
-            <input type="text"
-                class="form-control mb-2"
-                placeholder="Contoh: Gilardo"
-                value="${escapeHtml(order.customer_name || '')}"
-                oninput="QrCustomerOrder.updateOrderField('customer_name', this.value)">
-
-            <label>No WhatsApp</label>
-            <input type="number"
-                class="form-control mb-2"
-                placeholder="08xxxxxxxxxx"
-                value="${escapeHtml(order.customer_phone || '')}"
-                oninput="QrCustomerOrder.updateOrderField('customer_phone', this.value)">
-            
-                <label>Payment Method</label>
-                <select class="form-control mb-2"
-                    onchange="QrCustomerOrder.updateOrderField('payment_method', this.value)">
-                    ${renderPaymentOptions()}
-                </select>
-
-                <label>Customer Note</label>
-                <textarea class="form-control mb-2"
-                    placeholder="Contoh: jangan pedas, tanpa es..."
-                    oninput="QrCustomerOrder.updateOrderField('customer_note', this.value)">${escapeHtml(order.customer_note || '')}</textarea>
-            </div>
-
-            <div class="summary-box" id="cartSummaryBox"></div>
-        `;
-
-        el.innerHTML = html;
-        renderCartSummaryOnly();
-    }
-
-    function renderPaymentOptions() {
-        const entries = Object.entries(paymentOptions);
-
-        if (entries.length === 0) {
-            return `<option value="cash">Cash</option>`;
-        }
-
-        return entries.map(([value, label]) => {
-            return `
-                <option value="${escapeHtml(value)}" ${order.payment_method === value ? 'selected' : ''}>
-                    ${escapeHtml(label)}
-                </option>
-            `;
-        }).join('');
-    }
-
-    function renderCartSummaryOnly() {
-        const summary = document.getElementById('cartSummaryBox');
-        if (!summary) return;
-
-        const calc = calculate();
-
-        summary.innerHTML = `
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <b>${formatRupiah(calc.subtotal)}</b>
-            </div>
-
-            <div class="summary-row">
-                <span>Discount</span>
-                <b>${formatRupiah(calc.discount)}</b>
-            </div>
-
-            ${config.tax_enabled ? `
-                <div class="summary-row">
-                    <span>Tax ${config.tax_inclusive ? '(Included)' : `(${calc.taxRate}%)`}</span>
-                    <b>${formatRupiah(calc.tax)}</b>
-                </div>
-            ` : ''}
-
-            ${config.service_enabled ? `
-                <div class="summary-row">
-                    <span>Service ${config.service_inclusive ? '(Included)' : `(${calc.serviceRate}%)`}</span>
-                    <b>${formatRupiah(calc.service)}</b>
-                </div>
-            ` : ''}
-
-            <div class="summary-row grand">
-                <span>Total</span>
-                <span>${formatRupiah(calc.grand_total)}</span>
-            </div>
-
-            <button type="button"
-                class="btn-checkout"
-                id="checkoutButton"
-                onclick="QrCustomerOrder.checkout()"
-                ${isCheckoutLoading ? 'disabled' : ''}>
-                ${isCheckoutLoading ? 'Memproses...' : 'Checkout Sekarang'}
-            </button>
-        `;
-    }
-
-    function renderOrdersPage() {
-        const el = document.getElementById('ordersPageContent');
-        const countText = document.getElementById('orderCountText');
-
-        if (countText) {
-            countText.innerText = orders.length + ' pesanan';
-        }
-
-        if (!el) return;
-
-        if (orders.length === 0) {
-            el.innerHTML = `
-                <div class="empty-state">
-                    <div>
-                        <div class="empty-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M7 3h7l5 5v13H7z" stroke-width="1.8"></path>
-                                <path d="M14 3v5h5" stroke-width="1.8"></path>
-                                <path d="M10 13h6M10 17h6M10 9h2" stroke-width="1.8"></path>
-                            </svg>
-                        </div>
-                        <h5>Belum Ada Pesanan</h5>
-                        <p>Pesanan kamu akan muncul di sini</p>
-                    </div>
-                </div>
-            `;
-            return;
-        }
-
-        let html = `<div class="order-page-list">`;
-
-        orders.slice().reverse().forEach(orderItem => {
-            html += `
-                <div class="order-item-card">
-                    <div class="order-meta">
-                        <div>
-                            <div class="order-title">
-                                Pesanan #${escapeHtml(orderItem.order_code)}
-                            </div>
-                            <div class="order-date">
-                                ${escapeHtml(orderItem.date)}
-                            </div>
-                        </div>
-
-                        <div class="order-total">
-                            ${formatRupiah(orderItem.grand_total)}
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    ${orderItem.items.map(item => `
-                        <div class="order-line">
-                            <span>${item.qty}x ${escapeHtml(item.name)}</span>
-                            <b>${formatRupiah(item.qty * item.price)}</b>
-                        </div>
-                    `).join('')}
-
-                    <span class="status-badge">Diproses</span>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-        el.innerHTML = html;
     }
 
     function filterCategory(category, button) {
-        activeCategory = category || 'semua';
+        activeCategory = category;
 
         document.querySelectorAll('.category-chip').forEach(btn => {
-            btn.classList.remove('active');
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-gray-200', 'text-gray-800');
         });
 
         if (button) {
-            button.classList.add('active');
+            button.classList.remove('bg-gray-200', 'text-gray-800');
+            button.classList.add('bg-blue-600', 'text-white');
         }
 
         filterMenu();
@@ -471,37 +343,179 @@ function bindAddCartButtons() {
 
     function filterMenu() {
         const searchInput = document.getElementById('searchMenu');
-        const keyword = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
 
-        const cards = document.querySelectorAll('.menu-card');
-        const noResult = document.getElementById('noMenuResult');
-        const menuCountText = document.getElementById('menuCountText');
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const category = item.dataset.category || 'semua';
+            const name = item.dataset.name ? item.dataset.name.toLowerCase() : '';
 
-        let visibleCount = 0;
+            const categoryMatch = activeCategory === 'semua' || category === activeCategory;
+            const searchMatch = !searchTerm || name.includes(searchTerm);
 
-        cards.forEach(card => {
-            const name = (card.getAttribute('data-name') || '').toLowerCase();
-            const category = (card.getAttribute('data-category') || '').toLowerCase();
-
-            const matchSearch = name.includes(keyword);
-            const matchCategory = activeCategory === 'semua' || category.includes(activeCategory);
-
-            const show = matchSearch && matchCategory;
-
-            card.style.display = show ? 'block' : 'none';
-
-            if (show) {
-                visibleCount++;
+            if (categoryMatch && searchMatch) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
             }
         });
+    }
 
-        if (noResult) {
-            noResult.style.display = visibleCount === 0 ? 'block' : 'none';
+    function calculate() {
+        let subtotal = 0;
+        let totalItems = 0;
+
+        cart.forEach(item => {
+            subtotal += item.price * item.qty;
+            totalItems += item.qty;
+        });
+
+        const tax = config.tax_enabled ? Math.round(subtotal * (config.tax_rate / 100)) : 0;
+        const service = config.service_enabled ? Math.round(subtotal * (config.service_rate / 100)) : 0;
+        const discount = 0; // Default, bisa disesuaikan
+        const afterDiscount = subtotal - discount;
+
+        const grandTotal = afterDiscount + tax + service;
+
+        return {
+            subtotal: subtotal,
+            discount: discount,
+            tax: tax,
+            service: service,
+            grand_total: grandTotal,
+            total_items: totalItems
+        };
+    }
+
+    function render() {
+        const calc = calculate();
+
+        // Update cart badge
+        const cartBadge = document.getElementById('cartBadge');
+        if (cartBadge) {
+            cartBadge.textContent = calc.total_items;
+            cartBadge.classList.remove('hidden');
+            if (calc.total_items === 0) {
+                cartBadge.classList.add('hidden');
+            }
         }
 
-        if (menuCountText) {
-            menuCountText.innerText = visibleCount + ' menu';
+        // Update cart summary
+        renderCartSummaryOnly();
+    }
+
+    function renderCartSummaryOnly() {
+        const calc = calculate();
+        const cartSummary = document.getElementById('cartSummary');
+
+        if (cartSummary) {
+            cartSummary.innerHTML = `
+                <div class="text-sm text-gray-500">Subtotal: Rp ${calc.subtotal.toLocaleString('id-ID')}</div>
+                ${calc.discount > 0 ? `<div class="text-sm text-gray-500">Diskon: -Rp ${calc.discount.toLocaleString('id-ID')}</div>` : ''}
+                ${config.tax_enabled ? `<div class="text-sm text-gray-500">Pajak (${config.tax_rate}%): Rp ${calc.tax.toLocaleString('id-ID')}</div>` : ''}
+                ${config.service_enabled ? `<div class="text-sm text-gray-500">Layanan (${config.service_rate}%): Rp ${calc.service.toLocaleString('id-ID')}</div>` : ''}
+                <div class="text-lg font-bold">Total: Rp ${calc.grand_total.toLocaleString('id-ID')}</div>
+            `;
         }
+    }
+
+    function renderCartPage() {
+        const cartPage = document.getElementById('pageCart');
+        if (!cartPage) return;
+
+        const calc = calculate();
+
+        let html = `
+            <div class="p-4">
+                <h2 class="text-xl font-bold mb-4">Keranjang Belanja</h2>
+                <div id="cartItems" class="space-y-3 mb-4">
+        `;
+
+        if (cart.length === 0) {
+            html += `
+                <div class="text-center py-8">
+                    <p class="text-gray-500">Keranjang kosong</p>
+                    <button onclick="showPage('menu')" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">
+                        Kembali ke Menu
+                    </button>
+                </div>
+            `;
+        } else {
+            cart.forEach(item => {
+                html += `
+                    <div class="bg-white rounded-lg shadow p-3 flex items-center justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-medium">${item.name}</h4>
+                            <p class="text-sm text-gray-500">Rp ${item.price.toLocaleString('id-ID')} x ${item.qty}</p>
+                            <div class="flex items-center mt-1">
+                                <button onclick="updateCartQty(${item.id}, -1)" class="px-2 py-0.5 border rounded text-sm">-</button>
+                                <span class="px-2">${item.qty}</span>
+                                <button onclick="updateCartQty(${item.id}, 1)" class="px-2 py-0.5 border rounded text-sm">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                <div id="cartSummary" class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div class="text-sm text-gray-500">Subtotal: Rp ${calc.subtotal.toLocaleString('id-ID')}</div>
+                    ${calc.discount > 0 ? `<div class="text-sm text-gray-500">Diskon: -Rp ${calc.discount.toLocaleString('id-ID')}</div>` : ''}
+                    ${config.tax_enabled ? `<div class="text-sm text-gray-500">Pajak (${config.tax_rate}%): Rp ${calc.tax.toLocaleString('id-ID')}</div>` : ''}
+                    ${config.service_enabled ? `<div class="text-sm text-gray-500">Layanan (${config.service_rate}%): Rp ${calc.service.toLocaleString('id-ID')}</div>` : ''}
+                    <div class="text-lg font-bold mt-2">Total: Rp ${calc.grand_total.toLocaleString('id-ID')}</div>
+                </div>
+
+                <div class="space-y-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nama Pelanggan</label>
+                        <input type="text" id="customerName" value="${order.customer_name}" 
+                               onchange="order.customer_name = this.value"
+                               class="w-full px-3 py-2 border rounded-lg mt-1" placeholder="Nama">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
+                        <input type="tel" id="customerPhone" value="${order.customer_phone}" 
+                               onchange="order.customer_phone = this.value"
+                               class="w-full px-3 py-2 border rounded-lg mt-1" placeholder="08xxxx">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Catatan</label>
+                        <textarea id="customerNote" onchange="order.customer_note = this.value"
+                                  class="w-full px-3 py-2 border rounded-lg mt-1" placeholder="Catatan pesanan...">${order.customer_note}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+                        <select id="paymentMethod" onchange="order.payment_method = this.value"
+                                class="w-full px-3 py-2 border rounded-lg mt-1">
+                            ${Object.entries(paymentOptions).map(([key, label]) => `
+                                <option value="${key}" ${order.payment_method === key ? 'selected' : ''}>${label}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <button onclick="checkout()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors">
+                        Checkout
+                    </button>
+                </div>
+            `;
+        }
+
+        cartPage.innerHTML = html;
+    }
+
+    function renderMenu() {
+        const menuPage = document.getElementById('pageMenu');
+        if (!menuPage) return;
+
+        // Menu items akan di-render dari HTML yang sudah ada
+        // Kita hanya perlu update visibility berdasarkan filter
+        filterMenu();
     }
 
     function checkout() {
@@ -587,7 +601,8 @@ function bindAddCartButtons() {
                 service: calc.service,
                 grand_total: calc.grand_total,
                 payment_method: order.payment_method,
-                customer_note: order.customer_note
+                customer_note: order.customer_note,
+                status: 'new'
             };
             orders.push(newOrder);
             saveOrders();
@@ -603,11 +618,12 @@ function bindAddCartButtons() {
                 customer_note: ''
             };
 
-            alert(res.message || 'Pesanan berhasil dibuat');
+            // Tampilkan popup sukses
+            showSuccessPopup(newOrder);
+
             render();
             renderCartPage();
             renderOrdersPage();
-            showPage('orders');
         })
         .catch(error => {
             // ===== DEBUG LOG =====
@@ -627,22 +643,21 @@ function bindAddCartButtons() {
     }
 
     function escapeHtml(value) {
-        return String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
+        const div = document.createElement('div');
+        div.textContent = value;
+        return div.innerHTML;
     }
 
-    window.QrCustomerOrder = {
-        showPage,
-        addToCart,
-        changeQty,
-        updateItemNote,
-        updateOrderField,
-        filterCategory,
-        filterMenu,
-        checkout
-    };
+    // Make functions globally available
+    window.addToCart = addToCart;
+    window.removeFromCart = removeFromCart;
+    window.updateCartQty = updateCartQty;
+    window.setCartNote = setCartNote;
+    window.showPage = showPage;
+    window.checkout = checkout;
+    window.filterCategory = filterCategory;
+    window.render = render;
+    window.renderCartPage = renderCartPage;
+    window.renderOrdersPage = renderOrdersPage;
+    window.renderMenu = renderMenu;
 })();
