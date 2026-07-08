@@ -102,6 +102,19 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
 
         abort_unless($outlet->tenant_id === $tenant->id, 404, 'Outlet tidak ditemukan');
 
+        // Validasi di LUAR try-catch
+        $validated = $request->validate([
+            'customer_name' => ['nullable', 'string', 'max:100'],
+            'customer_phone' => ['nullable', 'string', 'max:30'],
+            'table_id' => ['required', 'integer'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.id' => ['required', 'integer'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
+            'items.*.note' => ['nullable', 'string', 'max:255'],
+            'payment_method' => ['required', 'string'],
+            'customer_note' => ['nullable', 'string', 'max:500'],
+        ]);
+
         try {
             $result = DB::transaction(function () use ($validated, $tenant, $outlet) {
                 $table = OutletTable::where('tenant_id', $tenant->id)
