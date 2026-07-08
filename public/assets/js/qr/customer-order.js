@@ -67,11 +67,20 @@ function bindAddCartButtons() {
         });
     }
 
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
     function bindSearchInput() {
         const searchInput = document.getElementById('searchMenu');
 
         if (searchInput) {
-            searchInput.addEventListener('input', filterMenu);
+            searchInput.addEventListener('input', debounce(filterMenu, 300));
         }
     }
 
