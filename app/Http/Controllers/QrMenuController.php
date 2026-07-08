@@ -102,114 +102,103 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
 
         abort_unless($outlet->tenant_id === $tenant->id, 404, 'Outlet tidak ditemukan');
 
-        $validated = $request->validate([
-            'customer_name' => ['nullable', 'string', 'max:100'],
-            'customer_phone' => ['nullable', 'string', 'max:30'],
-            'table_id' => ['required', 'integer'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.id' => ['required', 'integer'],
-            'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
-            'items.*.note' => ['nullable', 'string', 'max:255'],
-            'payment_method' => ['required', 'string'],
-            'customer_note' => ['nullable', 'string', 'max:500'],
-        ]);
-
         try {
             $result = DB::transaction(function () use ($validated, $tenant, $outlet) {
-            $table = OutletTable::where('tenant_id', $tenant->id)
-                ->where('outlet_id', $outlet->id)
-                ->where('id', $validated['table_id'])
-                ->firstOrFail();
+                $table = OutletTable::where('tenant_id', $tenant->id)
+                    ->where('outlet_id', $outlet->id)
+                    ->where('id', $validated['table_id'])
+                    ->firstOrFail();
 
-            $menuIds = collect($validated['items'])->pluck('id')->unique()->values();
+                $menuIds = collect($validated['items'])->pluck('id')->unique()->values();
 
-            $menus = MenuItem::where('tenant_id', $tenant->id)
-                ->where('is_active', 1)
-                ->whereIn('id', $menuIds)
-                ->lockForUpdate()
-                ->get()
-                ->keyBy('id');
+                $menus = MenuItem::where('tenant_id', $tenant->id)
+                    ->where('is_active', 1)
+                    ->whereIn('id', $menuIds)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('id');
 
-            abort_if($menus->count() !== $menuIds->count(), 422, 'Menu tidak valid');
+                abort_if($menus->count() !== $menuIds->count(), 422, 'Menu tidak valid');
 
-            $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
+                $settings = TenantSetting::where('tenant_id', $tenant->id)->first();
 
-            $subtotal = 0;
-            $items = [];
+                $subtotal = 0;
+                $items = [];
 
-            foreach ($validated['items'] as $cartItem) {
-                $menu = $menus->get($cartItem['id']);
+                foreach ($validated['items'] as $cartItem) {
+                    $menu = $menus->get($cartItem['id']);
 
-                $qty = (int) $cartItem['qty'];
-                $price = (int) $menu->price;
-                $lineTotal = $qty * $price;
+                    $qty = (int) $cartItem['qty'];
+                    $price = (int) $menu->price;
+                    $lineTotal = $qty * $price;
 
-                $subtotal += $lineTotal;
+                    $subtotal += $lineTotal;
 
-                $items[] = [
+                    $items[] = [
+                        'tenant_id' => $tenant->id,
+                        'menu_item_id' => $menu->id,
+                        'qty' => $qty,
+                        'price' => $price,
+                        'note' => $cartItem['note'] ?? null,
+                        'kitchen_status' => 'new',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                $discount = 0;
+                $afterDiscount = $subtotal;
+
+                $tax = ($settings && $settings->tax_enabled && !$settings->tax_inclusive)
+                            ? round($afterDiscount * (float) $settings->tax_rate)
+                            : 0;
+
+                $service = ($settings && $settings->service_enabled && !$settings->service_inclusive)
+                            ? round($afterDiscount * (float) $settings->service_rate)
+                            : 0;
+
+                $grandTotal = $afterDiscount + $tax + $service;
+
+                $order = Order::create([
                     'tenant_id' => $tenant->id,
-                    'menu_item_id' => $menu->id,
-                    'qty' => $qty,
-                    'price' => $price,
-                    'note' => $cartItem['note'] ?? null,
-                    'kitchen_status' => 'new',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
+                    'outlet_id' => $outlet->id,
+                    'code' => $this->generateQrOrderCode(),
+                    'table_code' => $table->table_code,
+                    'customer_name' => !empty($validated['customer_name'])
+                        ? trim($validated['customer_name'])
+                        : 'Guest',
+                    'customer_phone' => $validated['customer_phone'] ?? null,
+                    'customer_note' => $validated['customer_note'] ?? null,
+                    'status' => 'open',
+                    'payment_status' => 'unpaid',
+                    'payment_method' => $validated['payment_method'],
+                    'subtotal' => $subtotal,
+                    'discount' => $discount,
+                    'tax' => $tax,
+                    'service' => $service,
+                    'grand_total' => $grandTotal,
+                ]);
 
-            $discount = 0;
-            $afterDiscount = $subtotal;
+                foreach ($items as &$item) {
+                    $item['order_id'] = $order->id;
+                }
 
-            $tax = ($settings && $settings->tax_enabled && !$settings->tax_inclusive)
-                        ? round($afterDiscount * (float) $settings->tax_rate)
-                        : 0;
+                OrderItem::insert($items);
 
-                    $service = ($settings && $settings->service_enabled && !$settings->service_inclusive)
-                        ? round($afterDiscount * (float) $settings->service_rate)
-                        : 0;
-
-            $grandTotal = $afterDiscount + $tax + $service;
-
-            $order = Order::create([
-                'tenant_id' => $tenant->id,
-                'outlet_id' => $outlet->id,
-                'code' => $this->generateQrOrderCode(),
-                'table_code' => $table->table_code,
-                'customer_name' => !empty($validated['customer_name'])
-                    ? trim($validated['customer_name'])
-                    : 'Guest',
-
-                'customer_phone' => $validated['customer_phone'] ?? null,
-                'customer_note' => $validated['customer_note'] ?? null,
-                'status' => 'open',
-                'payment_status' => 'unpaid',
-                'payment_method' => $validated['payment_method'],
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'tax' => $tax,
-                'service' => $service,
-                'grand_total' => $grandTotal,
-            ]);
-
-            foreach ($items as &$item) {
-                $item['order_id'] = $order->id;
-            }
-
-            OrderItem::insert($items);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Order berhasil dibuat',
-                'order_code' => $order->code,
-                'data' => [
-                    'id' => $order->id,
-                    'code' => $order->code,
-                    'outlet_id' => $order->outlet_id,
-                    'table_code' => $order->table_code,
-                    'grand_total' => $order->grand_total,
-                ],
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order berhasil dibuat',
+                    'order_code' => $order->code,
+                    'data' => [
+                        'id' => $order->id,
+                        'code' => $order->code,
+                        'outlet_id' => $order->outlet_id,
+                        'table_code' => $order->table_code,
+                        'grand_total' => $order->grand_total,
+                    ],
+                ]);
+            });
+            return $result;
         } catch (\Exception $e) {
             \Log::error('[QR Checkout] Transaction failed', [
                 'error' => $e->getMessage(),
@@ -220,7 +209,7 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
                 'success' => false,
                 'message' => 'Checkout gagal: ' . $e->getMessage(),
             ], 500);
-        });
+        }
     }
 
     private function generateQrOrderCode(): string
