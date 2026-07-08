@@ -87,6 +87,16 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
 
     public function store(Request $request, $tenantSlug, Outlet $outlet)
     {
+        \Log::info('[QR Checkout] Request received', [
+            'tenant_slug' => $tenantSlug,
+            'outlet_id' => $outlet->id,
+            'payload' => $request->all(),
+            'headers' => [
+                'content-type' => $request->header('Content-Type'),
+                'accept' => $request->header('Accept'),
+            ],
+        ]);
+
         $tenant = TenantContext::get();
         abort_unless($tenant, 404, 'Tenant tidak ditemukan');
 
@@ -199,6 +209,16 @@ public function index($tenantSlug, Outlet $outlet, OutletTable $table)
                     'grand_total' => $order->grand_total,
                 ],
             ]);
+        } catch (\Exception $e) {
+            \Log::error('[QR Checkout] Transaction failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Checkout gagal: ' . $e->getMessage(),
+            ], 500);
         });
     }
 
