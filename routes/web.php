@@ -8,6 +8,12 @@ use App\Http\Controllers\Central\LandingController;
 use App\Http\Controllers\Central\LoginController;
 use App\Http\Controllers\Central\SignupController;
 use App\Http\Controllers\Central\MidtransWebhookController;
+use App\Http\Controllers\BlogController;
+
+// ... existing routes ...
+
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 use App\Http\Controllers\Central\QrAdminController;
 use App\Http\Controllers\Central\OutletController;
 use App\Http\Controllers\Central\MenuItemController;
