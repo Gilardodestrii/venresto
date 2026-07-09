@@ -118,15 +118,15 @@ Route::middleware(['auth'])
     });
 
 Route::get('/', LandingController::class)->name('landing.home');
-Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
-Route::view('/features', 'landing.features')->name('landing.features');
-Route::get('/documentation', [LandingController::class, 'documentation'])->name('landing.documentation');
+Route::view('/harga-sistem-pemesanan-restoran', 'landing.pricing')->name('landing.pricing');
+Route::view('/fitur-pemesanan-restoran', 'landing.features')->name('landing.features');
+Route::get('/panduan-pemesanan-restoran', [LandingController::class, 'documentation'])->name('landing.documentation');
 
 Route::view('/privacy', 'landing.privacy')->name('landing.privacy');
 Route::view('/terms', 'landing.terms')->name('landing.terms');
-Route::view('/contact', 'landing.contact')->name('landing.contact');
+Route::view('/kontak-sistem-restoran', 'landing.contact')->name('landing.contact');
 
-Route::post('/contact', function (Request $request) {
+Route::post('/kontak-sistem-restoran', function (Request $request) {
     $validated = $request->validate([
         'name' => ['required', 'string', 'max:100'],
         'email' => ['required', 'email', 'max:150'],
