@@ -13,6 +13,27 @@
     <meta property="og:description" content="Terima pesanan restoran secara online dengan Venresto. Mudah, cepat, dan tanpa ribet!">
     <meta property="og:image" content="https://venresto.biz.id/assets/images/og-image.jpg">
 
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Venresto",
+        "description": "Sistem pemesanan restoran online dengan QR code.",
+        "url": "https://venresto.biz.id",
+        "logo": "https://venresto.biz.id/assets/images/logo.png",
+        "image": "https://venresto.biz.id/assets/images/og-image.jpg",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Jl. Contoh No. 123",
+            "addressLocality": "Jakarta",
+            "addressCountry": "ID"
+        },
+        "telephone": "+628123456789",
+        "openingHours": "Mo-Su 09:00-22:00"
+    }
+    </script>
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://venresto.biz.id/">
