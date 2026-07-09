@@ -121,10 +121,26 @@
                     <h4 class="font-semibold text-white mb-4">Company</h4>
                     <ul class="space-y-3 text-sm text-gray-400">
                         <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="{{ route('blog.index') }}" class="hover:text-white transition-colors">Blog</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="{{ route('landing.contact') }}" class="hover:text-white transition-colors">Contact</a></li>
                     </ul>
+                </div>
+
+                {{-- Backlinks --}}
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Temukan Kami Di</h4>
+                    <div class="flex space-x-3">
+                        <a href="https://www.google.com/maps?cid=VENRESTO_GMB_CID" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google My Business" class="h-6">
+                        </a>
+                        <a href="https://www.tripadvisor.com/Restaurant_Review-VENRESTO_TRIPADVISOR_ID" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/TripAdvisor_logo.svg/512px-TripAdvisor_logo.svg.png" alt="TripAdvisor" class="h-6">
+                        </a>
+                        <a href="https://www.zomato.com/VENRESTO_ZOMATO_ID" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Zomato_logo.svg/512px-Zomato_logo.svg.png" alt="Zomato" class="h-6">
+                        </a>
+                    </div>
                 </div>
 
                 {{-- Legal --}}
