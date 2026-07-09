@@ -87,7 +87,7 @@
             <p class="text-xl mb-8 max-w-2xl mx-auto">
                 Daftar sekarang dan dapatkan uji coba gratis selama 14 hari. Tidak perlu kartu kredit!
             </p>
-            <a href="{{ route('register') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+            <a href="{{ route('central.signup') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
                 Daftar Gratis
             </a>
         </div>
