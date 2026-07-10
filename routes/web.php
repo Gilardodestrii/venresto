@@ -124,9 +124,9 @@ Route::middleware(['auth'])
     });
 
 Route::get('/', LandingController::class)->name('landing.home');
-Route::view('/harga-sistem-pemesanan-restoran', 'landing.pricing')->name('landing.pricing');
-Route::view('/fitur-pemesanan-restoran', 'landing.features')->name('landing.features');
-Route::get('/panduan-pemesanan-restoran', [LandingController::class, 'documentation'])->name('landing.documentation');
+Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
+Route::view('/features', 'landing.features')->name('landing.features');
+Route::get('/documentation', [LandingController::class, 'documentation'])->name('landing.documentation');
 
 Route::view('/privacy', 'landing.privacy')->name('landing.privacy');
 Route::view('/terms', 'landing.terms')->name('landing.terms');
