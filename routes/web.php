@@ -508,6 +508,4 @@ Route::middleware(['auth'])
             [KitchenDisplayController::class, 'updateStatus']
         )->name('item.status');
 
-    });Route::get('/sitemap.xml', function () {
-    return response()->view('sitemap')->header('Content-Type', 'text/xml');
-});
+    });
