@@ -1,95 +1,219 @@
 @extends('layouts.marketing')
 
+@section('title', 'VenResto — POS & QR Menu untuk Restoran')
+@section('meta_description', 'POS + QR Menu modern untuk restoran. Kasir cepat, tiket dapur, inventory, laporan, multi-tenant. Coba gratis 7 hari!')
+
 @section('content')
-    <!-- Hero Section -->
-    <section class="py-20 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">Sistem Pemesanan Restoran Online Terbaik</h1>
-            <p class="text-xl mb-8 max-w-3xl mx-auto">
-                Venresto membantu restoran Anda menerima pesanan online, mengelola meja, dan meningkatkan penjualan dengan sistem QR code yang mudah digunakan.
-            </p>
-            <a href="#cta" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Coba Gratis Sekarang
-            </a>
+  {{-- Hero --}}
+  <section class="hero">
+    <div class="max-w-7xl mx-auto px-4 py-5 lg:py-6">
+      <div class="grid lg:grid-cols-2 gap-4 items-center">
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700 mb-3">Trial 7 hari • Tanpa kartu kredit</span>
+          <h1 class="text-4xl lg:text-5xl font-bold text-slate-900">POS & QR Menu modern untuk restoran yang ingin tumbuh cepat</h1>
+          <p class="text-lg text-slate-600 mt-3">
+            Kelola pesanan dari QR per meja, kasir, dapur, hingga laporan—semua terintegrasi. Multi-tenant & siap scale.
+          </p>
+          <div class="flex gap-2 mt-3">
+            <a href="{{ route('central.signup') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-sky-500 text-white font-bold text-base hover:bg-sky-600 shadow-lg transition">Mulai Trial Gratis</a>
+            <a href="{{ route('landing.pricing') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl border-2 border-sky-500 text-sky-600 font-bold text-base hover:bg-sky-50 transition">Lihat Harga</a>
+          </div>
+          <div class="flex items-center gap-3 mt-3 text-sm text-slate-600">
+            <i class="bi bi-shield-check"></i><span>Keamanan & isolasi data per tenant</span>
+            <i class="bi bi-cloud-check"></i><span>Online 24/7</span>
+          </div>
         </div>
-    </section>
+        <div>
+          <div class="aspect-video rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+            {{-- Ganti dengan screenshot/preview app Anda --}}
+            <img src="{{ asset('assets/img/venresto.png') }}" class="w-full h-full object-cover" alt="Tampilan VenResto">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Why Choose Us Section -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">Mengapa Memilih Venresto?</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-xl font-semibold mb-4">Pemesanan QR Code</h3>
-                    <p class="text-gray-600">
-                        Pelanggan bisa memesan langsung dari meja menggunakan <strong>QR code</strong>.
-                        Tidak perlu menunggu pelayan, sehingga mengurangi antrian dan meningkatkan kepuasan pelanggan.
-                    </p>
+  {{-- Trust bar / brand row --}}
+  <section>
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="text-center text-slate-600 mb-3">Dipercaya tim F&B dan UMKM</div>
+      <div class="flex flex-row justify-center items-center gap-8 flex-wrap opacity-70">
+        <img src="{{ asset('assets/img/sapore.png') }}" alt="Brand 1" class="h-12 w-auto object-contain">
+        <img src="{{ asset('assets/img/warung-kita.png') }}" alt="Brand 2" class="h-12 w-auto object-contain">
+        <img src="{{ asset('assets/img/nuvora.png') }}" alt="Brand 3" class="h-12 w-auto object-contain">
+      </div>
+    </div>
+  </section>
+
+  {{-- Fitur utama --}}
+  <section id="features" class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+      <div class="text-center mb-4">
+        <h2 class="text-3xl font-bold">Fitur yang bikin kerja makin efisien</h2>
+        <p class="text-slate-600">Dari meja pelanggan sampai laporan owner—semua satu alur.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-qr-code text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">QR Menu per Meja</h3>
+          <p class="text-slate-600">Pelanggan scan, pilih menu, buat pesanan; tiket otomatis ke dapur.</p>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-cash-coin text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">POS Kasir Lengkap</h3>
+          <p class="text-slate-600">Open/close shift, hold, split bill, diskon, pajak, service charge.</p>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-box-seam text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">Inventory Sederhana</h3>
+          <p class="text-slate-600">Recipe & bahan, pergerakan stok, low-stock alert.</p>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-people text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">RBAC Multi-Role</h3>
+          <p class="text-slate-600">Owner, manager, cashier, kitchen, waiter; akses rapi & aman.</p>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-printer text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">Cetak Dapur & Struk</h3>
+          <p class="text-slate-600">ESC/POS (LAN/Bluetooth), PDF share siap kirim.</p>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full shadow-lg">
+          <div class="mb-3"><i class="bi bi-graph-up-arrow text-2xl text-sky-500"></i></div>
+          <h3 class="text-lg font-semibold">Laporan Real-time</h3>
+          <p class="text-slate-600">Penjualan per hari/meja/kategori, best seller, COGS sederhana.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- Langkah mulai --}}
+  <section class="bg-slate-100">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+      <div class="grid lg:grid-cols-2 gap-4 items-center">
+        <div>
+          <h2 class="text-3xl font-bold">Mulai dalam 3 langkah</h2>
+          <ul class="list-none mt-3">
+            <li class="flex gap-3 mb-3">
+              <div><span class="font-bold">1</span></div>
+              <div><strong>Daftar tenant</strong><br><span class="text-slate-600">Isi nama usaha & subdomain.</span></div>
+            </li>
+            <li class="flex gap-3 mb-3">
+              <div><span class="font-bold">2</span></div>
+              <div><strong>Atur menu & meja</strong><br><span class="text-slate-600">Tambahkan kategori, harga, & QR per meja.</span></div>
+            </li>
+            <li class="flex gap-3">
+              <div><span class="font-bold">3</span></div>
+              <div><strong>Terima pesanan</strong><br><span class="text-slate-600">Pesanan masuk ke kasir & dapur otomatis.</span></div>
+            </li>
+          </ul>
+          <a href="{{ route('central.signup') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-sky-500 text-white font-bold text-base hover:bg-sky-600 shadow-lg transition mt-2">Coba Gratis 7 Hari</a>
+        </div>
+        <div>
+          <div class="p-4 border border-slate-200 rounded-2xl bg-white shadow-lg">
+            <h3 class="text-lg font-semibold mb-3">Quick Signup</h3>
+            {{-- Contoh form singkat (opsional) --}}
+            <form method="POST" action="{{ route('central.signup.store') }}">
+              @csrf
+              <div class="grid md:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Usaha</label>
+                  <input name="tenant_name" class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" required>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-xl font-semibold mb-4">Manajemen Restoran Mudah</h3>
-                    <p class="text-gray-600">
-                        Kelola menu, meja, dan pesanan dari satu dashboard. <strong>Sistem pemesanan restoran online</strong>
-                        ini dirancang untuk efisiensi dan kemudahan penggunaan.
-                    </p>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                  <input type="email" name="email" class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" required>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-xl font-semibold mb-4">Laporan Penjualan Real-Time</h3>
-                    <p class="text-gray-600">
-                        Dapatkan laporan penjualan harian, mingguan, dan bulanan secara real-time.
-                        Optimalkan bisnis restoran Anda dengan data yang akurat.
-                    </p>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Anda</label>
+                  <input name="name" class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" required>
                 </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                  <input type="password" name="password" class="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" minlength="8" required>
+                </div>
+              </div>
+              <button class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-slate-900 text-white font-bold text-base hover:bg-slate-800 shadow-lg transition mt-3 w-full" type="submit">
+                Buat Akun & Tenant
+              </button>
+              <p class="text-sm text-slate-600 mt-2">Dengan melanjutkan, Anda menyetujui <a href="{{ route('landing.terms') }}">Syarat</a> & <a href="{{ route('landing.privacy') }}">Kebijakan Privasi</a>.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- Testimoni singkat --}}
+  <section id="testimonials">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+      <div class="text-center mb-4">
+        <h2 class="text-3xl font-bold">Apa kata mereka</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="p-4 border border-slate-200 rounded-2xl h-full bg-white shadow-lg">
+          <p class="mb-3">"Pesanan via QR jauh mengurangi antrian. Laporan harian jadi rapi."</p>
+          <div class="text-sm text-slate-600">— Aji, Owner Warung Aji</div>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full bg-white shadow-lg">
+          <p class="mb-3">"Kasir cepat, split bill & service charge mantap. Dapur langsung cetak."</p>
+          <div class="text-sm text-slate-600">— Rina, Manager Kafe Nusantara</div>
+        </div>
+        <div class="p-4 border border-slate-200 rounded-2xl h-full bg-white shadow-lg">
+          <p class="mb-3">"Setup 1 hari sudah jalan. Support responsif."</p>
+          <div class="text-sm text-slate-600">— Bima, Restoran Suki</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{-- FAQ --}}
+  <section id="faq" class="bg-slate-100">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+      <div class="text-center mb-4">
+        <h2 class="text-3xl font-bold">Pertanyaan Umum</h2>
+      </div>
+      <div class="border border-slate-200 rounded-2xl overflow-hidden">
+        <div>
+          <h2 class="accordion-header">
+            <button class="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-slate-900 hover:bg-slate-50 transition" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+              Apakah ada trial gratis?
+            </button>
+          </h2>
+          <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+            <div class="px-4 py-3 text-slate-600">
+              Ya, Anda mendapat trial 7 hari tanpa kartu kredit. Bisa dibatalkan kapan saja.
             </div>
+          </div>
         </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section class="py-16">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold mb-8">Cara Kerja Venresto</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div>
-                    <div class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">1. Scan QR Code</h3>
-                    <p class="text-gray-600">Pelanggan scan QR code di meja untuk membuka menu.</p>
-                </div>
-                <div>
-                    <div class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">2. Pesan Makanan</h3>
-                    <p class="text-gray-600">Pilih menu dan tambahkan ke keranjang.</p>
-                </div>
-                <div>
-                    <div class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">3. Bayar & Nikmati</h3>
-                    <p class="text-gray-600">Bayar melalui sistem dan nikmati makanan Anda.</p>
-                </div>
+        <div>
+          <h2 class="accordion-header">
+            <button class="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-slate-900 hover:bg-slate-50 transition" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+              Apakah mendukung printer kasir & dapur?
+            </button>
+          </h2>
+          <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="px-4 py-3 text-slate-600">
+              Ya, kami mendukung ESC/POS via LAN/Bluetooth serta export PDF untuk dibagikan.
             </div>
+          </div>
         </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section id="cta" class="py-16 bg-blue-600 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold mb-6">Siap Meningkatkan Penjualan Restoran Anda?</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">
-                Daftar sekarang dan dapatkan uji coba gratis selama 14 hari. Tidak perlu kartu kredit!
-            </p>
-            <a href="{{ route('central.signup') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Daftar Gratis
-            </a>
+        <div>
+          <h2 class="accordion-header">
+            <button class="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-slate-900 hover:bg-slate-50 transition" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+              Bisakah pakai subdomain khusus per tenant?
+            </button>
+          </h2>
+          <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="px-4 py-3 text-slate-600">
+              Bisa. Setiap tenant mendapatkan subdomain, misalnya <code>warung-aji.appku.com</code>.
+            </div>
+          </div>
         </div>
-    </section>
+      </div>
+      <div class="text-center mt-4">
+        <a class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-sky-500 text-white font-bold text-base hover:bg-sky-600 shadow-lg transition" href="{{ route('central.signup') }}">Mulai Trial Sekarang</a>
+      </div>
+    </div>
+  </section>
 @endsection
