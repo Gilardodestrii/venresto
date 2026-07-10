@@ -4,7 +4,47 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('page-title', config('app.name'))</title>
+
+    {{-- SEO --}}
+    <title>@yield('title', config('app.name'))</title>
+    <meta name="description" content="@yield('meta_description', 'VenResto — POS & QR Menu modern untuk restoran. Kasir cepat, tiket dapur, inventory, laporan, multi-tenant. Coba gratis 7 hari!')">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="VenResto">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', config('app.name'))">
+    <meta property="og:description" content="@yield('meta_description', 'POS & QR Menu modern untuk restoran. Coba gratis 7 hari!')">
+    <meta property="og:image" content="{{ asset('assets/img/venresto.png') }}">
+    <meta property="og:locale" content="id_ID">
+
+    {{-- Twitter --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', config('app.name'))">
+    <meta name="twitter:description" content="@yield('meta_description', 'POS & QR Menu modern untuk restoran. Coba gratis 7 hari!')">
+    <meta name="twitter:image" content="{{ asset('assets/img/venresto.png') }}">
+
+    {{-- Structured Data --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VenResto",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "POS & QR Menu modern untuk restoran. Kasir cepat, tiket dapur, inventory, laporan, multi-tenant.",
+        "url": "{{ url('/') }}",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "IDR",
+            "description": "Trial gratis 7 hari tanpa kartu kredit"
+        }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

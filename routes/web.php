@@ -128,6 +128,34 @@ Route::view('/pricing', 'landing.pricing')->name('landing.pricing');
 Route::view('/features', 'landing.features')->name('landing.features');
 Route::get('/documentation', [LandingController::class, 'documentation'])->name('landing.documentation');
 
+// Sitemap XML untuk SEO
+Route::get('/sitemap.xml', function () {
+    $urls = [
+        ['loc' => route('landing.home'), 'priority' => '1.0', 'changefreq' => 'weekly'],
+        ['loc' => route('landing.pricing'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => route('landing.features'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => route('landing.documentation'), 'priority' => '0.8', 'changefreq' => 'monthly'],
+        ['loc' => route('blog.index'), 'priority' => '0.7', 'changefreq' => 'weekly'],
+        ['loc' => route('blog.show', 'cara-meningkatkan-penjualan-restoran-dengan-qr-code'), 'priority' => '0.6', 'changefreq' => 'monthly'],
+        ['loc' => route('blog.show', '5-alasan-mengapa-restoran-butuh-sistem-pemesanan-online'), 'priority' => '0.6', 'changefreq' => 'monthly'],
+        ['loc' => route('landing.contact'), 'priority' => '0.5', 'changefreq' => 'yearly'],
+        ['loc' => route('central.signup'), 'priority' => '0.8', 'changefreq' => 'yearly'],
+    ];
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    foreach ($urls as $url) {
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>{$url['loc']}</loc>\n";
+        $xml .= "    <changefreq>{$url['changefreq']}</changefreq>\n";
+        $xml .= "    <priority>{$url['priority']}</priority>\n";
+        $xml .= "  </url>\n";
+    }
+    $xml .= '</urlset>';
+
+    return response($xml, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
 Route::view('/privacy', 'landing.privacy')->name('landing.privacy');
 Route::view('/terms', 'landing.terms')->name('landing.terms');
 Route::view('/kontak-sistem-restoran', 'landing.contact')->name('landing.contact');
